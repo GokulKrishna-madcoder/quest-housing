@@ -66,57 +66,92 @@ export default function PropertyDetails() {
 
   return (
     <div className="w-full pb-32 bg-light relative selection:bg-primary selection:text-navy text-navy stitch-grid pt-24">
-      {/* Hero Gallery (Cinematic) */}
-      <div className="h-[100vh] relative px-6 md:px-12 max-w-[1600px] mx-auto pt-8">
-        <div className="absolute inset-0 z-0 flex flex-col md:flex-row shadow-sm border-stitch bg-white m-6 md:m-12 p-3">
+      {/* Hero Gallery (Cinematic Stitch Layout) */}
+      <div className="min-h-[100vh] relative px-4 md:px-12 max-w-[1600px] mx-auto pt-4 md:pt-8">
+        <div className="h-[calc(100vh-8rem)] flex flex-col md:flex-row gap-3 bg-white border-stitch p-3 shadow-sm relative">
+          {/* Corner stitch marks */}
           <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
+          <div className="cross-mark top-0 right-0 translate-x-1/2 -translate-y-1/2 text-navy"></div>
+          <div className="cross-mark bottom-0 left-0 -translate-x-1/2 translate-y-1/2 text-navy"></div>
           <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-navy"></div>
-          <div className="w-full md:w-2/3 h-1/2 md:h-full md:pr-1 relative overflow-hidden group">
-             <div className="absolute inset-0 bg-navy/10 z-10 transition-colors duration-700 pointer-events-none" />
+
+          {/* Main Image (Left — contains text overlay) */}
+          <div className="w-full md:w-2/3 h-1/2 md:h-full relative overflow-hidden group">
             <img src={property.image} alt={property.name} className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-[1.03]" />
-          </div>
-          <div className="w-full md:w-1/3 h-1/2 md:h-full flex flex-row md:flex-col gap-1">
-            <div className="w-1/2 md:w-full h-full md:h-1/2 relative overflow-hidden pb-1 md:pb-0 group">
-              <div className="absolute inset-0 bg-navy/10 z-10 transition-colors duration-700 pointer-events-none" />
-              <img src={property.gallery[0]} alt="" className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-[1.03]" />
+            <div className="absolute inset-0 bg-navy/10 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
+            
+            {/* Gradient overlay — constrained to main image only */}
+            <div className="absolute inset-0 bg-gradient-to-t from-navy/90 via-navy/30 to-transparent pointer-events-none" />
+
+            {/* Text content — inside main image */}
+            <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-10 lg:p-14 z-20">
+              {/* Top: Back button */}
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Link to="/properties" className="inline-flex items-center gap-3 text-white hover:text-primary transition-colors text-xs font-bold uppercase tracking-[0.2em] group/back">
+                  <span className="w-8 h-8 border border-white/40 flex items-center justify-center group-hover/back:border-primary group-hover/back:bg-primary/10 transition-all">
+                    <ArrowLeft size={14} />
+                  </span>
+                  Back to Collection
+                </Link>
+              </motion.div>
+
+              {/* Bottom: Property info */}
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="max-w-2xl"
+              >
+                <div className="inline-block px-4 py-2 bg-white text-navy font-bold text-[10px] uppercase tracking-[0.3em] mb-5 shadow-sm">
+                  {property.type} &bull; {property.furnishing}
+                </div>
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-medium mb-4 tracking-tighter uppercase text-white leading-[1.05]">{property.name}</h1>
+                <p className="text-lg text-white/80 flex items-center gap-3 font-sans">
+                  <MapPin size={18} className="text-primary shrink-0" /> {property.location}
+                </p>
+              </motion.div>
             </div>
-            <div className="w-1/2 md:w-full h-full md:h-1/2 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-navy/10 z-10 transition-colors duration-700 pointer-events-none" />
-              <img src={property.gallery[1] || property.image} alt="" className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-[1.03]" />
-            </div>
-          </div>
-        </div>
-        <div className="absolute inset-0 flex items-end m-6 md:m-12 p-10 md:p-16 z-20 pointer-events-none bg-gradient-to-t from-navy/80 via-navy/20 to-transparent">
-          <div className="w-full">
+
+            {/* Monthly Rent Card — anchored bottom-right of main image */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-30 bg-white p-6 md:p-8 border-stitch shadow-xl text-right min-w-[200px] md:min-w-[260px] hidden md:block"
             >
-              <Link to="/properties" className="inline-flex items-center gap-3 text-white hover:text-primary mb-8 transition-colors text-xs font-bold uppercase tracking-[0.2em] group pointer-events-auto">
-                <span className="w-8 h-8 rounded-none border border-white/40 flex items-center justify-center group-hover:border-primary transition-all">
-                  <ArrowLeft size={14} />
-                </span>
-                Back to Collection
-              </Link>
-              <div className="flex flex-col md:flex-row md:items-end justify-between gap-10">
-                <div>
-                  <div className="inline-block px-4 py-2 bg-white border border-transparent text-navy font-bold text-[10px] uppercase tracking-[0.3em] mb-6 shadow-sm">
-                    {property.type} &bull; {property.furnishing}
-                  </div>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-medium mb-4 tracking-tighter uppercase text-white">{property.name}</h1>
-                  <p className="text-xl text-white/80 flex items-center gap-3 font-sans">
-                    <MapPin size={20} className="text-primary" /> {property.location}
-                  </p>
-                </div>
-                <div className="text-left md:text-right bg-white p-8 border-stitch pointer-events-auto shadow-xl relative min-w-[300px]">
-                  <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold mb-2">Monthly Rent</p>
-                  <p className="text-4xl md:text-5xl font-display text-navy tracking-tighter">{property.rent}</p>
-                </div>
-              </div>
+              <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold mb-2">Monthly Rent</p>
+              <p className="text-3xl md:text-4xl font-display text-navy tracking-tighter">{property.rent}</p>
             </motion.div>
           </div>
+
+          {/* Gallery Images (Right column) */}
+          <div className="w-full md:w-1/3 h-1/2 md:h-full flex flex-row md:flex-col gap-3">
+            <div className="w-1/2 md:w-full h-full md:h-1/2 relative overflow-hidden group border border-navy/5">
+              <img src={property.gallery[0]} alt="" className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-[1.03]" />
+              <div className="absolute inset-0 bg-navy/10 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
+            </div>
+            <div className="w-1/2 md:w-full h-full md:h-1/2 relative overflow-hidden group border border-navy/5">
+              <img src={property.gallery[1] || property.image} alt="" className="w-full h-full object-cover transition-transform duration-[3s] group-hover:scale-[1.03]" />
+              <div className="absolute inset-0 bg-navy/10 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
+            </div>
+          </div>
+
+          {/* Mobile Rent Card — visible only on small screens */}
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="md:hidden bg-white p-6 border-stitch shadow-sm text-center relative"
+          >
+            <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold mb-2">Monthly Rent</p>
+            <p className="text-3xl font-display text-navy tracking-tighter">{property.rent}</p>
+          </motion.div>
         </div>
       </div>
 

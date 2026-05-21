@@ -511,7 +511,7 @@ export default function Home() {
               className="md:col-span-8 relative overflow-hidden group border border-navy/10"
             >
               <img 
-                src="https://images.unsplash.com/photo-1600607687931-cebf09633e9d?w=1200&auto=format&fit=crop&q=80" 
+                src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&auto=format&fit=crop&q=80" 
                 alt="Interior Design" 
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
               />

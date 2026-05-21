@@ -12,7 +12,7 @@ export const properties = [
     image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&auto=format&fit=crop&q=60",
     gallery: [
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1600607687931-cebf09633e9d?w=1200&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&auto=format&fit=crop&q=80",
       "https://images.unsplash.com/photo-1600566753086-00f18efc2291?w=1200&auto=format&fit=crop&q=80"
     ],
     features: ["Private Pool", "Home Theatre", "Italian Marble", "Smart Home"],

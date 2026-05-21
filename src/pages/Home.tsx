@@ -124,7 +124,7 @@ export default function Home() {
               Immersive spaces designed for better living. Discover an exclusive collection of architectural masterpieces.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-5">
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row flex-wrap gap-5">
                <Link to="/properties" className="bg-primary hover:bg-white text-navy px-10 py-5 rounded-full font-black uppercase text-xs tracking-[0.2em] shadow-[0_8px_30px_rgba(247,209,18,0.3)] hover:shadow-[0_15px_40px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-3 w-full sm:w-auto">
                   Explore Properties
                   <div className="w-6 h-6 rounded-full bg-navy/10 flex items-center justify-center">
@@ -133,6 +133,10 @@ export default function Home() {
                </Link>
                <Link to="/register" className="bg-white/10 hover:bg-white/20 backdrop-blur-2xl border border-white/20 text-white px-10 py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-2 w-full sm:w-auto">
                   Register as Owner
+               </Link>
+               <Link to="/register" state={{ intent: "Tenant Requirement" }} className="bg-white/10 hover:bg-primary hover:text-navy backdrop-blur-2xl border border-primary/40 text-primary px-10 py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-3 w-full sm:w-auto">
+                  <ClipboardList size={16} />
+                  Tenants Share Your Requirement
                </Link>
             </motion.div>
           </motion.div>

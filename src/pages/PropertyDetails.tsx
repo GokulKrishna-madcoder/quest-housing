@@ -18,15 +18,13 @@ export default function PropertyDetails() {
           setProperty({
             id: data.id || data._id,
             name: data.title,
-            type: data.specs?.split('•')[0]?.trim() || "Property",
+            type: data.specs?.propertyType || "Property",
             location: data.location || "Unknown",
             rent: data.price || "Contact for Price",
-            bedrooms: data.specs?.match(/(\d+)\s*Bed/i)?.[1] || "—",
-            bathrooms: data.specs?.match(/(\d+)\s*Bath/i)?.[1] || "—",
-            area: data.specs?.match(/([\d,]+)\s*sqft/i)?.[1]
-              ? `${data.specs.match(/([\d,]+)\s*sqft/i)[1]} sqft`
-              : "TBD",
-            furnishing: "As Listed",
+            bedrooms: data.specs?.bedrooms || "—",
+            bathrooms: data.specs?.bathrooms || "—",
+            area: data.specs?.area ? `${data.specs.area} sqft` : "TBD",
+            furnishing: data.specs?.furnishing || "As Listed",
             description: data.description || "No description provided.",
             features: data.amenities || [],
             image: data.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",

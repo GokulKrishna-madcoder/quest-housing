@@ -33,10 +33,11 @@ export default function Home() {
         const mappedProperties = data.map((prop: any) => ({
           id: prop.id || prop._id,
           name: prop.title,
-          type: prop.specs?.split('•')[0]?.trim() || "Property",
+          type: prop.specs?.propertyType || "Property",
           location: prop.location || "Unknown",
           rent: prop.price || "Contact for Price",
-          specs: prop.specs || "",
+          bedrooms: prop.specs?.bedrooms || "—",
+          bathrooms: prop.specs?.bathrooms || "—",
           image: prop.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80"
         }));
         setFeaturedProperties(mappedProperties);

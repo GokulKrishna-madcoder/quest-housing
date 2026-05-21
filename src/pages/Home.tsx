@@ -38,7 +38,8 @@ export default function Home() {
           rent: prop.price || "Contact for Price",
           bedrooms: prop.specs?.bedrooms || "—",
           bathrooms: prop.specs?.bathrooms || "—",
-          image: prop.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80"
+          image: prop.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",
+          amenities: prop.amenities || []
         }));
         setFeaturedProperties(mappedProperties);
       } catch (error) {
@@ -222,7 +223,7 @@ export default function Home() {
                   <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-white"></div>
                   <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-white"></div>
                   
-                  <div className="relative aspect-[4/5] overflow-hidden mb-6 border-stitch-dark p-2 bg-white/5 backdrop-blur-sm">
+                  <div className="relative aspect-square overflow-hidden mb-6 border-stitch-dark p-2 bg-white/5 backdrop-blur-sm">
                     <div className="absolute inset-0 bg-navy/40 z-10 group-hover:bg-transparent transition-colors duration-700" />
                     <img 
                       src={prop.image} 
@@ -244,6 +245,20 @@ export default function Home() {
                       <p className="text-white/50 flex items-center gap-2 text-xs uppercase tracking-widest font-bold">
                         <MapPin size={14} /> {prop.location}
                       </p>
+                      {prop.amenities && prop.amenities.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {prop.amenities.slice(0, 3).map((amenity: string, i: number) => (
+                            <span key={i} className="text-[9px] uppercase tracking-widest border border-white/20 text-white/70 px-2 py-1 bg-white/5">
+                              {amenity}
+                            </span>
+                          ))}
+                          {prop.amenities.length > 3 && (
+                            <span className="text-[9px] uppercase tracking-widest text-white/50 py-1">
+                              +{prop.amenities.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Link>

@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+studio-quest-housing/node_modules/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Environment files - NEVER commit secrets
+.env
+.env.local
+.env.production
+.env.*.local
+# Keep example for reference
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+
+# Vite
+vite.config.ts.timestamp-*

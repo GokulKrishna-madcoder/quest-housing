@@ -153,7 +153,7 @@ export default function Home() {
                   </div>
                   <div>
                      <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 font-bold mb-1">Prime Locations</p>
-                     <p className="font-display text-2xl md:text-3xl font-medium tracking-tight">Across India</p>
+                     <p className="font-display text-2xl md:text-3xl font-medium tracking-tight">Across Bangalore</p>
                   </div>
                </div>
                <div className="h-[1px] w-full bg-white/10 mb-6 relative z-10" />

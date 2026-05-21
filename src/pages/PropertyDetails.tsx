@@ -67,7 +67,7 @@ export default function PropertyDetails() {
   return (
     <div className="w-full pb-32 bg-light relative selection:bg-primary selection:text-navy text-navy stitch-grid pt-24">
       {/* Hero Gallery (Cinematic) */}
-      <div className="h-[70vh] md:h-[85vh] relative px-6 md:px-12 max-w-[1600px] mx-auto pt-8">
+      <div className="h-[100vh] relative px-6 md:px-12 max-w-[1600px] mx-auto pt-8">
         <div className="absolute inset-0 z-0 flex flex-col md:flex-row shadow-sm border-stitch bg-white m-6 md:m-12 p-3">
           <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
           <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-navy"></div>
@@ -104,7 +104,7 @@ export default function PropertyDetails() {
                   <div className="inline-block px-4 py-2 bg-white border border-transparent text-navy font-bold text-[10px] uppercase tracking-[0.3em] mb-6 shadow-sm">
                     {property.type} &bull; {property.furnishing}
                   </div>
-                  <h1 className="text-5xl md:text-8xl font-display font-medium mb-4 tracking-tighter uppercase text-white">{property.name}</h1>
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-medium mb-4 tracking-tighter uppercase text-white">{property.name}</h1>
                   <p className="text-xl text-white/80 flex items-center gap-3 font-sans">
                     <MapPin size={20} className="text-primary" /> {property.location}
                   </p>

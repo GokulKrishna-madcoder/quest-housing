@@ -622,7 +622,7 @@ export default function Home() {
               <Link to="/register" className="px-12 py-5 bg-navy text-white font-bold text-xs uppercase tracking-[0.2em] text-center hover:bg-navy-dark transition-all shadow-[8px_8px_0px_rgba(247,209,18,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_rgba(247,209,18,1)]">
                 Register Your Interest
               </Link>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="flex items-center gap-4 px-12 py-5 bg-transparent text-navy font-bold text-xs uppercase tracking-[0.2em] text-center border-2 border-navy hover:bg-navy/5 transition-all">
+              <a href="https://wa.me/918886131316" target="_blank" rel="noreferrer" className="flex items-center gap-4 px-12 py-5 bg-transparent text-navy font-bold text-xs uppercase tracking-[0.2em] text-center border-2 border-navy hover:bg-navy/5 transition-all">
                 <div className="w-2 h-2 rounded-full bg-navy animate-pulse"></div>
                 Chat With Concierge
               </a>

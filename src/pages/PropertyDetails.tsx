@@ -224,7 +224,7 @@ export default function PropertyDetails() {
                 Q
               </div>
               <h3 className="text-4xl font-display font-medium mb-3 uppercase tracking-tighter">Request a Tour</h3>
-              <p className="text-navy/50 mb-10 font-sans text-sm">Schedule a cinematic viewing or express interest with our concierge team.</p>
+              <p className="text-navy/50 mb-10 font-sans text-sm">Schedule a visit or express interest with our concierge team.</p>
               
               <Link 
                 to="/register" 
@@ -235,7 +235,7 @@ export default function PropertyDetails() {
               </Link>
               
               <a 
-                href={`https://wa.me/919876543210?text=I'm interested in ${property.name} located at ${property.location}`}
+                href={`https://wa.me/918886131316?text=I'm interested in ${property.name} located at ${property.location}`}
                 target="_blank"
                 rel="noreferrer"
                 className="w-full flex items-center justify-center gap-3 py-5 bg-transparent border-2 border-navy text-navy font-bold uppercase text-xs tracking-[0.2em] hover:bg-light transition-colors"

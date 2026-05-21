@@ -217,7 +217,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: idx * 0.1, ease: "easeOut" }}
                 viewport={{ once: true, margin: "-50px" }}
-                className="snap-center shrink-0 w-[85vw] md:w-[50vw] lg:w-[40vw] group cursor-pointer relative"
+                className="snap-center shrink-0 w-[85vw] md:w-[50vw] lg:w-[25vw] group cursor-pointer relative"
               >
                 <Link to={`/properties/${prop.id}`} className="block">
                   <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-white"></div>
@@ -241,7 +241,7 @@ export default function Home() {
                   </div>
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-3xl lg:text-4xl font-display font-medium mb-3 text-white group-hover:text-primary transition-colors">{prop.name}</h3>
+                      <h3 className="text-xl lg:text-2xl font-display font-medium mb-3 text-white group-hover:text-primary transition-colors">{prop.name}</h3>
                       <p className="text-white/50 flex items-center gap-2 text-xs uppercase tracking-widest font-bold">
                         <MapPin size={14} /> {prop.location}
                       </p>

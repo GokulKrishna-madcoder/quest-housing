@@ -134,7 +134,7 @@ export default function Home() {
                <Link to="/register" className="bg-white/10 hover:bg-white/20 backdrop-blur-2xl border border-white/20 text-white px-10 py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-2 w-full sm:w-auto">
                   Register as Owner
                </Link>
-               <Link to="/register" state={{ intent: "Tenant Requirement" }} className="bg-white/10 hover:bg-primary hover:text-navy backdrop-blur-2xl border border-primary/40 text-primary px-10 py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-3 w-full sm:w-auto">
+               <Link to="/find-my-home" className="bg-white/10 hover:bg-primary hover:text-navy backdrop-blur-2xl border border-primary/40 text-primary px-10 py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-3 w-full sm:w-auto">
                   <ClipboardList size={16} />
                   Tenants Share Your Requirement
                </Link>

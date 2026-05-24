@@ -9,7 +9,7 @@ export type LeadStatus = 'Pending' | 'Contacted' | 'Completed';
 interface StatusSelectorProps {
   currentStatus: string;
   leadId: string;
-  table: 'owner_leads' | 'tenant_leads';
+  table: 'owner_leads' | 'tenant_leads' | 'instagram_leads';
 }
 
 export function StatusSelector({ currentStatus, leadId, table }: StatusSelectorProps) {

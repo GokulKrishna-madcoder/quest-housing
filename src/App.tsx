@@ -10,6 +10,7 @@ import About from './pages/About';
 import Properties from './pages/Properties';
 import PropertyDetails from './pages/PropertyDetails';
 import Registration from './pages/Registration';
+import FindMyHome from './pages/FindMyHome';
 import ScrollToTop from './components/ScrollToTop';
 
 // Admin Routes
@@ -18,6 +19,7 @@ import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import OwnerLeads from './pages/admin/OwnerLeads';
 import TenantLeads from './pages/admin/TenantLeads';
+import FunnelLeads from './pages/admin/FunnelLeads';
 
 export default function App() {
   return (
@@ -30,6 +32,7 @@ export default function App() {
           <Route path="properties" element={<Properties />} />
           <Route path="properties/:id" element={<PropertyDetails />} />
           <Route path="register" element={<Registration />} />
+          <Route path="find-my-home" element={<FindMyHome />} />
         </Route>
         
         {/* Admin Routes */}
@@ -38,6 +41,7 @@ export default function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="owner-leads" element={<OwnerLeads />} />
           <Route path="tenant-leads" element={<TenantLeads />} />
+          <Route path="funnel-leads" element={<FunnelLeads />} />
         </Route>
       </Routes>
     </Router>

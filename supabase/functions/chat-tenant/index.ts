@@ -11,11 +11,12 @@ serve(async (req) => {
     const { messages } = await req.json();
 
     const openai = new OpenAI({
-      apiKey: Deno.env.get('OPENAI_API_KEY'),
+      apiKey: Deno.env.get('GEMINI_API_KEY'),
+      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/'
     });
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gemini-2.5-flash',
       messages: [
         {
           role: 'system',

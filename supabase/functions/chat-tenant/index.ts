@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
-import { GoogleGenerativeAI, FunctionDeclaration, Schema, Type } from "https://esm.sh/@google/generative-ai@0.24.1";
+import { GoogleGenerativeAI, SchemaType } from "https://esm.sh/@google/generative-ai@0.24.1";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 serve(async (req) => {
@@ -35,11 +35,11 @@ serve(async (req) => {
           name: "capture_lead",
           description: "Captures a user's lead information when they provide their contact details and requirements.",
           parameters: {
-            type: Type.OBJECT,
+            type: SchemaType.OBJECT,
             properties: {
-              name: { type: Type.STRING, description: "The full name of the user" },
-              phone: { type: Type.STRING, description: "The WhatsApp or phone number of the user" },
-              requirement: { type: Type.STRING, description: "What the user is looking for (e.g. 2 BHK in Koramangala)" },
+              name: { type: SchemaType.STRING, description: "The full name of the user" },
+              phone: { type: SchemaType.STRING, description: "The WhatsApp or phone number of the user" },
+              requirement: { type: SchemaType.STRING, description: "What the user is looking for (e.g. 2 BHK in Koramangala)" },
             },
             required: ["name", "phone"],
           },

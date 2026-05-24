@@ -44,8 +44,16 @@ export function TenantChatbot() {
       setMessages([...newMessages, { role: 'assistant', content: data.content }]);
     } catch (err: any) {
       console.error('Chat error:', err);
-      const errorMsg = err.context ? await err.context.text() : err.message || 'Unknown error';
-      setMessages([...newMessages, { role: 'assistant', content: `Error: ${errorMsg}. Please check your Edge Function deployment and API keys.` }]);
+      let errorMsg = err.message || 'Unknown error';
+      try {
+        if (err.context && typeof err.context.text === 'function') {
+           const text = await err.context.text();
+           if (text) errorMsg = text;
+        }
+      } catch (e) {
+        // Body might be already read, fallback to err.message
+      }
+      setMessages([...newMessages, { role: 'assistant', content: `Error: ${errorMsg}. Please check your Edge Function logs.` }]);
     } finally {
       setLoading(false);
     }

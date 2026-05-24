@@ -74,8 +74,12 @@ If they give you their contact info, ALWAYS call the 'capture_lead' function to 
     const latestMessage = messages[messages.length - 1].content;
     let result = await chat.sendMessage(latestMessage);
     
-    // Check if the model decided to call a function
-    const call = result.response.functionCalls()?.[0];
+    // Check if the model decided to call a function safely
+    const calls = typeof result.response.functionCalls === 'function' 
+      ? result.response.functionCalls() 
+      : result.response.functionCalls;
+    const call = calls?.[0];
+    
     if (call && call.name === "capture_lead") {
        const args = call.args;
        
@@ -95,7 +99,13 @@ If they give you their contact info, ALWAYS call the 'capture_lead' function to 
        }]);
     }
 
-    const text = result.response.text();
+    let text = "";
+    try {
+      text = result.response.text();
+    } catch (e) {
+      // If the model response contains only function calls or is blocked, .text() throws.
+      text = "Thank you. Your request has been recorded.";
+    }
 
     // Log the conversation asynchronously
     supabase.from('chatbot_conversations').insert({

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Plus, Edit2, Trash2, X, Upload, Home, MapPin, Filter } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, X, Upload, Home, MapPin, Filter, ArrowLeft, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { toast } from 'sonner';
@@ -17,6 +17,10 @@ const emptyForm = {
 };
 
 export default function AdminProperties() {
+  type UnifiedImage = 
+    | { type: 'existing'; url: string }
+    | { type: 'new'; file: File; preview: string; id: string };
+
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -24,8 +28,7 @@ export default function AdminProperties() {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [images, setImages] = useState<UnifiedImage[]>([]);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -50,8 +53,7 @@ export default function AdminProperties() {
   const openAdd = () => {
     setEditId(null);
     setForm(emptyForm);
-    setImageFiles([]);
-    setExistingImages([]);
+    setImages([]);
     setShowForm(true);
   };
 
@@ -65,8 +67,7 @@ export default function AdminProperties() {
       amenities: (p.amenities || []).join(', '),
       bedrooms: p.bedrooms || 1, bathrooms: p.bathrooms || 1, area_sqft: p.area_sqft || 0,
     });
-    setExistingImages(p.image_urls || []);
-    setImageFiles([]);
+    setImages((p.image_urls || []).map((url: string) => ({ type: 'existing', url })));
     setShowForm(true);
   };
 
@@ -77,13 +78,17 @@ export default function AdminProperties() {
     }
     setSaving(true);
     try {
-      const newUrls: string[] = [];
-      for (const file of imageFiles) {
-        const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-        const { error: upErr } = await supabase.storage.from('property-images').upload(fileName, file);
-        if (upErr) throw upErr;
-        const { data: urlData } = supabase.storage.from('property-images').getPublicUrl(fileName);
-        newUrls.push(urlData.publicUrl);
+      const finalUrls: string[] = [];
+      for (const img of images) {
+        if (img.type === 'existing') {
+          finalUrls.push(img.url);
+        } else {
+          const fileName = `${Date.now()}-${img.file.name.replace(/\s+/g, '-')}`;
+          const { error: upErr } = await supabase.storage.from('property-images').upload(fileName, img.file);
+          if (upErr) throw upErr;
+          const { data: urlData } = supabase.storage.from('property-images').getPublicUrl(fileName);
+          finalUrls.push(urlData.publicUrl);
+        }
       }
 
       const payload = {
@@ -100,7 +105,7 @@ export default function AdminProperties() {
         bedrooms: Number(form.bedrooms),
         bathrooms: Number(form.bathrooms),
         area_sqft: Number(form.area_sqft),
-        image_urls: [...existingImages, ...newUrls],
+        image_urls: finalUrls,
         updated_at: new Date().toISOString(),
       };
 
@@ -127,8 +132,38 @@ export default function AdminProperties() {
     else toast.success('Property deleted.');
   };
 
-  const removeExistingImage = (url: string) => {
-    setExistingImages(prev => prev.filter(u => u !== url));
+  const removeImage = (index: number) => {
+    setImages(prev => {
+      const newArr = [...prev];
+      if (newArr[index].type === 'new') {
+        URL.revokeObjectURL((newArr[index] as any).preview);
+      }
+      newArr.splice(index, 1);
+      return newArr;
+    });
+  };
+
+  const moveImage = (index: number, direction: 'left' | 'right') => {
+    setImages(prev => {
+      const newArr = [...prev];
+      if (direction === 'left' && index > 0) {
+        [newArr[index - 1], newArr[index]] = [newArr[index], newArr[index - 1]];
+      } else if (direction === 'right' && index < newArr.length - 1) {
+        [newArr[index], newArr[index + 1]] = [newArr[index + 1], newArr[index]];
+      }
+      return newArr;
+    });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newImages: UnifiedImage[] = files.map(file => ({
+      type: 'new',
+      file,
+      preview: URL.createObjectURL(file),
+      id: Math.random().toString(36).substring(7)
+    }));
+    setImages(prev => [...prev, ...newImages]);
   };
 
   const filtered = properties.filter(p =>
@@ -305,22 +340,22 @@ export default function AdminProperties() {
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Images</label>
                       <label className="flex items-center gap-2 px-4 py-3 border border-dashed border-navy/20 rounded-lg cursor-pointer hover:bg-navy/5 transition-colors text-sm text-navy/50">
                         <Upload size={16} /> Click to upload images
-                        <input type="file" multiple accept="image/*" className="hidden" onChange={e => setImageFiles(Array.from(e.target.files || []))} />
+                        <input type="file" multiple accept="image/*" className="hidden" onChange={handleFileChange} />
                       </label>
-                      {(existingImages.length > 0 || imageFiles.length > 0) && (
+                      {images.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-3">
-                          {existingImages.map((url, i) => (
-                            <div key={i} className="relative w-20 h-14 rounded-lg overflow-hidden group/thumb">
-                              <img src={url} alt="" className="w-full h-full object-cover" />
-                              <button onClick={() => removeExistingImage(url)}
-                                className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover/thumb:opacity-100 transition-opacity cursor-pointer">
-                                <X size={14} />
-                              </button>
-                            </div>
-                          ))}
-                          {imageFiles.map((file, i) => (
-                            <div key={`new-${i}`} className="w-20 h-14 rounded-lg overflow-hidden border-2 border-primary">
-                              <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                          {images.map((img, i) => (
+                            <div key={img.type === 'existing' ? img.url : img.id} className={`relative w-24 h-16 rounded-lg overflow-hidden group/thumb ${img.type === 'new' ? 'border-2 border-primary' : ''}`}>
+                              <img src={img.type === 'existing' ? img.url : img.preview} alt="" className="w-full h-full object-cover" />
+                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center gap-1 opacity-0 group-hover/thumb:opacity-100 transition-opacity">
+                                {i > 0 && (
+                                  <button onClick={(e) => { e.preventDefault(); moveImage(i, 'left'); }} className="p-1 hover:bg-white/20 rounded text-white cursor-pointer"><ArrowLeft size={14} /></button>
+                                )}
+                                <button onClick={(e) => { e.preventDefault(); removeImage(i); }} className="p-1 hover:bg-red-500 rounded text-white cursor-pointer"><Trash2 size={14} /></button>
+                                {i < images.length - 1 && (
+                                  <button onClick={(e) => { e.preventDefault(); moveImage(i, 'right'); }} className="p-1 hover:bg-white/20 rounded text-white cursor-pointer"><ArrowRight size={14} /></button>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </div>

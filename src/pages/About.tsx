@@ -105,7 +105,7 @@ export default function About() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-            {/* Brokerage */}
+            {/* Fee for Services */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -117,10 +117,13 @@ export default function About() {
               </div>
               <h3 className="text-3xl font-display text-navy mb-4 uppercase tracking-tight">Radical Transparency</h3>
               <p className="text-navy/70 leading-relaxed font-sans mb-6">
-                The traditional real estate market thrives on opaque fees and hidden costs. We believe you deserve better. Our model is clean, simple, and strictly upfront: <span className="font-bold text-navy">a flat, one-time fee equal to exactly 22 Days of Rent.</span>
+                The traditional real estate market thrives on opaque costs. We believe you deserve better. Our model is clean, simple, and strictly upfront: <span className="font-bold text-navy">a flat Fee for Services equal to exactly 22 Days of Rent.</span>
+              </p>
+              <p className="text-navy/70 leading-relaxed font-sans mb-6">
+                This is exclusively a fee for the premium end-to-end services we provide. We do not charge a single rupee upfront. <span className="font-bold text-primary">You only pay the fee once you have successfully secured the property.</span>
               </p>
               <p className="text-navy/70 leading-relaxed font-sans">
-                No last-minute surprises. No endless negotiations. Just honest, premium matchmaking that aligns our incentives perfectly with finding you the ideal space or tenant.
+                No last-minute surprises. No endless negotiations. Just honest matchmaking that aligns our incentives perfectly with finding you the ideal space or tenant.
               </p>
             </motion.div>
 

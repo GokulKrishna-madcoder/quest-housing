@@ -617,6 +617,45 @@ export default function Home() {
         </div>
       </section>
       
+      {/* Service Fee Banner */}
+      <section className="py-20 bg-primary relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-overlay"></div>
+        <div className="container mx-auto px-6 md:px-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex-1"
+          >
+            <h2 className="text-4xl md:text-5xl font-display font-black text-navy uppercase tracking-tighter mb-4">
+              Transparent <br />Fee for Services
+            </h2>
+            <p className="text-navy/80 font-sans text-lg max-w-xl font-medium">
+              We charge a flat fee equivalent to <span className="font-bold border-b-2 border-navy pb-1">22 Days of Rent</span> for our end-to-end premium concierge services. 
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex-1 w-full flex justify-start md:justify-end"
+          >
+            <div className="bg-white/90 backdrop-blur-md p-8 border-2 border-navy shadow-[8px_8px_0px_rgba(10,25,47,1)] inline-flex items-start gap-6 max-w-md">
+              <div className="w-12 h-12 bg-navy text-primary flex items-center justify-center shrink-0">
+                <ShieldCheck size={24} />
+              </div>
+              <div>
+                <h4 className="font-display font-bold text-xl text-navy uppercase mb-2">Zero Upfront Costs</h4>
+                <p className="text-navy/70 text-sm font-sans font-medium">
+                  We don't charge a single rupee until you successfully secure the property. Our incentives are perfectly aligned with yours.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* CTA Section (LIGHT LUXURY) */}
       <section className="py-40 relative flex items-center justify-center overflow-hidden bg-light border-y border-navy/10 stitch-grid">
         <div className="container mx-auto px-6 md:px-12 relative z-20 text-center max-w-4xl">

@@ -18,7 +18,7 @@ serve(async (req) => {
 
     const systemPrompt = `You are the Quest Housing Admin AI Analyst. 
 You are a senior real estate data analyst and business strategist.
-You have access to the following raw database context covering Owner Leads, Tenant Funnel Leads, and Property Inventory:
+You have access to the following raw database context covering Owner Leads, Tenant Funnel Leads, Property Inventory, and Recent Tenant Chat Logs:
 <RAW_DATA>
 ${analyticsContext || 'No data provided.'}
 </RAW_DATA>

@@ -40,16 +40,18 @@ export default function AIAnalyst() {
 
     try {
       // Fetch fresh analytics snapshot
-      const [ownersRes, funnelRes, propsRes] = await Promise.all([
+      const [ownersRes, funnelRes, propsRes, chatsRes] = await Promise.all([
         supabase.from('owner_leads').select('status, created_at, property_type, location'),
         supabase.from('instagram_leads').select('status, created_at, budget_type, preferred_location, utm_source'),
-        supabase.from('properties').select('type, availability_status, rent_amount, location')
+        supabase.from('properties').select('type, availability_status, rent_amount, location'),
+        supabase.from('chatbot_conversations').select('user_message, bot_response, created_at').limit(50).order('created_at', { ascending: false })
       ]);
 
       const analyticsContext = JSON.stringify({
         ownerLeads: ownersRes.data,
         funnelLeads: funnelRes.data,
-        properties: propsRes.data
+        properties: propsRes.data,
+        recentTenantChatLogs: chatsRes.data
       });
 
       const { data, error } = await supabase.functions.invoke('chat-admin', {

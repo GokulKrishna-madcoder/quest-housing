@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Download, FileText, Filter, Trash2, MessageCircle, Phone } from 'lucide-react';
+import { Search, Download, FileText, Filter, Trash2, MessageCircle, Phone, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
+import { NotesDrawer } from '../../components/admin/NotesDrawer';
 import { toast } from 'sonner';
 
 export default function TenantLeads() {
@@ -15,6 +16,7 @@ export default function TenantLeads() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
+  const [notesLead, setNotesLead] = useState<any | null>(null);
 
   useEffect(() => {
     fetchLeads();
@@ -187,7 +189,7 @@ export default function TenantLeads() {
                       <p className="text-navy font-medium mb-2">{lead.phone}</p>
                       <div className="flex items-center gap-2">
                         <a
-                          href={`https://wa.me/91${(lead.whatsapp || lead.phone || '').replace(/\D/g, '')}`}
+                          href={`https://wa.me/91${(lead.whatsapp || lead.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${lead.full_name}, this is Quest Housing Bangalore. We received your enquiry for ${lead.looking_for} in ${lead.preferred_location}. Let us help you find the perfect home! 🏠`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Chat on WhatsApp"
@@ -219,7 +221,13 @@ export default function TenantLeads() {
                     <td className="px-6 py-4">
                       <StatusSelector currentStatus={lead.status} leadId={lead.id} table="tenant_leads" />
                     </td>
-                    <td className="px-6 py-4 text-right flex justify-end">
+                    <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button 
+                         onClick={() => setNotesLead(lead)}
+                         className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-navy bg-navy/5 hover:bg-navy/10 px-3 py-1.5 rounded transition-colors"
+                      >
+                         <StickyNote size={14} /> Notes
+                      </button>
                       <button 
                          onClick={() => setLeadToDelete(lead.id)}
                          className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition-colors"
@@ -234,6 +242,7 @@ export default function TenantLeads() {
           </table>
         </div>
       </div>
+      <NotesDrawer isOpen={!!notesLead} onClose={() => setNotesLead(null)} lead={notesLead} table="tenant_leads" />
       <DeleteModal 
         isOpen={!!leadToDelete} 
         onClose={() => setLeadToDelete(null)} 

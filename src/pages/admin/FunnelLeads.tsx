@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'motion/react';
-import { Search, Download, FileText, Filter, Trash2, TrendingUp, MapPin, Calendar, MessageCircle, Phone } from 'lucide-react';
+import { Search, Download, FileText, Filter, Trash2, TrendingUp, MapPin, Calendar, MessageCircle, Phone, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
+import { NotesDrawer } from '../../components/admin/NotesDrawer';
 import { toast } from 'sonner';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -18,6 +19,7 @@ export default function FunnelLeads() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
+  const [notesLead, setNotesLead] = useState<any | null>(null);
 
   useEffect(() => {
     fetchLeads();
@@ -235,7 +237,7 @@ export default function FunnelLeads() {
                       <p className="text-navy font-medium mb-2">{lead.whatsapp_number}</p>
                       <div className="flex items-center gap-2">
                         <a
-                          href={`https://wa.me/91${(lead.whatsapp_number || '').replace(/\D/g, '')}`}
+                          href={`https://wa.me/91${(lead.whatsapp_number || '').replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${lead.full_name}, this is Quest Housing Bangalore. We received your requirement for ${(lead.property_type || []).join('/')} in ${lead.preferred_location}. Our team is on it! 🏠`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Chat on WhatsApp"
@@ -277,7 +279,11 @@ export default function FunnelLeads() {
                     <td className="px-6 py-4">
                       <StatusSelector currentStatus={lead.status || 'new'} leadId={lead.id} table="instagram_leads" />
                     </td>
-                    <td className="px-6 py-4 text-right flex justify-end">
+                    <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button onClick={() => setNotesLead(lead)}
+                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-navy bg-navy/5 hover:bg-navy/10 px-3 py-1.5 rounded transition-colors">
+                        <StickyNote size={14} /> Notes
+                      </button>
                       <button onClick={() => setLeadToDelete(lead.id)}
                         className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition-colors">
                         <Trash2 size={14} /> Delete
@@ -290,6 +296,7 @@ export default function FunnelLeads() {
           </table>
         </div>
       </div>
+      <NotesDrawer isOpen={!!notesLead} onClose={() => setNotesLead(null)} lead={notesLead} table="instagram_leads" />
       <DeleteModal isOpen={!!leadToDelete} onClose={() => setLeadToDelete(null)} onConfirm={() => leadToDelete && handleDelete(leadToDelete)} />
     </motion.div>
   );

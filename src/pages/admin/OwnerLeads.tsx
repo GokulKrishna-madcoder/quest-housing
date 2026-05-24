@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Download, Image as ImageIcon, X, FileText, Trash2, Filter, MessageCircle, Phone } from 'lucide-react';
+import { Search, Download, Image as ImageIcon, X, FileText, Trash2, Filter, MessageCircle, Phone, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
+import { NotesDrawer } from '../../components/admin/NotesDrawer';
 import { toast } from 'sonner';
 
 export default function OwnerLeads() {
@@ -16,6 +17,7 @@ export default function OwnerLeads() {
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
+  const [notesLead, setNotesLead] = useState<any | null>(null);
 
   useEffect(() => {
     fetchLeads();
@@ -186,7 +188,7 @@ export default function OwnerLeads() {
                       <p className="text-navy font-medium mb-2">{lead.phone}</p>
                       <div className="flex items-center gap-2">
                         <a
-                          href={`https://wa.me/91${(lead.whatsapp || lead.phone || '').replace(/\D/g, '')}`}
+                          href={`https://wa.me/91${(lead.whatsapp || lead.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${lead.full_name}, this is Quest Housing Bangalore. We'd like to discuss listing your ${lead.property_type} property in ${lead.location}. When would be a good time to connect? 🏠`)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           title="Chat on WhatsApp"
@@ -215,6 +217,12 @@ export default function OwnerLeads() {
                     </td>
                     <td className="px-6 py-4 text-right flex justify-end gap-2">
                       <button 
+                         onClick={() => setNotesLead(lead)}
+                         className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-navy bg-navy/5 hover:bg-navy/10 px-3 py-1.5 rounded transition-colors"
+                      >
+                         <StickyNote size={14} /> Notes
+                      </button>
+                      <button 
                          onClick={() => setSelectedLead(lead)}
                          className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary bg-navy px-3 py-1.5 rounded hover:bg-navy-dark transition-colors"
                       >
@@ -240,6 +248,7 @@ export default function OwnerLeads() {
           <ImageModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
         )}
       </AnimatePresence>
+      <NotesDrawer isOpen={!!notesLead} onClose={() => setNotesLead(null)} lead={notesLead} table="owner_leads" />
       <DeleteModal 
         isOpen={!!leadToDelete} 
         onClose={() => setLeadToDelete(null)} 

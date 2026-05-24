@@ -81,6 +81,16 @@ export default function FunnelLeads() {
     .slice(0, 5)
     .map(([name, value]) => ({ name, value }));
 
+  const utmDist: Record<string, number> = {};
+  leads.forEach(l => {
+    const u = l.utm_source || 'Direct / None';
+    utmDist[u] = (utmDist[u] || 0) + 1;
+  });
+  const utmPieData = Object.entries(utmDist)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, value]) => ({ name, value }));
+
   const filteredLeads = leads.filter(l =>
     (statusFilter === 'All' || (l.status || 'new') === statusFilter) &&
     ((l.full_name || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -89,12 +99,12 @@ export default function FunnelLeads() {
   );
 
   const exportCSV = () => {
-    const headers = ['Name', 'WhatsApp', 'Budget', 'Location', 'Pincode', 'Move-in', 'Property Type', 'Furnishing', 'Status', 'Date'];
+    const headers = ['Name', 'WhatsApp', 'Budget', 'Location', 'Pincode', 'Move-in', 'Property Type', 'Furnishing', 'UTM Source', 'Status', 'Date'];
     const csvData = leads.map(l => [
       l.full_name, l.whatsapp_number, `${l.budget_type} (${l.budget_min}-${l.budget_max})`,
       l.preferred_location, l.preferred_pincode, l.move_in_type,
       (l.property_type || []).join('; '), (l.furnishing_type || []).join('; '),
-      l.status || 'new', format(new Date(l.created_at), 'PPP')
+      l.utm_source || '', l.status || 'new', format(new Date(l.created_at), 'PPP')
     ]);
     const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -144,7 +154,7 @@ export default function FunnelLeads() {
             <AnalyticsCard icon={<Calendar size={18} />} title="This Week" value={thisWeek} highlight />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="bg-white p-8 rounded-2xl border border-navy/5 shadow-sm">
               <h3 className="text-sm font-bold uppercase tracking-widest text-navy mb-6">Budget Distribution</h3>
               <div className="h-64">
@@ -166,6 +176,22 @@ export default function FunnelLeads() {
                   <PieChart>
                     <Pie data={locationPieData} innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value" stroke="none">
                       {locationPieData.map((_, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                    <Legend iconType="circle" layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: '12px' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div className="bg-white p-8 rounded-2xl border border-navy/5 shadow-sm">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-navy mb-6">Traffic Sources (UTM)</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie data={utmPieData} innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value" stroke="none">
+                      {utmPieData.map((_, i) => (
                         <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                       ))}
                     </Pie>
@@ -217,6 +243,7 @@ export default function FunnelLeads() {
                 <th className="px-6 py-4">Location</th>
                 <th className="px-6 py-4">Move-in</th>
                 <th className="px-6 py-4">Property</th>
+                <th className="px-6 py-4">Source</th>
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4">Status</th>
                 <th className="px-6 py-4 text-right">Actions</th>
@@ -272,6 +299,17 @@ export default function FunnelLeads() {
                           <span key={i} className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{t}</span>
                         ))}
                       </div>
+                    </td>
+                    <td className="px-6 py-4 text-navy/70 text-sm">
+                      {lead.utm_source ? (
+                        <span className="text-[10px] bg-primary/10 text-primary px-2 py-1 rounded font-bold uppercase tracking-widest border border-primary/20">
+                          {lead.utm_source}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-navy/40 font-bold uppercase tracking-widest">
+                          Direct
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-navy/70 text-sm">
                       {format(new Date(lead.created_at), 'MMM dd, yyyy')}

@@ -4,10 +4,12 @@ import { motion } from 'motion/react';
 import { Send, User, Bot, Loader2, Sparkles, Database } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { BarChart, Bar, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
+  charts?: any[];
 }
 
 export default function AIAnalyst() {
@@ -56,7 +58,23 @@ export default function AIAnalyst() {
 
       if (error) throw error;
 
-      setMessages([...newMessages, { role: 'assistant', content: data.content }]);
+      let rawContent = data.content || '';
+      const charts: any[] = [];
+      const chartRegex = /\[CHART:\s*({[\s\S]*?})\]/g;
+      
+      let match;
+      while ((match = chartRegex.exec(rawContent)) !== null) {
+        try {
+          const chartData = JSON.parse(match[1]);
+          charts.push(chartData);
+        } catch (e) {
+          console.error("Failed to parse chart JSON", e);
+        }
+      }
+      
+      const cleanContent = rawContent.replace(/\[CHART:\s*({[\s\S]*?})\]/g, '').trim();
+
+      setMessages([...newMessages, { role: 'assistant', content: cleanContent, charts }]);
     } catch (err: any) {
       console.error('Chat error:', err);
       const errorMsg = err.context ? await err.context.text() : err.message || 'Unknown error';
@@ -92,6 +110,37 @@ export default function AIAnalyst() {
                   msg.content
                 ) : (
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                )}
+                
+                {msg.charts && msg.charts.length > 0 && (
+                  <div className="mt-6 space-y-6">
+                    {msg.charts.map((chart, cIdx) => (
+                      <div key={cIdx} className="bg-white border border-navy/10 rounded-xl p-4 shadow-sm w-full">
+                        <h4 className="text-sm font-bold uppercase tracking-widest text-navy/60 mb-4">{chart.title}</h4>
+                        <div className="h-[250px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            {chart.type === 'line' ? (
+                              <LineChart data={chart.data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                                <XAxis dataKey={chart.xKey} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} cursor={{ stroke: '#f1f5f9', strokeWidth: 2 }} />
+                                <Line type="monotone" dataKey={chart.yKey} stroke="#f7d112" strokeWidth={3} dot={{ fill: '#0a192f', strokeWidth: 2, r: 4 }} activeDot={{ r: 6, fill: '#f7d112' }} />
+                              </LineChart>
+                            ) : (
+                              <BarChart data={chart.data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                                <XAxis dataKey={chart.xKey} tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                                <RechartsTooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                <Bar dataKey={chart.yKey} fill="#f7d112" radius={[4, 4, 0, 0]} />
+                              </BarChart>
+                            )}
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

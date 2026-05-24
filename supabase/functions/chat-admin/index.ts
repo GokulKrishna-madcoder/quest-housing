@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
 import OpenAI from "https://esm.sh/openai@4.28.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -9,24 +8,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Fetch analytics data
-    const [leadsResponse, ownersResponse, propertiesResponse] = await Promise.all([
-      supabase.from('instagram_leads').select('id', { count: 'exact' }),
-      supabase.from('owner_leads').select('id', { count: 'exact' }),
-      supabase.from('properties').select('availability_status'),
-    ]);
-
-    const totalTenantLeads = leadsResponse.count || 0;
-    const totalOwnerLeads = ownersResponse.count || 0;
-    
-    const availableProperties = propertiesResponse.data?.filter(p => p.availability_status === 'Available').length || 0;
-    const rentedProperties = propertiesResponse.data?.filter(p => p.availability_status === 'Rented').length || 0;
+    const { messages, analyticsContext } = await req.json();
 
     const apiKey = Deno.env.get('NVIDIA_API_KEY') || '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';
     const openai = new OpenAI({
@@ -35,17 +17,26 @@ serve(async (req) => {
     });
 
     const systemPrompt = `You are the Quest Housing Admin AI Analyst. 
-You are an expert real estate business analyst.
-Use the following real-time platform analytics to answer the admin's questions, provide insights, and suggest strategies.
-If they ask for data you don't have, politely let them know.
+You are a senior real estate data analyst and business strategist.
+You have access to the following raw database context covering Owner Leads, Tenant Funnel Leads, and Property Inventory:
+<RAW_DATA>
+${analyticsContext || 'No data provided.'}
+</RAW_DATA>
 
-CURRENT ANALYTICS:
-- Total Tenant Leads in Funnel: ${totalTenantLeads}
-- Total Owner Leads: ${totalOwnerLeads}
-- Available Properties to Rent: ${availableProperties}
-- Currently Rented Properties: ${rentedProperties}
+Analyze this data thoroughly when answering the admin's questions.
 
-Tone: Professional, highly analytical, concise, and structured. Use Markdown bullet points where necessary.`;
+CRITICAL INSTRUCTION 1 (VISUALIZATIONS):
+When you want to visualize data to support your analysis, you MUST output a chart block in exactly this JSON format. Only use "bar" or "line" for the chart type.
+Example:
+[CHART: {"type": "bar", "title": "Lead Budgets", "data": [{"name": "Under 15k", "value": 10}, {"name": "15k-25k", "value": 20}], "xKey": "name", "yKey": "value"}]
+Ensure the JSON is strictly valid. You can output multiple charts if needed.
+
+CRITICAL INSTRUCTION 2 (ACTIONABLE INSIGHTS):
+You MUST always end your response with a dedicated section titled exactly:
+"### What should be implemented based on this data:"
+Under this heading, provide concrete, actionable business strategies or marketing implementations based on the trends you found in the data.
+
+Tone: Professional, highly analytical, concise, and structured.`;
 
     const formattedMessages = messages.map((m: any) => ({
       role: m.role,
@@ -58,7 +49,7 @@ Tone: Professional, highly analytical, concise, and structured. Use Markdown bul
         { role: "system", content: systemPrompt },
         ...formattedMessages
       ],
-      max_tokens: 1000,
+      max_tokens: 1500,
     });
 
     const text = response.choices[0].message.content || "I couldn't generate a response.";

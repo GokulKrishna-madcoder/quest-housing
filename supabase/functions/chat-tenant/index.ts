@@ -12,7 +12,7 @@ serve(async (req) => {
 
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') as string);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       systemInstruction: `You are the Quest Housing Concierge AI. Your goal is to help users find properties in Bangalore, answer their FAQs, and collect their contact info (Name and WhatsApp number). 
 Be extremely concise, polite, and use a premium tone. 
 If they ask for properties, tell them to browse the "Portfolio" section or use the "Find My Home" form.

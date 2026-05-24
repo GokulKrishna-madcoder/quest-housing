@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'motion/react';
-import { LayoutDashboard, Users, Home, LogOut, ClipboardList, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { LayoutDashboard, Users, Home, LogOut, ClipboardList, PanelLeftClose, PanelLeft, Building2 } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 
 export default function AdminLayout() {
@@ -51,6 +51,7 @@ export default function AdminLayout() {
     { name: 'Owner Leads', path: '/admin/owner-leads', icon: Home },
     { name: 'Tenant Leads', path: '/admin/tenant-leads', icon: Users },
     { name: 'Funnel Leads', path: '/admin/funnel-leads', icon: ClipboardList },
+    { name: 'Properties', path: '/admin/properties', icon: Building2 },
   ];
 
   return (

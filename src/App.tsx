@@ -20,6 +20,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import OwnerLeads from './pages/admin/OwnerLeads';
 import TenantLeads from './pages/admin/TenantLeads';
 import FunnelLeads from './pages/admin/FunnelLeads';
+import AdminProperties from './pages/admin/Properties';
 
 export default function App() {
   return (
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="owner-leads" element={<OwnerLeads />} />
           <Route path="tenant-leads" element={<TenantLeads />} />
           <Route path="funnel-leads" element={<FunnelLeads />} />
+          <Route path="properties" element={<AdminProperties />} />
         </Route>
       </Routes>
     </Router>

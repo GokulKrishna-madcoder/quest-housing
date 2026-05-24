@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useLeadFormStore } from '../../store/useLeadFormStore';
 import StepName from './steps/StepName';
@@ -19,10 +20,17 @@ const slideVariants = {
 };
 
 export default function FunnelLayout() {
-  const { currentStep } = useLeadFormStore();
+  const { currentStep, updateData } = useLeadFormStore();
   const StepComponent = STEPS[currentStep];
   const progress = ((currentStep + 1) / TOTAL) * 100;
   const stepLabel = String(currentStep + 1).padStart(2, '0');
+
+  // Capture UTM params on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const utm = params.get('utm_source') || params.get('ref') || '';
+    if (utm) updateData({ utmSource: utm });
+  }, []);
 
   return (
     <div className="min-h-screen bg-light relative flex flex-col stitch-grid">

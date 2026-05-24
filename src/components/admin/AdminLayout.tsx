@@ -47,23 +47,23 @@ export default function AdminLayout() {
   }
 
   const navItems = [
-    { name: 'Dashboard Analytics', path: '/admin', icon: LayoutDashboard },
-    { name: 'Owner Leads', path: '/admin/owner-leads', icon: Home },
-    { name: 'Tenant Leads', path: '/admin/tenant-leads', icon: Users },
-    { name: 'Funnel Leads', path: '/admin/funnel-leads', icon: ClipboardList },
-    { name: 'Properties', path: '/admin/properties', icon: Building2 },
+    { name: 'Dashboard', shortName: 'Dashboard', path: '/admin', icon: LayoutDashboard },
+    { name: 'Owner Leads', shortName: 'Owners', path: '/admin/owner-leads', icon: Home },
+    { name: 'Tenant Leads', shortName: 'Tenants', path: '/admin/tenant-leads', icon: Users },
+    { name: 'Funnel Leads', shortName: 'Funnel', path: '/admin/funnel-leads', icon: ClipboardList },
+    { name: 'Properties', shortName: 'Properties', path: '/admin/properties', icon: Building2 },
   ];
 
   return (
     <div className="flex h-screen bg-light text-navy font-sans overflow-hidden">
       <Toaster position="top-right" richColors />
       
-      {/* Sidebar */}
+      {/* ===== DESKTOP SIDEBAR (hidden on mobile) ===== */}
       <motion.aside
         initial={false}
         animate={{ width: collapsed ? 80 : 256 }}
         transition={{ duration: 0.25, ease: 'easeInOut' }}
-        className="bg-white border-r border-navy/10 flex flex-col z-20 shrink-0 overflow-hidden"
+        className="hidden md:flex bg-white border-r border-navy/10 flex-col z-20 shrink-0 overflow-hidden"
       >
         <div className="p-4 border-b border-navy/10 flex items-center justify-between min-h-[73px]">
           {!collapsed && (
@@ -123,12 +123,50 @@ export default function AdminLayout() {
         </div>
       </motion.aside>
 
+      {/* ===== MOBILE HEADER (md:hidden) ===== */}
+      <div className="fixed top-0 left-0 right-0 z-30 md:hidden bg-white/90 backdrop-blur-xl border-b border-navy/10 px-4 py-3 flex items-center justify-between">
+        <Link to="/">
+          <h1 className="text-lg font-display font-medium uppercase tracking-tighter">Quest <span className="font-light opacity-60">Admin</span></h1>
+        </Link>
+        <button onClick={handleLogout} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+          <LogOut size={18} />
+        </button>
+      </div>
+
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-light/30 relative">
-        <div className="p-8 lg:p-12 max-w-7xl mx-auto">
+        <div className="p-4 pt-16 md:pt-8 pb-24 md:pb-8 lg:p-12 max-w-7xl mx-auto">
           <Outlet />
         </div>
       </main>
+
+      {/* ===== MOBILE BOTTOM BAR (md:hidden) ===== */}
+      <nav className="fixed bottom-0 left-0 right-0 z-30 md:hidden bg-white/90 backdrop-blur-xl border-t border-navy/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <div className="flex items-center justify-around px-1 py-2">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-0 ${
+                  isActive
+                    ? 'text-navy'
+                    : 'text-navy/35'
+                }`}
+              >
+                <div className={`p-1.5 rounded-lg transition-all ${isActive ? 'bg-primary/20' : ''}`}>
+                  <Icon size={20} className={isActive ? 'text-navy' : ''} />
+                </div>
+                <span className="text-[9px] font-bold uppercase tracking-wider truncate max-w-[60px]">{item.shortName}</span>
+              </Link>
+            );
+          })}
+        </div>
+        {/* Safe area for iPhone home indicator */}
+        <div className="h-[env(safe-area-inset-bottom)]" />
+      </nav>
     </div>
   );
 }

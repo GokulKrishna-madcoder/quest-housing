@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { motion } from 'motion/react';
-import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { useFavorites } from '../hooks/useFavorites';
 
 export default function PropertyDetails() {
   const { id } = useParams();
   const [property, setProperty] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     async function load() {
@@ -97,12 +99,18 @@ export default function PropertyDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Left */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
               <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">{property.type}</span>
               <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">{property.furnishing_status}</span>
               {property.availability_status === 'Available' && (
                 <span className="text-[10px] bg-green-500 text-white px-3 py-1 rounded font-bold uppercase tracking-wider">Available</span>
               )}
+              </div>
+              <button onClick={() => property && toggleFavorite(property.id)}
+                className="p-2.5 bg-white border border-navy/10 rounded-full shadow-sm hover:scale-110 transition-transform cursor-pointer">
+                <Heart size={20} className={property && isFavorite(property.id) ? 'fill-red-500 text-red-500' : 'text-navy/30'} />
+              </button>
             </div>
 
             <h1 className="text-4xl font-display font-medium tracking-tighter text-navy mb-3">{property.title}</h1>

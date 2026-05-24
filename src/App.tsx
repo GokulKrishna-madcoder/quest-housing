@@ -11,6 +11,7 @@ import Properties from './pages/Properties';
 import PropertyDetails from './pages/PropertyDetails';
 import Registration from './pages/Registration';
 import FindMyHome from './pages/FindMyHome';
+import SavedProperties from './pages/SavedProperties';
 import ScrollToTop from './components/ScrollToTop';
 
 // Admin Routes
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="properties/:id" element={<PropertyDetails />} />
           <Route path="register" element={<Registration />} />
           <Route path="find-my-home" element={<FindMyHome />} />
+          <Route path="saved" element={<SavedProperties />} />
         </Route>
         
         {/* Admin Routes */}

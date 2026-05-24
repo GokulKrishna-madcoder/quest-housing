@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { motion } from 'motion/react';
-import { Search, MapPin, BedDouble, Bath, Maximize, Filter } from 'lucide-react';
+import { Search, MapPin, BedDouble, Bath, Maximize, Filter, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useFavorites } from '../hooks/useFavorites';
 
 const BHK_FILTERS = ['All', '1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
 const FURNISH_FILTERS = ['All', 'Fully Furnished', 'Semi Furnished', 'Unfurnished'];
@@ -15,6 +16,7 @@ export default function Properties() {
   const [furnishFilter, setFurnishFilter] = useState('All');
   const [budgetMin, setBudgetMin] = useState('');
   const [budgetMax, setBudgetMax] = useState('');
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
     async function load() {
@@ -95,8 +97,13 @@ export default function Properties() {
             <p className="text-xs uppercase tracking-widest text-navy/40 font-bold mb-8">{filtered.length} {filtered.length === 1 ? 'property' : 'properties'} found</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filtered.map((p, i) => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <Link to={`/properties/${p.id}`} className="block bg-white rounded-2xl border border-navy/10 shadow-sm hover:shadow-lg transition-all overflow-hidden group">
+              <motion.div key={p.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                <div className="bg-white rounded-2xl border border-navy/10 shadow-sm hover:shadow-lg transition-all overflow-hidden group relative">
+                  <button onClick={(e) => { e.preventDefault(); toggleFavorite(p.id); }}
+                    className="absolute top-4 right-4 z-10 p-2 bg-white/90 rounded-full shadow-md hover:scale-110 transition-transform cursor-pointer">
+                    <Heart size={18} className={isFavorite(p.id) ? 'fill-red-500 text-red-500' : 'text-navy/30'} />
+                  </button>
+                  <Link to={`/properties/${p.id}`}>
                     <div className="aspect-video bg-navy/5 overflow-hidden">
                       {p.image_urls?.length > 0 ? (
                         <img src={p.image_urls[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -123,7 +130,8 @@ export default function Properties() {
                       </div>
                     </div>
                   </Link>
-                </motion.div>
+                </div>
+              </motion.div>
               ))}
             </div>
           </>

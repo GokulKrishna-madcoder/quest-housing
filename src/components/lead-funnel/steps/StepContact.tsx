@@ -27,6 +27,7 @@ export default function StepContact() {
         move_in_date: formData.moveInDate || null,
         property_type: formData.propertyType,
         furnishing_type: formData.furnishingType,
+        utm_source: formData.utmSource || '',
       });
       if (error) throw error;
       nextStep();

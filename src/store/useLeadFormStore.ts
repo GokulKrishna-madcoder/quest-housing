@@ -12,6 +12,7 @@ export interface LeadFormData {
   moveInDate: string;
   propertyType: string[];
   furnishingType: string[];
+  utmSource: string;
 }
 
 interface LeadFormStore {
@@ -36,6 +37,7 @@ const initialData: LeadFormData = {
   moveInDate: '',
   propertyType: [],
   furnishingType: [],
+  utmSource: '',
 };
 
 export const useLeadFormStore = create<LeadFormStore>((set) => ({

@@ -19,7 +19,6 @@ import AdminLayout from './components/admin/AdminLayout';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import OwnerLeads from './pages/admin/OwnerLeads';
-import TenantLeads from './pages/admin/TenantLeads';
 import FunnelLeads from './pages/admin/FunnelLeads';
 import AdminProperties from './pages/admin/Properties';
 
@@ -43,7 +42,6 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="owner-leads" element={<OwnerLeads />} />
-          <Route path="tenant-leads" element={<TenantLeads />} />
           <Route path="funnel-leads" element={<FunnelLeads />} />
           <Route path="properties" element={<AdminProperties />} />
         </Route>

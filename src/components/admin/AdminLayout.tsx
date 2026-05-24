@@ -49,7 +49,6 @@ export default function AdminLayout() {
   const navItems = [
     { name: 'Dashboard', shortName: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Owner Leads', shortName: 'Owners', path: '/admin/owner-leads', icon: Home },
-    { name: 'Tenant Leads', shortName: 'Tenants', path: '/admin/tenant-leads', icon: Users },
     { name: 'Funnel Leads', shortName: 'Funnel', path: '/admin/funnel-leads', icon: ClipboardList },
     { name: 'Properties', shortName: 'Properties', path: '/admin/properties', icon: Building2 },
   ];

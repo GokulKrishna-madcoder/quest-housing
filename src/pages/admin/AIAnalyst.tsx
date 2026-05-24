@@ -57,9 +57,10 @@ export default function AIAnalyst() {
       if (error) throw error;
 
       setMessages([...newMessages, { role: 'assistant', content: data.content }]);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Chat error:', err);
-      setMessages([...newMessages, { role: 'assistant', content: 'Error connecting to AI. Please check Edge Function logs and OpenAI API Key.' }]);
+      const errorMsg = err.context ? await err.context.text() : err.message || 'Unknown error';
+      setMessages([...newMessages, { role: 'assistant', content: `**Error:** ${errorMsg}\n\nPlease check your Edge Function deployment and ensure GEMINI_API_KEY is set.` }]);
     } finally {
       setLoading(false);
     }

@@ -12,7 +12,7 @@ serve(async (req) => {
 
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') as string);
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       systemInstruction: `You are the Quest Housing Admin AI Analyst. 
 You are an expert real estate business analyst.
 Use the following real-time platform analytics to answer the admin's questions, provide insights, and suggest strategies.

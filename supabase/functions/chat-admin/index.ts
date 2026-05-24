@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.24.1";
+import OpenAI from "https://esm.sh/openai@4.28.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -8,42 +9,65 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, analyticsContext } = await req.json();
+    const { messages } = await req.json();
 
-    const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') as string);
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-2.5-flash",
-      systemInstruction: `You are the Quest Housing Admin AI Analyst. 
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Fetch analytics data
+    const [leadsResponse, ownersResponse, propertiesResponse] = await Promise.all([
+      supabase.from('instagram_leads').select('id', { count: 'exact' }),
+      supabase.from('owner_leads').select('id', { count: 'exact' }),
+      supabase.from('properties').select('availability_status'),
+    ]);
+
+    const totalTenantLeads = leadsResponse.count || 0;
+    const totalOwnerLeads = ownersResponse.count || 0;
+    
+    const availableProperties = propertiesResponse.data?.filter(p => p.availability_status === 'Available').length || 0;
+    const rentedProperties = propertiesResponse.data?.filter(p => p.availability_status === 'Rented').length || 0;
+
+    const apiKey = Deno.env.get('NVIDIA_API_KEY') || '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';
+    const openai = new OpenAI({
+      apiKey: apiKey,
+      baseURL: "https://integrate.api.nvidia.com/v1",
+    });
+
+    const systemPrompt = `You are the Quest Housing Admin AI Analyst. 
 You are an expert real estate business analyst.
 Use the following real-time platform analytics to answer the admin's questions, provide insights, and suggest strategies.
-Format your responses using clean markdown (bolding, bullet points) for readability.
+If they ask for data you don't have, politely let them know.
 
---- CURRENT PLATFORM ANALYTICS ---
-${analyticsContext}
-----------------------------------`
-    });
+CURRENT ANALYTICS:
+- Total Tenant Leads in Funnel: ${totalTenantLeads}
+- Total Owner Leads: ${totalOwnerLeads}
+- Available Properties to Rent: ${availableProperties}
+- Currently Rented Properties: ${rentedProperties}
 
-    let formattedHistory = messages.slice(0, -1).map((msg: any) => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }],
+Tone: Professional, highly analytical, concise, and structured. Use Markdown bullet points where necessary.`;
+
+    const formattedMessages = messages.map((m: any) => ({
+      role: m.role,
+      content: m.content
     }));
 
-    while (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
-      formattedHistory.shift();
-    }
-
-    const chat = model.startChat({
-      history: formattedHistory,
+    const response = await openai.chat.completions.create({
+      model: "meta/llama-3.1-70b-instruct",
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...formattedMessages
+      ],
+      max_tokens: 1000,
     });
 
-    const latestMessage = messages[messages.length - 1].content;
-    const result = await chat.sendMessage(latestMessage);
-    const text = result.response.text();
+    const text = response.choices[0].message.content || "I couldn't generate a response.";
 
     return new Response(JSON.stringify({ content: text, role: 'assistant' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.error("Error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

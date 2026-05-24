@@ -6,8 +6,8 @@ export default function StepName() {
   return (
     <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto px-6 gap-10">
       <div>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-bold mb-4">LET'S GET STARTED</p>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium tracking-tighter text-white">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold mb-4">LET'S GET STARTED</p>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium tracking-tighter text-navy">
           What's your name?
         </h1>
       </div>
@@ -18,13 +18,13 @@ export default function StepName() {
         onChange={(e) => updateData({ fullName: e.target.value })}
         placeholder="Enter your full name"
         autoFocus
-        className="w-full bg-white/10 border border-white/20 text-white text-lg p-4 focus:border-primary focus:outline-none transition-colors placeholder:text-white/30"
+        className="w-full bg-white border border-navy/20 text-navy text-lg p-4 focus:border-primary focus:outline-none transition-colors placeholder:text-navy/30 shadow-sm"
       />
 
       <button
         onClick={nextStep}
         disabled={!formData.fullName.trim()}
-        className="bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-10 py-4 hover:bg-white transition-all disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+        className="bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-10 py-4 hover:bg-primary/80 transition-all disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed shadow-sm"
       >
         Continue
       </button>

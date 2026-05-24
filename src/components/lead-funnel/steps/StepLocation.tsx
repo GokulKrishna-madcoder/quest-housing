@@ -43,8 +43,8 @@ export default function StepLocation() {
   return (
     <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto px-6 gap-10">
       <div>
-        <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-bold mb-4">LOCATION</p>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium tracking-tighter text-white">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold mb-4">LOCATION</p>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium tracking-tighter text-navy">
           Where do you want to live?
         </h1>
       </div>
@@ -58,18 +58,18 @@ export default function StepLocation() {
             updateData({ preferredLocation: e.target.value, preferredPincode: '' });
           }}
           placeholder="Search Area or Enter Pincode"
-          className="w-full bg-white/10 border border-white/20 text-white text-lg p-4 focus:border-primary focus:outline-none transition-colors placeholder:text-white/30"
+          className="w-full bg-white border border-navy/20 text-navy text-lg p-4 focus:border-primary focus:outline-none transition-colors placeholder:text-navy/30 shadow-sm"
         />
         {open && results.length > 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-navy border border-white/20 max-h-60 overflow-y-auto z-10">
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-navy/15 max-h-60 overflow-y-auto z-10 shadow-lg">
             {results.map((loc, i) => (
               <button
                 key={i}
                 onClick={() => selectLocation(loc)}
-                className="w-full text-left px-4 py-3 text-white hover:bg-white/10 transition-colors flex justify-between cursor-pointer"
+                className="w-full text-left px-4 py-3 text-navy hover:bg-navy/5 transition-colors flex justify-between cursor-pointer"
               >
                 <span>{loc.name}</span>
-                <span className="text-white/40 text-sm">{loc.pincode}</span>
+                <span className="text-navy/40 text-sm">{loc.pincode}</span>
               </button>
             ))}
           </div>
@@ -77,13 +77,13 @@ export default function StepLocation() {
       </div>
 
       <div className="flex items-center gap-6">
-        <button onClick={prevStep} className="text-white/50 hover:text-white text-xs uppercase tracking-widest cursor-pointer transition-colors">
+        <button onClick={prevStep} className="text-navy/50 hover:text-navy text-xs uppercase tracking-widest cursor-pointer transition-colors">
           Back
         </button>
         <button
           onClick={nextStep}
           disabled={!formData.preferredLocation.trim()}
-          className="bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-10 py-4 hover:bg-white transition-all disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed"
+          className="bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-10 py-4 hover:bg-primary/80 transition-all disabled:opacity-30 cursor-pointer disabled:cursor-not-allowed shadow-sm"
         >
           Continue
         </button>

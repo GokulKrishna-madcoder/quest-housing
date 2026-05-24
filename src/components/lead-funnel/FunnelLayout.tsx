@@ -25,18 +25,10 @@ export default function FunnelLayout() {
   const stepLabel = String(currentStep + 1).padStart(2, '0');
 
   return (
-    <div className="min-h-screen bg-navy relative flex flex-col">
-      {/* Stitch grid overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage: `radial-gradient(circle, #F8F8F6 1px, transparent 1px)`,
-          backgroundSize: '24px 24px',
-        }}
-      />
-
+    <div className="min-h-screen bg-light relative flex flex-col stitch-grid">
       {/* Progress bar */}
       <div className="relative z-10">
-        <div className="h-1 bg-white/10 w-full">
+        <div className="h-1 bg-navy/10 w-full">
           <motion.div
             className="h-full bg-primary"
             initial={false}
@@ -45,7 +37,7 @@ export default function FunnelLayout() {
           />
         </div>
         {currentStep < TOTAL - 1 && (
-          <p className="text-[10px] uppercase tracking-[0.3em] text-white/30 font-bold text-center mt-4">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold text-center mt-4">
             STEP {stepLabel} / {String(TOTAL).padStart(2, '0')}
           </p>
         )}

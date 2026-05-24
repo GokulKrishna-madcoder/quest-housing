@@ -77,8 +77,11 @@ Here are the currently available properties:
 ${propertiesContext}
 
 If they ask for properties, recommend 1-2 from the list above that match their criteria.
-CRITICAL INSTRUCTION: Whenever you recommend a property to the user, you MUST include the exact string [PROPERTY_ID: <id>] in your response (replace <id> with the actual ID from the property list). Do this for EVERY property you recommend.
-If they give you their contact info, ALWAYS call the 'capture_lead' function to save it, then politely acknowledge it and tell them a representative will reach out shortly.`;
+CRITICAL INSTRUCTION 1: Whenever you recommend a property to the user, you MUST include the exact string [PROPERTY_ID: <id>] in your response (replace <id> with the actual ID from the property list). Do this for EVERY property you recommend.
+
+CRITICAL INSTRUCTION 2: If the user wants to list a property, share personal contact info, or submit a detailed requirement, DO NOT try to collect it manually in the chat. Instead, ask them: "Are you looking to list a property as an owner, or find a home as a tenant?". 
+If they indicate they are an Owner, you MUST include the exact string [ACTION: OPEN_OWNER_FORM] in your response.
+If they indicate they are a Tenant, you MUST include the exact string [ACTION: OPEN_TENANT_FORM] in your response.`;
 
     // Filter out previous system messages just in case, though the frontend sends user/assistant
     const formattedMessages = messages.map((m: any) => ({
@@ -86,70 +89,17 @@ If they give you their contact info, ALWAYS call the 'capture_lead' function to 
       content: m.content
     }));
 
-    const tools = [{
-      type: "function",
-      function: {
-        name: "capture_lead",
-        description: "Captures a user's lead information when they provide their contact details and requirements.",
-        parameters: {
-          type: "object",
-          properties: {
-            name: { type: "string", description: "The full name of the user" },
-            phone: { type: "string", description: "The WhatsApp or phone number of the user" },
-            requirement: { type: "string", description: "What the user is looking for (e.g. 2 BHK in Koramangala)" },
-          },
-          required: ["name", "phone"],
-        }
-      }
-    }];
-
     let response = await openai.chat.completions.create({
       model: "meta/llama-3.1-70b-instruct",
       messages: [
         { role: "system", content: systemPrompt },
         ...formattedMessages
       ],
-      tools: tools as any,
       max_tokens: 500,
     });
 
     let message = response.choices[0].message;
     let finalContent = message.content;
-
-    // Check if the model decided to call a function
-    if (message.tool_calls && message.tool_calls.length > 0) {
-      const call = message.tool_calls[0];
-      if (call.function.name === "capture_lead") {
-         const args = JSON.parse(call.function.arguments);
-         
-         // Insert into Supabase
-         await supabase.from('chatbot_leads').insert({
-           name: args.name,
-           phone: args.phone,
-           requirement: args.requirement || "General Inquiry"
-         });
-         
-         // Send result back to model to get the final text response
-         const toolMessages = [
-           { role: "system", content: systemPrompt },
-           ...formattedMessages,
-           message,
-           {
-             role: "tool",
-             tool_call_id: call.id,
-             content: JSON.stringify({ success: true })
-           }
-         ];
-
-         const secondResponse = await openai.chat.completions.create({
-           model: "meta/llama-3.1-70b-instruct",
-           messages: toolMessages as any,
-           max_tokens: 500,
-         });
-
-         finalContent = secondResponse.choices[0].message.content;
-      }
-    }
 
     if (!finalContent) {
       finalContent = "Thank you. Your request has been recorded.";

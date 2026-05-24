@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, User, Bot, Loader2, MapPin, ChevronRight, IndianRupee } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import OwnerFunnelLayout from '../owner-funnel/OwnerFunnelLayout';
+import FunnelLayout from '../lead-funnel/FunnelLayout';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -17,6 +19,8 @@ export function TenantChatbot() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showOwnerForm, setShowOwnerForm] = useState(false);
+  const [showTenantForm, setShowTenantForm] = useState(false);
   const [sessionId] = useState(() => crypto.randomUUID());
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -43,7 +47,34 @@ export function TenantChatbot() {
 
       if (error) throw error;
 
-      setMessages([...newMessages, { role: 'assistant', content: data.content, recommended_properties: data.recommended_properties }]);
+      let responseText = data.content || '';
+      let shouldOpenOwnerForm = false;
+      let shouldOpenTenantForm = false;
+
+      if (responseText.includes('[ACTION: OPEN_OWNER_FORM]')) {
+        shouldOpenOwnerForm = true;
+        responseText = responseText.replace(/\[ACTION:\s*OPEN_OWNER_FORM\]/g, '').trim();
+      }
+
+      if (responseText.includes('[ACTION: OPEN_TENANT_FORM]')) {
+        shouldOpenTenantForm = true;
+        responseText = responseText.replace(/\[ACTION:\s*OPEN_TENANT_FORM\]/g, '').trim();
+      }
+
+      setMessages([...newMessages, { role: 'assistant', content: responseText, recommended_properties: data.recommended_properties }]);
+
+      if (shouldOpenOwnerForm) {
+        setTimeout(() => {
+          setIsOpen(false);
+          setShowOwnerForm(true);
+        }, 1500);
+      } else if (shouldOpenTenantForm) {
+        setTimeout(() => {
+          setIsOpen(false);
+          setShowTenantForm(true);
+        }, 1500);
+      }
+
     } catch (err: any) {
       console.error('Chat error:', err);
       let errorMsg = err.message || 'Unknown error';
@@ -78,7 +109,7 @@ export function TenantChatbot() {
                   <Bot size={18} />
                 </div>
                 <div>
-                  <h3 className="font-display font-medium text-lg leading-none">Quest AI</h3>
+                  <h3 className="font-display font-medium text-lg leading-none text-white">Quest AI</h3>
                   <p className="text-[10px] uppercase tracking-widest text-primary font-bold">Concierge</p>
                 </div>
               </div>
@@ -119,7 +150,7 @@ export function TenantChatbot() {
                             </div>
                           </div>
                           <div className="p-3">
-                            <h4 className="font-display font-medium text-sm truncate mb-1">{prop.title}</h4>
+                            <h4 className="font-display font-medium text-sm truncate mb-1 text-primary">{prop.title}</h4>
                             <div className="flex items-center text-[10px] text-white/50 mb-2">
                               <MapPin size={10} className="mr-1 shrink-0" />
                               <span className="truncate">{prop.location}</span>
@@ -183,6 +214,25 @@ export function TenantChatbot() {
       >
         {isOpen ? <X size={24} /> : <MessageSquare size={24} />}
       </motion.button>
+
+      <AnimatePresence>
+        {showOwnerForm && (
+          <OwnerFunnelLayout onClose={() => setShowOwnerForm(false)} />
+        )}
+        {showTenantForm && (
+          <div className="fixed inset-0 z-50 bg-navy overflow-y-auto">
+            <div className="flex items-center justify-end p-6 absolute top-0 right-0 z-[60]">
+              <button 
+                onClick={() => setShowTenantForm(false)}
+                className="p-2 text-white/50 hover:text-white transition-colors bg-navy/50 rounded-full"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <FunnelLayout />
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

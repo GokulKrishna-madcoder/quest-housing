@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { motion } from 'motion/react';
-import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { motion, AnimatePresence, PanInfo } from 'motion/react';
+import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight, Heart, X, ZoomIn } from 'lucide-react';
 import { useFavorites } from '../hooks/useFavorites';
 
 export default function PropertyDetails() {
@@ -10,6 +10,7 @@ export default function PropertyDetails() {
   const [property, setProperty] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [showLightbox, setShowLightbox] = useState(false);
   const { toggleFavorite, isFavorite } = useFavorites();
 
   useEffect(() => {
@@ -45,6 +46,15 @@ export default function PropertyDetails() {
   const prevImage = () => setActiveImage(i => (i === 0 ? images.length - 1 : i - 1));
   const nextImage = () => setActiveImage(i => (i === images.length - 1 ? 0 : i + 1));
 
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const swipeThreshold = 50;
+    if (info.offset.x < -swipeThreshold) {
+      nextImage();
+    } else if (info.offset.x > swipeThreshold) {
+      prevImage();
+    }
+  };
+
   const waText = encodeURIComponent(`Hi, I'm interested in "${property.title}" at ${property.location}. Can I schedule a visit?`);
 
   return (
@@ -58,7 +68,10 @@ export default function PropertyDetails() {
         {/* Image Gallery */}
         {images.length > 0 && (
           <div className="mb-10">
-            <div className="aspect-video md:aspect-[21/9] bg-navy/5 rounded-2xl overflow-hidden relative group">
+            <div 
+              className="aspect-video md:aspect-[21/9] bg-navy/5 rounded-2xl overflow-hidden relative group cursor-zoom-in"
+              onClick={() => setShowLightbox(true)}
+            >
               <motion.img
                 key={activeImage}
                 initial={{ opacity: 0 }}
@@ -67,6 +80,9 @@ export default function PropertyDetails() {
                 alt={property.title}
                 className="w-full h-full object-cover"
               />
+              <div className="absolute inset-0 bg-navy/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <ZoomIn size={48} className="text-white/80" />
+              </div>
               {images.length > 1 && (
                 <>
                   <button onClick={prevImage}
@@ -193,6 +209,79 @@ export default function PropertyDetails() {
           </div>
         </div>
       </div>
+
+      {/* Lightbox Overlay */}
+      <AnimatePresence>
+        {showLightbox && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-navy/95 backdrop-blur-xl flex flex-col items-center justify-center"
+          >
+            {/* Lightbox Controls */}
+            <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-10 pointer-events-none">
+              <div className="pointer-events-auto text-white/50 text-[10px] uppercase tracking-[0.3em] font-bold">
+                {activeImage + 1} / {images.length}
+              </div>
+              <button 
+                onClick={() => setShowLightbox(false)}
+                className="pointer-events-auto p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors cursor-pointer"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            {/* Lightbox Image Container */}
+            <div className="relative w-full h-full flex items-center justify-center overflow-hidden px-4 md:px-20">
+              <motion.img
+                key={activeImage}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                src={images[activeImage]}
+                alt={property.title}
+                className="max-w-full max-h-[85vh] object-contain cursor-grab active:cursor-grabbing shadow-2xl rounded-lg"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={1}
+                onDragEnd={handleDragEnd}
+              />
+            </div>
+
+            {/* Desktop Arrows */}
+            {images.length > 1 && (
+              <>
+                <button onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                  className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 text-white items-center justify-center transition-colors cursor-pointer z-10 backdrop-blur-sm">
+                  <ChevronLeft size={32} />
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                  className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/10 hover:bg-white/20 text-white items-center justify-center transition-colors cursor-pointer z-10 backdrop-blur-sm">
+                  <ChevronRight size={32} />
+                </button>
+              </>
+            )}
+
+            {/* Thumbnail Strip */}
+            {images.length > 1 && (
+              <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-3 px-6 overflow-x-auto pointer-events-none">
+                <div className="pointer-events-auto flex gap-2 p-2 bg-black/20 rounded-2xl backdrop-blur-md">
+                  {images.map((url, i) => (
+                    <button key={i} onClick={() => setActiveImage(i)}
+                      className={`w-14 h-10 rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
+                        i === activeImage ? 'border-primary opacity-100' : 'border-transparent opacity-40 hover:opacity-100'
+                      }`}>
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

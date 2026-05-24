@@ -15,7 +15,9 @@ export function TenantChatbot() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sessionId] = useState(() => crypto.randomUUID());
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -34,7 +36,7 @@ export function TenantChatbot() {
 
     try {
       const { data, error } = await supabase.functions.invoke('chat-tenant', {
-        body: { messages: newMessages }
+        body: { messages: newMessages, sessionId }
       });
 
       if (error) throw error;

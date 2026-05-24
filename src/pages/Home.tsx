@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Shield, MapPin, Users, ChevronRight, ChevronLeft, Plus, Home as HomeIcon, Headset, Search, ClipboardList, Sparkles, ShieldCheck } from 'lucide-react';
 import { testimonials } from '../data';
 import { useRef, useState, useEffect } from 'react';
-import { fetchFeaturedProperties } from '../lib/sanityAPI';
+import { supabase } from '../lib/supabase';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -29,21 +29,31 @@ export default function Home() {
   useEffect(() => {
     async function loadFeatured() {
       try {
-        const data = await fetchFeaturedProperties();
-        const mappedProperties = data.map((prop: any) => ({
-          id: prop.id || prop._id,
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('availability_status', 'Available')
+          .order('created_at', { ascending: false })
+          .limit(6);
+
+        if (error) throw error;
+
+        const mappedProperties = (data || []).map((prop: any) => ({
+          id: prop.id,
           name: prop.title,
-          type: prop.specs?.propertyType || "Property",
+          type: prop.type || "Property",
           location: prop.location || "Unknown",
-          rent: prop.price || "Contact for Price",
-          bedrooms: prop.specs?.bedrooms || "—",
-          bathrooms: prop.specs?.bathrooms || "—",
-          image: prop.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",
+          rent: `₹${prop.rent_amount?.toLocaleString()}`,
+          bedrooms: prop.bedrooms || "—",
+          bathrooms: prop.bathrooms || "—",
+          image: (prop.image_urls && prop.image_urls.length > 0) 
+            ? prop.image_urls[0] 
+            : "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",
           amenities: prop.amenities || []
         }));
         setFeaturedProperties(mappedProperties);
       } catch (error) {
-        console.error("Failed to fetch featured properties from Sanity:", error);
+        console.error("Failed to fetch featured properties from Supabase:", error);
       }
     }
     loadFeatured();

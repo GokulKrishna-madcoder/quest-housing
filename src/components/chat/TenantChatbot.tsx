@@ -89,6 +89,7 @@ export function TenantChatbot() {
 
             {/* Chat Area */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 stitch-grid-dark scroll-smooth">
+              {messages.map((msg, idx) => (
                 <div key={idx} className={`flex flex-col gap-2`}>
                   <div className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-white/10' : 'bg-primary text-navy'}`}>
@@ -126,7 +127,7 @@ export function TenantChatbot() {
                             <div className="flex justify-between items-center mt-3 pt-2 border-t border-white/10">
                               <div className="flex items-center text-primary font-bold text-sm">
                                 <IndianRupee size={12} />
-                                {prop.rent_amount.toLocaleString()}
+                                {prop.rent_amount ? prop.rent_amount.toLocaleString() : 'Price on request'}
                               </div>
                               <div className="flex items-center text-[10px] uppercase tracking-wider text-white/70 group-hover:text-primary transition-colors">
                                 View <ChevronRight size={12} />
@@ -138,6 +139,7 @@ export function TenantChatbot() {
                     </div>
                   )}
                 </div>
+              ))}
               {loading && (
                 <div className="flex gap-3 flex-row">
                   <div className="w-8 h-8 rounded-full bg-primary text-navy flex items-center justify-center shrink-0">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Download, FileText, Filter, Trash2 } from 'lucide-react';
+import { Search, Download, FileText, Filter, Trash2, MessageCircle, Phone } from 'lucide-react';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -184,8 +184,25 @@ export default function TenantLeads() {
                       <p className="text-xs text-navy/50">{lead.email}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-navy">{lead.phone}</p>
-                      {lead.whatsapp && <p className="text-xs text-green-600">WA: {lead.whatsapp}</p>}
+                      <p className="text-navy font-medium mb-2">{lead.phone}</p>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={`https://wa.me/91${(lead.whatsapp || lead.phone || '').replace(/\D/g, '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Chat on WhatsApp"
+                          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-green-500 hover:bg-green-600 px-2.5 py-1.5 rounded transition-colors"
+                        >
+                          <MessageCircle size={12} /> WA
+                        </a>
+                        <a
+                          href={`tel:+91${(lead.phone || '').replace(/\D/g, '')}`}
+                          title="Call directly"
+                          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-blue-500 hover:bg-blue-600 px-2.5 py-1.5 rounded transition-colors"
+                        >
+                          <Phone size={12} /> Call
+                        </a>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <p className="text-navy font-medium">{lead.looking_for}</p>

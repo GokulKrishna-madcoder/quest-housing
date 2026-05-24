@@ -40,9 +40,10 @@ export function TenantChatbot() {
       if (error) throw error;
 
       setMessages([...newMessages, { role: 'assistant', content: data.content }]);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Chat error:', err);
-      setMessages([...newMessages, { role: 'assistant', content: 'Sorry, I am having trouble connecting right now. Please try again later.' }]);
+      const errorMsg = err.context ? await err.context.text() : err.message || 'Unknown error';
+      setMessages([...newMessages, { role: 'assistant', content: `Error: ${errorMsg}. Please check your Edge Function deployment and API keys.` }]);
     } finally {
       setLoading(false);
     }

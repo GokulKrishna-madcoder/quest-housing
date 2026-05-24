@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
-import OpenAI from "https://esm.sh/openai@4.28.0";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.2.1";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -10,26 +10,29 @@ serve(async (req) => {
   try {
     const { messages } = await req.json();
 
-    const openai = new OpenAI({
-      apiKey: Deno.env.get('GEMINI_API_KEY'),
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/'
-    });
-
-    const response = await openai.chat.completions.create({
-      model: 'gemini-2.5-flash',
-      messages: [
-        {
-          role: 'system',
-          content: `You are the Quest Housing Concierge AI. Your goal is to help users find properties in Bangalore, answer their FAQs, and collect their contact info (Name and WhatsApp number). 
+    const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') as string);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: `You are the Quest Housing Concierge AI. Your goal is to help users find properties in Bangalore, answer their FAQs, and collect their contact info (Name and WhatsApp number). 
 Be extremely concise, polite, and use a premium tone. 
 If they ask for properties, tell them to browse the "Portfolio" section or use the "Find My Home" form.
 If they give you their contact info, politely acknowledge it and tell them a representative will reach out shortly.`
-        },
-        ...messages
-      ],
     });
 
-    return new Response(JSON.stringify(response.choices[0].message), {
+    const formattedHistory = messages.slice(0, -1).map((msg: any) => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }],
+    }));
+
+    const chat = model.startChat({
+      history: formattedHistory,
+    });
+
+    const latestMessage = messages[messages.length - 1].content;
+    const result = await chat.sendMessage(latestMessage);
+    const text = result.response.text();
+
+    return new Response(JSON.stringify({ content: text, role: 'assistant' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

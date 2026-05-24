@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
-import OpenAI from "https://esm.sh/openai@4.28.0";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.2.1";
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -10,17 +10,10 @@ serve(async (req) => {
   try {
     const { messages, analyticsContext } = await req.json();
 
-    const openai = new OpenAI({
-      apiKey: Deno.env.get('GEMINI_API_KEY'),
-      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/'
-    });
-
-    const response = await openai.chat.completions.create({
-      model: 'gemini-2.5-pro',
-      messages: [
-        {
-          role: 'system',
-          content: `You are the Quest Housing Admin AI Analyst. 
+    const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') as string);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-pro",
+      systemInstruction: `You are the Quest Housing Admin AI Analyst. 
 You are an expert real estate business analyst.
 Use the following real-time platform analytics to answer the admin's questions, provide insights, and suggest strategies.
 Format your responses using clean markdown (bolding, bullet points) for readability.
@@ -28,12 +21,22 @@ Format your responses using clean markdown (bolding, bullet points) for readabil
 --- CURRENT PLATFORM ANALYTICS ---
 ${analyticsContext}
 ----------------------------------`
-        },
-        ...messages
-      ],
     });
 
-    return new Response(JSON.stringify(response.choices[0].message), {
+    const formattedHistory = messages.slice(0, -1).map((msg: any) => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }],
+    }));
+
+    const chat = model.startChat({
+      history: formattedHistory,
+    });
+
+    const latestMessage = messages[messages.length - 1].content;
+    const result = await chat.sendMessage(latestMessage);
+    const text = result.response.text();
+
+    return new Response(JSON.stringify({ content: text, role: 'assistant' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

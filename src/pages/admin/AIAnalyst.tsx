@@ -10,6 +10,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   charts?: any[];
+  tables?: any[];
 }
 
 export default function AIAnalyst() {
@@ -62,21 +63,32 @@ export default function AIAnalyst() {
 
       let rawContent = data.content || '';
       const charts: any[] = [];
-      const chartRegex = /\[CHART:\s*({[\s\S]*?})\]/g;
+      const tables: any[] = [];
       
-      let match;
-      while ((match = chartRegex.exec(rawContent)) !== null) {
+      const chartRegex = /\[CHART:\s*({[\s\S]*?})\]/g;
+      let matchChart;
+      while ((matchChart = chartRegex.exec(rawContent)) !== null) {
         try {
-          const chartData = JSON.parse(match[1]);
-          charts.push(chartData);
+          charts.push(JSON.parse(matchChart[1]));
         } catch (e) {
           console.error("Failed to parse chart JSON", e);
         }
       }
-      
-      const cleanContent = rawContent.replace(/\[CHART:\s*({[\s\S]*?})\]/g, '').trim();
 
-      setMessages([...newMessages, { role: 'assistant', content: cleanContent, charts }]);
+      const tableRegex = /\[TABLE:\s*({[\s\S]*?})\]/g;
+      let matchTable;
+      while ((matchTable = tableRegex.exec(rawContent)) !== null) {
+        try {
+          tables.push(JSON.parse(matchTable[1]));
+        } catch (e) {
+          console.error("Failed to parse table JSON", e);
+        }
+      }
+      
+      let cleanContent = rawContent.replace(/\[CHART:\s*({[\s\S]*?})\]/g, '').trim();
+      cleanContent = cleanContent.replace(/\[TABLE:\s*({[\s\S]*?})\]/g, '').trim();
+
+      setMessages([...newMessages, { role: 'assistant', content: cleanContent, charts, tables }]);
     } catch (err: any) {
       console.error('Chat error:', err);
       const errorMsg = err.context ? await err.context.text() : err.message || 'Unknown error';
@@ -139,6 +151,38 @@ export default function AIAnalyst() {
                               </BarChart>
                             )}
                           </ResponsiveContainer>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {msg.tables && msg.tables.length > 0 && (
+                  <div className="mt-6 space-y-6">
+                    {msg.tables.map((table, tIdx) => (
+                      <div key={tIdx} className="bg-white border border-navy/10 rounded-xl overflow-hidden shadow-sm w-full">
+                        <div className="bg-navy/5 px-4 py-3 border-b border-navy/10">
+                          <h4 className="text-xs font-bold uppercase tracking-widest text-navy">{table.title}</h4>
+                        </div>
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-sm text-navy/80">
+                            <thead className="bg-light text-[10px] uppercase tracking-widest font-bold text-navy/50">
+                              <tr>
+                                {table.columns.map((col: string, i: number) => (
+                                  <th key={i} className="px-4 py-3 border-b border-navy/5">{col}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {table.rows.map((row: any[], rIdx: number) => (
+                                <tr key={rIdx} className="border-b border-navy/5 last:border-0 hover:bg-navy/[0.02]">
+                                  {row.map((cell: any, cIdx: number) => (
+                                    <td key={cIdx} className="px-4 py-3">{cell}</td>
+                                  ))}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
                       </div>
                     ))}

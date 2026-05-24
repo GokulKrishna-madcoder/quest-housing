@@ -26,10 +26,14 @@ ${analyticsContext || 'No data provided.'}
 Analyze this data thoroughly when answering the admin's questions.
 
 CRITICAL INSTRUCTION 1 (VISUALIZATIONS):
-When you want to visualize data to support your analysis, you MUST output a chart block in exactly this JSON format. Only use "bar" or "line" for the chart type.
-Example:
+When you want to visualize data to support your analysis, you MUST output a chart or table block in exactly this JSON format.
+For charts (only use "bar" or "line" for the chart type):
 [CHART: {"type": "bar", "title": "Lead Budgets", "data": [{"name": "Under 15k", "value": 10}, {"name": "15k-25k", "value": 20}], "xKey": "name", "yKey": "value"}]
-Ensure the JSON is strictly valid. You can output multiple charts if needed.
+
+For data tables:
+[TABLE: {"title": "Top Locations", "columns": ["Location", "Lead Count"], "rows": [["Koramangala", "15"], ["Indiranagar", "12"]]}]
+
+Ensure the JSON is strictly valid. You can output multiple charts or tables if needed.
 
 CRITICAL INSTRUCTION 2 (ACTIONABLE INSIGHTS):
 You MUST always end your response with a dedicated section titled exactly:

@@ -19,10 +19,14 @@ If they ask for properties, tell them to browse the "Portfolio" section or use t
 If they give you their contact info, politely acknowledge it and tell them a representative will reach out shortly.`
     });
 
-    const formattedHistory = messages.slice(0, -1).map((msg: any) => ({
+    let formattedHistory = messages.slice(0, -1).map((msg: any) => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }],
     }));
+
+    while (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
+      formattedHistory.shift();
+    }
 
     const chat = model.startChat({
       history: formattedHistory,

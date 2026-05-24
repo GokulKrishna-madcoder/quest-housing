@@ -18,12 +18,19 @@ serve(async (req) => {
     // Fetch properties
     const { data: properties } = await supabase
       .from('properties')
-      .select('title, type, location, rent_amount, furnishing_status')
+      .select('id, title, type, location, rent_amount, furnishing_status, image_urls')
       .eq('availability_status', 'Available')
       .limit(10);
       
     const propertiesContext = properties && properties.length > 0
-      ? JSON.stringify(properties) 
+      ? JSON.stringify(properties.map(p => ({
+          id: p.id,
+          title: p.title,
+          type: p.type,
+          location: p.location,
+          rent: p.rent_amount,
+          furnishing: p.furnishing_status
+        })))
       : "No properties available at the moment.";
 
     const apiKey = Deno.env.get('NVIDIA_API_KEY') || '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';
@@ -37,6 +44,7 @@ Be extremely concise, polite, and use a premium tone.
 Here are the currently available properties:
 ${propertiesContext}
 If they ask for properties, recommend 1-2 from the list above that match their criteria.
+CRITICAL INSTRUCTION: Whenever you recommend a property to the user, you MUST include the exact string [PROPERTY_ID: <id>] in your response (replace <id> with the actual ID from the property list). Do this for EVERY property you recommend.
 If they give you their contact info, ALWAYS call the 'capture_lead' function to save it, then politely acknowledge it and tell them a representative will reach out shortly.`;
 
     // Filter out previous system messages just in case, though the frontend sends user/assistant
@@ -114,16 +122,32 @@ If they give you their contact info, ALWAYS call the 'capture_lead' function to 
       finalContent = "Thank you. Your request has been recorded.";
     }
 
+    // Extract property IDs and prepare structured data
+    const propertyIds = new Set<string>();
+    const propertyRegex = /\[PROPERTY_ID:\s*([a-zA-Z0-9-]+)\]/g;
+    let match;
+    while ((match = propertyRegex.exec(finalContent)) !== null) {
+      propertyIds.add(match[1]);
+    }
+
+    // Strip the tags from the final text
+    const cleanContent = finalContent.replace(/\[PROPERTY_ID:\s*[a-zA-Z0-9-]+\]/g, '').trim();
+
+    // Find the full property objects
+    const recommended_properties = properties 
+      ? properties.filter(p => propertyIds.has(p.id))
+      : [];
+
     const latestMessage = messages[messages.length - 1].content;
     
     // Log the conversation asynchronously
     supabase.from('chatbot_conversations').insert({
       session_id: sessionId,
       user_message: latestMessage,
-      bot_response: finalContent
+      bot_response: cleanContent
     }).then(() => console.log("Logged conversation"));
 
-    return new Response(JSON.stringify({ content: finalContent, role: 'assistant' }), {
+    return new Response(JSON.stringify({ content: cleanContent, role: 'assistant', recommended_properties }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

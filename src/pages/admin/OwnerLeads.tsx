@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Download, Image as ImageIcon, X, FileText, Trash2, Filter, MessageCircle, Phone, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
@@ -8,56 +7,17 @@ import autoTable from 'jspdf-autotable';
 import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { NotesDrawer } from '../../components/admin/NotesDrawer';
-import { toast } from 'sonner';
+
+import { useOwnerLeads } from '../../hooks/useOwnerLeads';
 
 export default function OwnerLeads() {
-  const [leads, setLeads] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: leads = [], isLoading, updateStatus, deleteLead } = useOwnerLeads();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
   const [notesLead, setNotesLead] = useState<any | null>(null);
 
-  useEffect(() => {
-    fetchLeads();
-
-    // Subscribe to realtime updates
-    const channel = supabase.channel('public:owner_leads')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'owner_leads' }, (payload) => {
-        if (payload.eventType === 'INSERT') {
-          setLeads((current) => [payload.new, ...current]);
-        } else if (payload.eventType === 'UPDATE') {
-          setLeads((current) => current.map(lead => lead.id === payload.new.id ? payload.new : lead));
-        } else if (payload.eventType === 'DELETE') {
-          setLeads((current) => current.filter(lead => lead.id !== payload.old.id));
-        }
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  async function fetchLeads() {
-    const { data, error } = await supabase
-      .from('owner_leads')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (data) setLeads(data);
-    setLoading(false);
-  }
-
-  const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('owner_leads').delete().eq('id', id);
-    if (error) {
-      toast.error('Failed to delete lead: ' + error.message);
-    } else {
-      toast.success('Lead deleted successfully.');
-    }
-  };
 
   const exportCSV = () => {
     const headers = ['Full Name', 'Email', 'Phone', 'WhatsApp', 'Property Type', 'Location', 'Status', 'Date Submitted'];
@@ -169,7 +129,7 @@ export default function OwnerLeads() {
               </tr>
             </thead>
             <tbody className="divide-y divide-navy/5">
-              {loading ? (
+              {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-10 text-center text-navy/50">Loading leads...</td>
                 </tr>
@@ -252,7 +212,7 @@ export default function OwnerLeads() {
       <DeleteModal 
         isOpen={!!leadToDelete} 
         onClose={() => setLeadToDelete(null)} 
-        onConfirm={() => leadToDelete && handleDelete(leadToDelete)} 
+        onConfirm={() => { if (leadToDelete) { deleteLead.mutate(leadToDelete); setLeadToDelete(null); } }} 
       />
     </motion.div>
   );

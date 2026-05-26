@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { useOwnerFormStore } from '../../../store/useOwnerFormStore';
 import { supabase } from '../../../lib/supabase';
+import { uploadMedia } from '../../../lib/mediaUpload';
 import { toast } from 'sonner';
 import { UploadCloud, X } from 'lucide-react';
 
@@ -40,20 +41,8 @@ export default function StepImages() {
       
       // Upload images
       for (const file of formData.images) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${formData.fullName.replace(/[^a-zA-Z]/g, '').substring(0, 4)}_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('owner-property-images')
-          .upload(fileName, file);
-          
-        if (uploadError) throw new Error('Failed to upload image: ' + uploadError.message);
-        
-        const { data: publicUrlData } = supabase.storage
-          .from('owner-property-images')
-          .getPublicUrl(fileName);
-          
-        uploadedUrls.push(publicUrlData.publicUrl);
+        const publicUrl = await uploadMedia(file, { bucket: 'owner-property-images' });
+        uploadedUrls.push(publicUrl);
       }
 
       // Insert to owner_leads

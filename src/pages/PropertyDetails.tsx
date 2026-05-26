@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
 import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight, Heart, X, ZoomIn } from 'lucide-react';
 import { useFavorites } from '../hooks/useFavorites';
+import { useTracker } from '../hooks/useTracker';
 import SEO from '../components/SEO';
 
 export default function PropertyDetails() {
@@ -13,12 +14,16 @@ export default function PropertyDetails() {
   const [activeImage, setActiveImage] = useState(0);
   const [showLightbox, setShowLightbox] = useState(false);
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { trackEvent } = useTracker();
 
   useEffect(() => {
     async function load() {
       if (!id) return;
       const { data } = await supabase.from('properties').select('*').eq('id', id).single();
-      if (data) setProperty(data);
+      if (data) {
+        setProperty(data);
+        trackEvent('property_view', { property_id: id, title: data.title });
+      }
       setLoading(false);
     }
     load();
@@ -202,6 +207,10 @@ export default function PropertyDetails() {
 
               <div className="space-y-3">
                 <a href={`https://wa.me/918886131316?text=${waText}`} target="_blank" rel="noopener noreferrer"
+                  onClick={() => {
+                    trackEvent('whatsapp_opened', { property_id: id });
+                    trackEvent('visit_requested', { property_id: id });
+                  }}
                   className="flex items-center justify-center gap-2 w-full bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-6 py-4 hover:bg-primary/80 transition-all shadow-sm">
                   <MessageCircle size={16} /> Schedule a Visit
                 </a>

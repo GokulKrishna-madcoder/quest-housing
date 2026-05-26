@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '../../../lib/supabase';
 import { useLeadFormStore } from '../../../store/useLeadFormStore';
+import { useTracker } from '../../../hooks/useTracker';
 
 const PHONE_REGEX = /^[6-9]\d{9}$/;
 
 export default function StepContact() {
   const { formData, updateData, nextStep, prevStep } = useLeadFormStore();
   const [submitting, setSubmitting] = useState(false);
+  const { trackEvent } = useTracker();
 
   const valid = PHONE_REGEX.test(formData.whatsappNumber);
 
@@ -32,6 +34,7 @@ export default function StepContact() {
         utm_campaign: formData.utmCampaign || '',
       });
       if (error) throw error;
+      trackEvent('lead_created', { source: 'tenant_funnel', whatsapp: formData.whatsappNumber });
       nextStep();
     } catch (err: any) {
       toast.error(err.message || 'Something went wrong. Please try again.');

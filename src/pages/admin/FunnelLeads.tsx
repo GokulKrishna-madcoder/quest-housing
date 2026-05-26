@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Search, Download, FileText, Filter, Trash2, TrendingUp, MapPin, Calendar, MessageCircle, Phone, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
@@ -8,49 +7,19 @@ import autoTable from 'jspdf-autotable';
 import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { NotesDrawer } from '../../components/admin/NotesDrawer';
-import { toast } from 'sonner';
+
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { useFunnelLeads } from '../../hooks/useFunnelLeads';
 
 const PIE_COLORS = ['#161B40', '#F7D112', '#3b82f6', '#10b981', '#f59e0b'];
 
 export default function FunnelLeads() {
-  const [leads, setLeads] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: leads = [], isLoading, deleteLead } = useFunnelLeads();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
   const [notesLead, setNotesLead] = useState<any | null>(null);
 
-  useEffect(() => {
-    fetchLeads();
-    const channel = supabase.channel('public:instagram_leads')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'instagram_leads' }, (payload) => {
-        if (payload.eventType === 'INSERT') {
-          setLeads((c) => [payload.new, ...c]);
-        } else if (payload.eventType === 'UPDATE') {
-          setLeads((c) => c.map(l => l.id === payload.new.id ? payload.new : l));
-        } else if (payload.eventType === 'DELETE') {
-          setLeads((c) => c.filter(l => l.id !== payload.old.id));
-        }
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, []);
-
-  async function fetchLeads() {
-    const { data } = await supabase
-      .from('instagram_leads')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (data) setLeads(data);
-    setLoading(false);
-  }
-
-  const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('instagram_leads').delete().eq('id', id);
-    if (error) toast.error('Delete failed: ' + error.message);
-    else toast.success('Lead deleted.');
-  };
 
   const totalLeads = leads.length;
 
@@ -145,7 +114,7 @@ export default function FunnelLeads() {
         <p className="text-navy/50 text-sm">Leads captured from the guided property requirement funnel.</p>
       </div>
 
-      {!loading && (
+      {!isLoading && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <AnalyticsCard icon={<TrendingUp size={18} />} title="Total Funnel Leads" value={totalLeads} />
@@ -250,7 +219,7 @@ export default function FunnelLeads() {
               </tr>
             </thead>
             <tbody className="divide-y divide-navy/5">
-              {loading ? (
+              {isLoading ? (
                 <tr><td colSpan={9} className="px-6 py-10 text-center text-navy/50">Loading leads...</td></tr>
               ) : filteredLeads.length === 0 ? (
                 <tr><td colSpan={9} className="px-6 py-10 text-center text-navy/50">No funnel leads found.</td></tr>
@@ -335,7 +304,7 @@ export default function FunnelLeads() {
         </div>
       </div>
       <NotesDrawer isOpen={!!notesLead} onClose={() => setNotesLead(null)} lead={notesLead} table="instagram_leads" />
-      <DeleteModal isOpen={!!leadToDelete} onClose={() => setLeadToDelete(null)} onConfirm={() => leadToDelete && handleDelete(leadToDelete)} />
+      <DeleteModal isOpen={!!leadToDelete} onClose={() => setLeadToDelete(null)} onConfirm={() => { if (leadToDelete) { deleteLead.mutate(leadToDelete); setLeadToDelete(null); } }} />
     </motion.div>
   );
 }

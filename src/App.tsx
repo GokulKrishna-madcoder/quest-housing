@@ -23,12 +23,25 @@ import FunnelLeads from './pages/admin/FunnelLeads';
 import AdminProperties from './pages/admin/Properties';
 import AIAnalyst from './pages/admin/AIAnalyst';
 import ChatbotAnalytics from './pages/admin/ChatbotAnalytics';
+import UnifiedInbox from './pages/admin/UnifiedInbox';
 
 import { HelmetProvider } from 'react-helmet-async';
 import AnalyticsTracker from './components/AnalyticsTracker';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30 * 1000, // 30 seconds
+      gcTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 export default function App() {
   return (
+    <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <Router>
         <AnalyticsTracker />
@@ -53,10 +66,12 @@ export default function App() {
           <Route path="properties" element={<AdminProperties />} />
           <Route path="ai-analyst" element={<AIAnalyst />} />
           <Route path="chat-analytics" element={<ChatbotAnalytics />} />
+          <Route path="inbox" element={<UnifiedInbox />} />
         </Route>
       </Routes>
       </Router>
     </HelmetProvider>
+    </QueryClientProvider>
   );
 }
 

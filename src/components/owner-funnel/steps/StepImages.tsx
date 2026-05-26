@@ -68,6 +68,9 @@ export default function StepImages() {
           location: formData.location,
           description: formData.description || null,
           image_urls: uploadedUrls,
+          utm_source: formData.utmSource || '',
+          utm_medium: formData.utmMedium || '',
+          utm_campaign: formData.utmCampaign || '',
         }]);
 
       if (dbError) throw new Error(dbError.message);

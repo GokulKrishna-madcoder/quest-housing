@@ -28,8 +28,13 @@ export default function FunnelLayout() {
   // Capture UTM params on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const utm = params.get('utm_source') || params.get('ref') || '';
-    if (utm) updateData({ utmSource: utm });
+    const utmSource = params.get('utm_source') || params.get('ref') || '';
+    const utmMedium = params.get('utm_medium') || '';
+    const utmCampaign = params.get('utm_campaign') || '';
+    
+    if (utmSource || utmMedium || utmCampaign) {
+      updateData({ utmSource, utmMedium, utmCampaign });
+    }
   }, []);
 
   return (

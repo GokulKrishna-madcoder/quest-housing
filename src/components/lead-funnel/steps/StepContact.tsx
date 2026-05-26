@@ -28,6 +28,8 @@ export default function StepContact() {
         property_type: formData.propertyType,
         furnishing_type: formData.furnishingType,
         utm_source: formData.utmSource || '',
+        utm_medium: formData.utmMedium || '',
+        utm_campaign: formData.utmCampaign || '',
       });
       if (error) throw error;
       nextStep();

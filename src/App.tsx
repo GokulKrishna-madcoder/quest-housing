@@ -24,10 +24,15 @@ import AdminProperties from './pages/admin/Properties';
 import AIAnalyst from './pages/admin/AIAnalyst';
 import ChatbotAnalytics from './pages/admin/ChatbotAnalytics';
 
+import { HelmetProvider } from 'react-helmet-async';
+import AnalyticsTracker from './components/AnalyticsTracker';
+
 export default function App() {
   return (
-    <Router>
-      <ScrollToTop />
+    <HelmetProvider>
+      <Router>
+        <AnalyticsTracker />
+        <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -50,7 +55,8 @@ export default function App() {
           <Route path="chat-analytics" element={<ChatbotAnalytics />} />
         </Route>
       </Routes>
-    </Router>
+      </Router>
+    </HelmetProvider>
   );
 }
 

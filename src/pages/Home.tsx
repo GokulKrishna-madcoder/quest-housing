@@ -4,6 +4,7 @@ import { ArrowRight, Star, Shield, MapPin, Users, ChevronRight, ChevronLeft, Plu
 import { testimonials } from '../data';
 import { useRef, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import SEO from '../components/SEO';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -79,6 +80,10 @@ export default function Home() {
 
   return (
     <div className="w-full flex-col flex overflow-hidden bg-light text-navy">
+      <SEO 
+        title="Luxury Rentals & Property Management in Bengaluru" 
+        description="Quest Housing offers zero upfront cost, premium rentals, and 100% verified properties in Bengaluru. Find your dream home or list your property with us today." 
+      />
       
       {/* Cinematic Hero Section */}
       <section className="relative min-h-[100vh] w-full flex flex-col justify-end pt-32 pb-16 overflow-hidden bg-navy-dark group">

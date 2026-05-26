@@ -6,9 +6,11 @@ interface OwnerFormData {
   email: string;
   whatsapp: string;
   propertyType: string;
-  location: string;
   description: string;
   images: File[];
+  utmSource: string;
+  utmMedium: string;
+  utmCampaign: string;
 }
 
 interface OwnerFormState {
@@ -26,10 +28,12 @@ const initialData: OwnerFormData = {
   phone: '',
   email: '',
   whatsapp: '',
-  propertyType: '',
   location: '',
   description: '',
   images: [],
+  utmSource: '',
+  utmMedium: '',
+  utmCampaign: '',
 };
 
 export const useOwnerFormStore = create<OwnerFormState>((set) => ({

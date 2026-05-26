@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
 import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight, Heart, X, ZoomIn } from 'lucide-react';
 import { useFavorites } from '../hooks/useFavorites';
+import SEO from '../components/SEO';
 
 export default function PropertyDetails() {
   const { id } = useParams();
@@ -59,6 +60,12 @@ export default function PropertyDetails() {
 
   return (
     <div className="bg-light stitch-grid min-h-screen">
+      <SEO 
+        title={`${property.type} for rent in ${property.location}`} 
+        description={`Check out this ${property.bedrooms} BHK ${property.type} available for rent in ${property.location} for ₹${property.rent_amount?.toLocaleString()}. ${property.description ? property.description.substring(0, 100) + '...' : ''}`} 
+        image={images.length > 0 ? images[0] : undefined}
+      />
+      
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-24">
         {/* Back */}
         <Link to="/properties" className="inline-flex items-center gap-2 text-navy/50 hover:text-navy text-xs uppercase tracking-widest font-bold mb-8 transition-colors">

@@ -8,10 +8,23 @@ import StepDetails from './steps/StepDetails';
 import StepImages from './steps/StepImages';
 import StepSuccess from './steps/StepSuccess';
 import { X } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function OwnerFunnelLayout({ onClose }: { onClose: () => void }) {
   const currentStep = useOwnerFormStore((state) => state.currentStep);
+  const updateData = useOwnerFormStore((state) => state.updateData);
   const totalSteps = 7;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const utmSource = params.get('utm_source') || params.get('ref') || '';
+    const utmMedium = params.get('utm_medium') || '';
+    const utmCampaign = params.get('utm_campaign') || '';
+    
+    if (utmSource || utmMedium || utmCampaign) {
+      updateData({ utmSource, utmMedium, utmCampaign });
+    }
+  }, []);
 
   const steps = [
     <StepName key="name" />,

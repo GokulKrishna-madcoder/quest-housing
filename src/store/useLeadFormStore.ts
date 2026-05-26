@@ -13,6 +13,8 @@ export interface LeadFormData {
   propertyType: string[];
   furnishingType: string[];
   utmSource: string;
+  utmMedium: string;
+  utmCampaign: string;
 }
 
 interface LeadFormStore {
@@ -38,6 +40,8 @@ const initialData: LeadFormData = {
   propertyType: [],
   furnishingType: [],
   utmSource: '',
+  utmMedium: '',
+  utmCampaign: '',
 };
 
 export const useLeadFormStore = create<LeadFormStore>((set) => ({

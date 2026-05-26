@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Search, MapPin, BedDouble, Bath, Maximize, Filter, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFavorites } from '../hooks/useFavorites';
+import SEO from '../components/SEO';
 
 const BHK_FILTERS = ['All', '1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
 const FURNISH_FILTERS = ['All', 'Fully Furnished', 'Semi Furnished', 'Unfurnished'];
@@ -42,6 +43,11 @@ export default function Properties() {
 
   return (
     <div className="bg-light stitch-grid min-h-screen">
+      <SEO 
+        title="Available Properties" 
+        description="Browse our exclusive collection of 100% verified flats, villas, and premium homes available for rent in Bengaluru." 
+      />
+      
       {/* Header */}
       <div className="max-w-7xl mx-auto px-6 pt-32 pb-12">
         <p className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold mb-4">BROWSE LISTINGS</p>

@@ -4,8 +4,7 @@ import { motion } from 'motion/react';
 import { Send, User, Bot, Loader2, Sparkles, Database, BarChart2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import CanvasJSReact from '@canvasjs/react-charts';
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+import CanvasJSChart from '../../components/CanvasJSChart';
 
 interface Message {
   role: 'user' | 'assistant';

@@ -8,8 +8,7 @@ import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { NotesDrawer } from '../../components/admin/NotesDrawer';
 
-import CanvasJSReact from '@canvasjs/react-charts';
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+import CanvasJSChart from '../../components/CanvasJSChart';
 import { useFunnelLeads } from '../../hooks/useFunnelLeads';
 
 const PIE_COLORS = ['#161B40', '#F7D112', '#3b82f6', '#10b981', '#f59e0b'];

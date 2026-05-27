@@ -2,8 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'motion/react';
 import { Users, Home, TrendingUp, CheckCircle, Clock, PhoneCall, Timer, Activity, Zap, BarChart2, PieChart } from 'lucide-react';
-import CanvasJSReact from '@canvasjs/react-charts';
-const CanvasJSChart = CanvasJSReact.CanvasJSChart;
+import CanvasJSChart from '../../components/CanvasJSChart';
 
 export default function AdminDashboard() {
   const [data, setData] = useState({

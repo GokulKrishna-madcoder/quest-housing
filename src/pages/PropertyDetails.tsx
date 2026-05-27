@@ -316,7 +316,7 @@ export default function PropertyDetails() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative border-stitch"
+              className="bg-white shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto hide-scrollbar relative border-stitch"
             >
               {/* Cross marks */}
               <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>

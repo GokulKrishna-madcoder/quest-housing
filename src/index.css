@@ -89,3 +89,87 @@
   height: 100%;
   background-color: currentColor;
 }
+
+/* ─── Quest Housing Calendar Theme ─── */
+.quest-calendar {
+  --rdp-accent-color: #161B40;
+  --rdp-accent-background-color: rgba(22, 27, 64, 0.08);
+  --rdp-day-height: 44px;
+  --rdp-day-width: 44px;
+  font-family: "Inter", sans-serif;
+  width: 100%;
+}
+.quest-calendar .rdp-month_caption {
+  font-family: "Clash Display", sans-serif;
+  font-weight: 500;
+  font-size: 1.125rem;
+  color: #161B40;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(22, 27, 64, 0.15);
+}
+.quest-calendar .rdp-weekday {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: rgba(22, 27, 64, 0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  padding-bottom: 0.5rem;
+}
+.quest-calendar .rdp-day button,
+.quest-calendar .rdp-day {
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #161B40;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.quest-calendar .rdp-day:not(.rdp-disabled):not(.rdp-selected):hover button,
+.quest-calendar .rdp-day:not(.rdp-disabled):not(.rdp-selected):hover {
+  background: rgba(22, 27, 64, 0.06);
+  transform: scale(1.08);
+}
+.quest-calendar .rdp-day.rdp-selected button,
+.quest-calendar .rdp-day.rdp-selected {
+  background: #161B40 !important;
+  color: #fff !important;
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(22, 27, 64, 0.25);
+}
+.quest-calendar .rdp-day.rdp-today:not(.rdp-selected) button,
+.quest-calendar .rdp-day.rdp-today:not(.rdp-selected) {
+  border: 2px solid #F7D112;
+  border-radius: 10px;
+  font-weight: 700;
+  color: #161B40;
+}
+.quest-calendar .rdp-day.rdp-disabled button,
+.quest-calendar .rdp-day.rdp-disabled {
+  color: rgba(22, 27, 64, 0.15) !important;
+  cursor: not-allowed;
+}
+.quest-calendar .rdp-button_previous,
+.quest-calendar .rdp-button_next {
+  width: 32px;
+  height: 32px;
+  border: 1px dashed rgba(22, 27, 64, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #161B40;
+  transition: all 0.2s;
+}
+.quest-calendar .rdp-button_previous:hover,
+.quest-calendar .rdp-button_next:hover {
+  background: #161B40;
+  color: #fff;
+  border-color: #161B40;
+}
+.quest-calendar .rdp-nav {
+  gap: 0.25rem;
+}

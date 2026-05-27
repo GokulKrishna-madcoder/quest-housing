@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { motion, AnimatePresence, PanInfo } from 'motion/react';
-import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight, Heart, X, ZoomIn, Calendar, Shield, Star, Clock, Loader2 } from 'lucide-react';
+import { MapPin, BedDouble, Bath, Maximize, ArrowLeft, MessageCircle, Phone, Check, ChevronLeft, ChevronRight, Heart, X, ZoomIn, Calendar, Shield, Star, Clock, Loader2, Sun, CloudSun, Moon } from 'lucide-react';
 import { DayPicker } from 'react-day-picker';
-import { format } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { useFavorites } from '../hooks/useFavorites';
 import { useTracker } from '../hooks/useTracker';
 import { toast } from 'sonner';
@@ -316,130 +316,236 @@ export default function PropertyDetails() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+              className="bg-white shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative border-stitch"
             >
-              <div className="p-6 border-b border-navy/10 flex items-center justify-between">
+              {/* Cross marks */}
+              <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
+              <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-navy"></div>
+
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4 border-stitch-b flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-display font-medium text-navy">Schedule a Visit</h3>
-                  <p className="text-xs text-navy/50 mt-1">{property.title}</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold mb-1">Property Visit</p>
+                  <h3 className="text-2xl font-display font-medium text-navy tracking-tight">Schedule a Visit</h3>
+                  <p className="text-xs text-navy/40 mt-1 truncate max-w-[280px]">{property.title} — {property.locality || ''}</p>
                 </div>
                 <button
                   onClick={() => { if (!submitting) { setShowVisitModal(false); setVisitStep(1); setSelectedDates([]); } }}
-                  className="p-2 hover:bg-navy/5 rounded-lg transition-colors cursor-pointer"
+                  className="w-10 h-10 border border-navy/10 flex items-center justify-center hover:bg-navy hover:text-white hover:border-navy transition-all cursor-pointer"
                 >
-                  <X size={20} className="text-navy/40" />
+                  <X size={16} />
                 </button>
               </div>
 
               <div className="p-6">
-                {/* Step indicator */}
-                <div className="flex items-center gap-2 mb-6">
-                  {[1, 2, 3].map(step => (
-                    <div key={step} className="flex items-center gap-2">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                        visitStep >= step ? 'bg-primary text-navy' : 'bg-navy/5 text-navy/30'
-                      }`}>{step}</div>
-                      {step < 3 && <div className={`w-8 h-px ${visitStep > step ? 'bg-primary' : 'bg-navy/10'}`} />}
+                {/* Step indicator with stitch connectors */}
+                <div className="flex items-center justify-center gap-1 mb-8">
+                  {[
+                    { num: 1, label: 'Details' },
+                    { num: 2, label: 'Date & Time' },
+                    { num: 3, label: 'Confirm' },
+                  ].map((step, i) => (
+                    <div key={step.num} className="flex items-center gap-1">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className={`w-9 h-9 flex items-center justify-center text-xs font-bold transition-all duration-300 ${
+                          visitStep > step.num
+                            ? 'bg-primary text-navy shadow-[0_2px_8px_rgba(247,209,18,0.4)]'
+                            : visitStep === step.num
+                              ? 'bg-navy text-white shadow-[0_4px_12px_rgba(22,27,64,0.3)]'
+                              : 'bg-navy/5 text-navy/25'
+                        }`}>
+                          {visitStep > step.num ? <Check size={14} /> : step.num}
+                        </div>
+                        <span className={`text-[8px] uppercase tracking-[0.2em] font-bold ${
+                          visitStep >= step.num ? 'text-navy' : 'text-navy/25'
+                        }`}>{step.label}</span>
+                      </div>
+                      {i < 2 && (
+                        <div className={`w-12 h-px mb-4 ${visitStep > step.num ? 'bg-primary' : 'border-b border-dashed border-navy/15'}`} />
+                      )}
                     </div>
                   ))}
                 </div>
 
+                {/* STEP 1: Contact Details */}
                 {visitStep === 1 && (
-                  <div className="space-y-4">
-                    <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block">Your Name *</label>
-                    <input
-                      type="text"
-                      value={visitorName}
-                      onChange={(e) => setVisitorName(e.target.value)}
-                      placeholder="Full name"
-                      className="w-full bg-white border border-navy/10 text-navy text-sm p-3 rounded-xl focus:border-primary focus:outline-none placeholder:text-navy/30"
-                    />
-                    <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block">Phone Number *</label>
-                    <input
-                      type="tel"
-                      value={visitorPhone}
-                      onChange={(e) => setVisitorPhone(e.target.value)}
-                      placeholder="+91"
-                      className="w-full bg-white border border-navy/10 text-navy text-sm p-3 rounded-xl focus:border-primary focus:outline-none placeholder:text-navy/30"
-                    />
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-5"
+                  >
+                    <div>
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold block mb-2">Your Name *</label>
+                      <input
+                        type="text"
+                        value={visitorName}
+                        onChange={(e) => setVisitorName(e.target.value)}
+                        placeholder="Full name"
+                        className="w-full bg-white border border-navy/10 text-navy text-sm p-3.5 focus:border-navy focus:outline-none placeholder:text-navy/25 transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold block mb-2">Phone Number *</label>
+                      <div className="relative">
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-navy/30 font-medium">+91</span>
+                        <input
+                          type="tel"
+                          value={visitorPhone}
+                          onChange={(e) => setVisitorPhone(e.target.value)}
+                          placeholder="98765 43210"
+                          className="w-full bg-white border border-navy/10 text-navy text-sm p-3.5 pl-12 focus:border-navy focus:outline-none placeholder:text-navy/25 transition-colors"
+                        />
+                      </div>
+                    </div>
                     <button
                       onClick={() => setVisitStep(2)}
                       disabled={!visitorName.trim() || !visitorPhone.trim()}
-                      className="w-full bg-navy text-white font-bold uppercase text-xs tracking-[0.2em] px-6 py-4 rounded-xl hover:bg-navy/90 transition-colors disabled:opacity-30"
+                      className="w-full bg-navy text-white font-bold uppercase text-xs tracking-[0.2em] px-6 py-4 hover:bg-navy/90 transition-colors disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
                     >
                       Continue
                     </button>
-                  </div>
+                  </motion.div>
                 )}
 
+                {/* STEP 2: Date & Time */}
                 {visitStep === 2 && (
-                  <div className="space-y-4">
-                    <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block">
-                      Select 3 Preferred Dates *
-                    </label>
-                    <div className="flex justify-center">
-                      <DayPicker
-                        mode="multiple"
-                        min={1}
-                        max={3}
-                        selected={selectedDates}
-                        onSelect={setSelectedDates}
-                        disabled={{ before: new Date() }}
-                        className="!font-sans"
-                        modifiersStyles={{
-                          selected: { backgroundColor: '#161B40', color: 'white', borderRadius: '8px' },
-                          today: { border: '2px solid #D9C8A9' },
-                        }}
-                      />
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-5"
+                  >
+                    <div>
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold block mb-3">
+                        Select Up to 3 Preferred Dates *
+                      </label>
+                      <div className="bg-light border border-navy/5 p-4">
+                        <DayPicker
+                          mode="multiple"
+                          min={1}
+                          max={3}
+                          selected={selectedDates}
+                          onSelect={(dates) => setSelectedDates(dates || [])}
+                          disabled={{ before: addDays(new Date(), 1) }}
+                          className="quest-calendar"
+                        />
+                      </div>
                     </div>
-                    <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block">Preferred Time</label>
-                    <div className="flex gap-2">
-                      {[
-                        { value: 'morning', label: 'Morning (9-12)' },
-                        { value: 'afternoon', label: 'Afternoon (12-4)' },
-                        { value: 'evening', label: 'Evening (4-7)' },
-                      ].map(t => (
-                        <button
-                          key={t.value}
-                          onClick={() => setPreferredTime(t.value)}
-                          className={`flex-1 py-3 rounded-xl text-xs font-bold uppercase tracking-widest transition-all cursor-pointer ${
-                            preferredTime === t.value
-                              ? 'bg-navy text-white'
-                              : 'bg-navy/5 text-navy/60 hover:bg-navy/10'
-                          }`}
-                        >
-                          {t.label}
-                        </button>
-                      ))}
+
+                    {/* Selected date chips */}
+                    {selectedDates.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {[...selectedDates].sort((a, b) => a.getTime() - b.getTime()).map((d, i) => (
+                          <motion.div
+                            key={d.toISOString()}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="flex items-center gap-2 bg-navy text-white px-3 py-1.5 text-xs font-bold uppercase tracking-widest"
+                          >
+                            <Calendar size={12} />
+                            {format(d, 'dd MMM')}
+                            <button
+                              onClick={() => setSelectedDates(prev => prev.filter(pd => pd.toISOString() !== d.toISOString()))}
+                              className="ml-1 hover:text-primary transition-colors cursor-pointer"
+                            >
+                              <X size={10} />
+                            </button>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold block mb-3">Preferred Time</label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { value: 'morning', label: 'Morning', sub: '9 AM – 12 PM', Icon: Sun },
+                          { value: 'afternoon', label: 'Afternoon', sub: '12 – 4 PM', Icon: CloudSun },
+                          { value: 'evening', label: 'Evening', sub: '4 – 7 PM', Icon: Moon },
+                        ].map(t => (
+                          <motion.button
+                            key={t.value}
+                            whileHover={{ y: -2 }}
+                            whileTap={{ scale: 0.97 }}
+                            onClick={() => setPreferredTime(t.value)}
+                            className={`flex flex-col items-center gap-1.5 py-4 px-2 text-center transition-all cursor-pointer ${
+                              preferredTime === t.value
+                                ? 'bg-navy text-white shadow-[0_4px_16px_rgba(22,27,64,0.25)]'
+                                : 'bg-white border border-navy/10 text-navy/60 hover:border-navy/30'
+                            }`}
+                          >
+                            <t.Icon size={20} className={preferredTime === t.value ? 'text-primary' : ''} />
+                            <span className="text-[10px] font-bold uppercase tracking-widest">{t.label}</span>
+                            <span className={`text-[9px] ${preferredTime === t.value ? 'text-white/50' : 'text-navy/30'}`}>{t.sub}</span>
+                          </motion.button>
+                        ))}
+                      </div>
                     </div>
-                    <button
-                      onClick={() => setVisitStep(3)}
-                      disabled={selectedDates.length === 0}
-                      className="w-full bg-navy text-white font-bold uppercase text-xs tracking-[0.2em] px-6 py-4 rounded-xl hover:bg-navy/90 transition-colors disabled:opacity-30"
-                    >
-                      Review & Submit
-                    </button>
-                  </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setVisitStep(1)}
+                        className="px-6 py-4 border border-navy/10 text-navy/50 font-bold uppercase text-xs tracking-[0.2em] hover:bg-navy/5 transition-colors cursor-pointer"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={() => setVisitStep(3)}
+                        disabled={selectedDates.length === 0}
+                        className="flex-1 bg-navy text-white font-bold uppercase text-xs tracking-[0.2em] px-6 py-4 hover:bg-navy/90 transition-colors disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        Review & Submit
+                      </button>
+                    </div>
+                  </motion.div>
                 )}
 
+                {/* STEP 3: Review & Confirm */}
                 {visitStep === 3 && (
-                  <div className="space-y-4">
-                    <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block">Review Your Request</label>
-                    <div className="bg-navy/5 rounded-xl p-4 space-y-2">
-                      <p className="text-sm text-navy"><span className="font-bold">Name:</span> {visitorName}</p>
-                      <p className="text-sm text-navy"><span className="font-bold">Phone:</span> {visitorPhone}</p>
-                      <p className="text-sm text-navy"><span className="font-bold">Dates:</span> {selectedDates.sort((a, b) => a.getTime() - b.getTime()).map(d => format(d, 'dd MMM')).join(', ')}</p>
-                      <p className="text-sm text-navy"><span className="font-bold">Time:</span> {preferredTime}</p>
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="space-y-5"
+                  >
+                    <label className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold block">Review Your Request</label>
+                    <div className="border-stitch p-5 space-y-3 relative">
+                      <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
+                      <div className="flex justify-between items-center border-stitch-b pb-3">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-navy/40 font-bold">Name</span>
+                        <span className="text-sm font-medium text-navy">{visitorName}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-stitch-b pb-3">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-navy/40 font-bold">Phone</span>
+                        <span className="text-sm font-medium text-navy">+91 {visitorPhone}</span>
+                      </div>
+                      <div className="flex justify-between items-center border-stitch-b pb-3">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-navy/40 font-bold">Dates</span>
+                        <span className="text-sm font-medium text-navy">
+                          {[...selectedDates].sort((a, b) => a.getTime() - b.getTime()).map(d => format(d, 'dd MMM')).join(' · ')}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-navy/40 font-bold">Time</span>
+                        <span className="text-sm font-medium text-navy capitalize">{preferredTime}</span>
+                      </div>
                     </div>
-                    <button
-                      onClick={handleVisitSubmit}
-                      disabled={submitting}
-                      className="w-full bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-6 py-4 rounded-xl hover:bg-primary/80 transition-all disabled:opacity-30 flex items-center justify-center gap-2"
-                    >
-                      {submitting ? <Loader2 size={16} className="animate-spin" /> : <Calendar size={16} />}
-                      {submitting ? 'Submitting...' : 'Confirm Visit'}
-                    </button>
-                  </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setVisitStep(2)}
+                        className="px-6 py-4 border border-navy/10 text-navy/50 font-bold uppercase text-xs tracking-[0.2em] hover:bg-navy/5 transition-colors cursor-pointer"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={handleVisitSubmit}
+                        disabled={submitting}
+                        className="flex-1 bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-6 py-4 hover:bg-primary/80 transition-all disabled:opacity-30 flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(247,209,18,0.3)] cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        {submitting ? <Loader2 size={16} className="animate-spin" /> : <Calendar size={16} />}
+                        {submitting ? 'Submitting...' : 'Confirm Visit'}
+                      </button>
+                    </div>
+                  </motion.div>
                 )}
               </div>
             </motion.div>

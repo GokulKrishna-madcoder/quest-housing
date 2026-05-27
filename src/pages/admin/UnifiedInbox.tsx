@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
 import { format, isPast } from 'date-fns';
@@ -16,6 +16,9 @@ import {
   Activity,
   X,
   Phone,
+  Sparkles,
+  Copy,
+  AlertTriangle,
 } from 'lucide-react';
 
 // ─────────────────────────────────────────────────────────
@@ -36,7 +39,7 @@ interface CombinedLead {
   property_type?: string | string[];
 }
 
-type ActiveTab = 'timeline' | 'notes' | 'reminders';
+type ActiveTab = 'timeline' | 'notes' | 'reminders' | 'drafts';
 
 // ─────────────────────────────────────────────────────────
 // Main Component
@@ -58,6 +61,9 @@ export default function UnifiedInbox() {
   const [savingScore, setSavingScore] = useState(false);
   const [addingNote, setAddingNote] = useState(false);
   const [addingReminder, setAddingReminder] = useState(false);
+  const [aiDrafts, setAiDrafts] = useState<any[]>([]);
+  const [overdueAlerts, setOverdueAlerts] = useState<any[]>([]);
+  const [alertCount, setAlertCount] = useState(0);
 
   // ── Fetch combined leads ──────────────────────────────
   useEffect(() => {
@@ -98,7 +104,22 @@ export default function UnifiedInbox() {
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
     setLeads(combined);
+
+    const { data: alerts } = await supabase
+      .from('overdue_alerts')
+      .select('*')
+      .eq('is_read', false)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    setOverdueAlerts(alerts || []);
+    setAlertCount(alerts?.length || 0);
+
     setLoading(false);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Draft copied to clipboard!');
   };
 
   // ── Select a lead and load CRM data ──────────────────
@@ -108,7 +129,7 @@ export default function UnifiedInbox() {
     setActiveTab('timeline');
     setCrmLoading(true);
 
-    const [notesRes, remindersRes, timelineRes] = await Promise.all([
+    const [notesRes, remindersRes, timelineRes, draftsRes] = await Promise.all([
       supabase
         .from('crm_notes')
         .select('*')
@@ -127,18 +148,25 @@ export default function UnifiedInbox() {
         .eq('lead_id', lead.id)
         .eq('lead_type', lead.lead_type)
         .order('created_at', { ascending: false }),
+      supabase
+        .from('ai_drafts')
+        .select('*')
+        .eq('lead_id', lead.id)
+        .eq('lead_type', lead.lead_type)
+        .order('created_at', { ascending: false }),
     ]);
 
     setNotes(notesRes.data || []);
     setReminders(remindersRes.data || []);
     setTimeline(timelineRes.data || []);
+    setAiDrafts(draftsRes.data || []);
     setCrmLoading(false);
   };
 
   // ── Reload CRM data for selected lead ────────────────
   const refreshCrmData = async () => {
     if (!selectedLead) return;
-    const [notesRes, remindersRes, timelineRes] = await Promise.all([
+    const [notesRes, remindersRes, timelineRes, draftsRes] = await Promise.all([
       supabase
         .from('crm_notes')
         .select('*')
@@ -157,10 +185,17 @@ export default function UnifiedInbox() {
         .eq('lead_id', selectedLead.id)
         .eq('lead_type', selectedLead.lead_type)
         .order('created_at', { ascending: false }),
+      supabase
+        .from('ai_drafts')
+        .select('*')
+        .eq('lead_id', selectedLead.id)
+        .eq('lead_type', selectedLead.lead_type)
+        .order('created_at', { ascending: false }),
     ]);
     setNotes(notesRes.data || []);
     setReminders(remindersRes.data || []);
     setTimeline(timelineRes.data || []);
+    setAiDrafts(draftsRes.data || []);
   };
 
   // ── Add Note ─────────────────────────────────────────
@@ -294,51 +329,72 @@ export default function UnifiedInbox() {
             {leads.length} total leads across all channels
           </p>
         </div>
-        <button
-          onClick={fetchLeads}
-          className="flex items-center gap-2 bg-navy/5 hover:bg-navy/10 text-navy text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-colors"
-        >
-          {loading ? <Loader2 size={14} className="animate-spin" /> : <Activity size={14} />}
-          Refresh
-        </button>
+        <div className="flex items-center gap-3">
+          {alertCount > 0 && (
+            <button
+              onClick={() => toast.info(`${alertCount} overdue alert(s) pending`)}
+              className="relative flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-colors"
+            >
+              <AlertTriangle size={14} />
+              {alertCount} Alert{alertCount > 1 ? 's' : ''}
+            </button>
+          )}
+          <button
+            onClick={fetchLeads}
+            className="flex items-center gap-2 bg-navy/5 hover:bg-navy/10 text-navy text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-colors"
+          >
+            {loading ? <Loader2 size={14} className="animate-spin" /> : <Activity size={14} />}
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* ── Dual Pane ── */}
       <div className="flex-1 flex gap-6 overflow-hidden min-h-0">
 
-        {/* ════ LEFT PANE: Lead List ════ */}
-        <div className="w-80 shrink-0 flex flex-col bg-white rounded-2xl border border-navy/5 shadow-sm overflow-hidden">
-          {/* Search */}
-          <div className="p-3 border-b border-navy/5 shrink-0">
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-navy/30" />
-              <input
-                type="text"
-                placeholder="Search name, phone, location..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-navy/5 rounded-lg text-sm text-navy focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-navy/30"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-navy/30 hover:text-navy"
-                >
-                  <X size={12} />
-                </button>
-              )}
+          {/* ════ LEFT PANE: Lead List ════ */}
+          <div className="w-80 shrink-0 flex flex-col border-r border-navy/5 min-h-0">
+            {/* Search */}
+            <div className="p-4 border-b border-navy/5 shrink-0">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-navy/30" />
+                <input
+                  type="text"
+                  placeholder="Search leads..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full bg-navy/5 border-0 text-navy text-sm py-2.5 pl-9 pr-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 placeholder:text-navy/30"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Lead count badge */}
-          <div className="px-4 py-2 border-b border-navy/5 shrink-0">
-            <p className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold">
-              {filteredLeads.length} leads
-            </p>
-          </div>
+            {/* Overdue Alerts Panel */}
+            {overdueAlerts.length > 0 && (
+              <div className="shrink-0 border-b border-red-100 bg-red-50/50">
+                <div className="px-4 py-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle size={13} className="text-red-500" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-red-600">
+                      {alertCount} Overdue Alert{alertCount > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                  <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                    {overdueAlerts.map(alert => (
+                      <div key={alert.id} className="flex items-start gap-2 text-[11px]">
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-400 mt-1.5 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-red-700 font-medium truncate">{alert.title}</p>
+                          <p className="text-red-400 text-[10px]">{alert.lead_name || '—'}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
 
-          {/* Scrollable list */}
-          <div className="flex-1 overflow-y-auto">
+            {/* Lead List */}
+            <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 size={24} className="animate-spin text-navy/30" />
@@ -480,7 +536,7 @@ export default function UnifiedInbox() {
 
               {/* ── Tabs ── */}
               <div className="flex border-b border-navy/5 shrink-0 px-6">
-                {(['timeline', 'notes', 'reminders'] as ActiveTab[]).map(tab => (
+                {(['timeline', 'notes', 'drafts', 'reminders'] as ActiveTab[]).map(tab => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
@@ -492,6 +548,7 @@ export default function UnifiedInbox() {
                   >
                     {tab === 'timeline' && <Activity size={13} />}
                     {tab === 'notes' && <StickyNote size={13} />}
+                    {tab === 'drafts' && <Sparkles size={13} />}
                     {tab === 'reminders' && (
                       <div className="relative">
                         <Bell size={13} />
@@ -502,7 +559,7 @@ export default function UnifiedInbox() {
                         )}
                       </div>
                     )}
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                    {tab === 'drafts' ? 'AI Drafts' : tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
                 ))}
               </div>
@@ -614,6 +671,66 @@ export default function UnifiedInbox() {
                                 <p className="text-[10px] text-navy/40 mt-2">
                                   {format(new Date(note.created_at), 'dd MMM yyyy, h:mm a')}
                                 </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+
+                    {/* ── AI DRAFTS TAB ── */}
+                    {activeTab === 'drafts' && (
+                      <motion.div
+                        key="drafts"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        className="p-6"
+                      >
+                        {aiDrafts.length === 0 ? (
+                          <EmptyState icon={<Sparkles size={32} />} label="No AI drafts generated yet" />
+                        ) : (
+                          <div className="space-y-4">
+                            {aiDrafts.map(draft => (
+                              <div
+                                key={draft.id}
+                                className="bg-gradient-to-br from-indigo-50/50 to-purple-50/50 border border-indigo-100 rounded-xl p-5"
+                              >
+                                <div className="flex items-center justify-between mb-3">
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-indigo-500 bg-indigo-100 px-2.5 py-1 rounded">
+                                    AI Generated
+                                  </span>
+                                  <span className="text-[10px] text-navy/40">
+                                    {format(new Date(draft.created_at), 'dd MMM yyyy, h:mm a')}
+                                  </span>
+                                </div>
+                                <p className="text-sm text-navy whitespace-pre-wrap break-words leading-relaxed mb-4">
+                                  {draft.draft_message}
+                                </p>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => copyToClipboard(draft.draft_message)}
+                                    className="flex items-center gap-2 bg-navy text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg hover:bg-navy/90 transition-colors"
+                                  >
+                                    <Copy size={12} />
+                                    Copy Draft
+                                  </button>
+                                  {selectedLead?.whatsapp && (
+                                    <button
+                                      onClick={() => {
+                                        copyToClipboard(draft.draft_content);
+                                        window.open(
+                                          `https://wa.me/${selectedLead.whatsapp.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(draft.draft_content)}`,
+                                          '_blank'
+                                        );
+                                      }}
+                                      className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-lg transition-colors"
+                                    >
+                                      <MessageCircle size={12} />
+                      Copy & Open WhatsApp
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -739,7 +856,7 @@ export default function UnifiedInbox() {
 // Empty State Helper
 // ─────────────────────────────────────────────────────────
 
-function EmptyState({ icon, label }: { icon: React.ReactNode; label: string }) {
+function EmptyState({ icon, label }: { icon: ReactNode; label: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 gap-3 text-navy/30">
       {icon}

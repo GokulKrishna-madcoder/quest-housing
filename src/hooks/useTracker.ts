@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { captureEvent } from '../lib/posthog';
 
 const getSessionId = () => {
   let id = sessionStorage.getItem('qh_session');
@@ -12,12 +13,16 @@ const getSessionId = () => {
 
 export function useTracker() {
   const trackEvent = useCallback((eventName: string, data: Record<string, any> = {}) => {
-    // Fire and forget — never await this
     supabase.from('user_events').insert({
       session_id: getSessionId(),
       event_name: eventName,
       event_data: data,
-    }).then(() => {}).catch(() => {});
+    }).then(() => {});
+
+    captureEvent(eventName, {
+      ...data,
+      session_id: getSessionId(),
+    });
   }, []);
 
   return { trackEvent };

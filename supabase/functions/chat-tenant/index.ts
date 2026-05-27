@@ -18,7 +18,7 @@ serve(async (req) => {
     // Fetch properties
     const { data: properties } = await supabase
       .from('properties')
-      .select('id, title, type, location, rent_amount, furnishing_status, image_urls')
+      .select('id, title, type, locality, price, furnishing, images')
       .eq('availability_status', 'Available')
       .limit(10);
       
@@ -27,9 +27,9 @@ serve(async (req) => {
           id: p.id,
           title: p.title,
           type: p.type,
-          location: p.location,
-          rent: p.rent_amount,
-          furnishing: p.furnishing_status
+          location: p.locality,
+          rent: p.price,
+          furnishing: p.furnishing
         })))
       : "No properties available at the moment.";
 

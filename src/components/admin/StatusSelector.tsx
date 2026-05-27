@@ -4,19 +4,22 @@ import { ChevronDown, Check } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { toast } from 'sonner';
 
-export type LeadStatus = 'Pending' | 'Contacted' | 'Completed';
+export type LeadStatus = 'Pending' | 'Contacted' | 'Completed' | 'Cancelled' | 'Confirmed';
 
 interface StatusSelectorProps {
   currentStatus: string;
   leadId: string;
-  table: 'owner_leads' | 'tenant_leads' | 'instagram_leads';
+  table: 'owner_leads' | 'tenant_leads' | 'instagram_leads' | 'visit_slots';
 }
 
 export function StatusSelector({ currentStatus, leadId, table }: StatusSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [status, setStatus] = useState<LeadStatus>((currentStatus as LeadStatus) || 'Pending');
 
-  const statuses: LeadStatus[] = ['Pending', 'Contacted', 'Completed'];
+  // Define different status options based on table type
+  const statuses: LeadStatus[] = table === 'visit_slots' 
+    ? ['Pending', 'Confirmed', 'Completed', 'Cancelled']
+    : ['Pending', 'Contacted', 'Completed'];
 
   const handleUpdate = async (newStatus: LeadStatus) => {
     setStatus(newStatus);
@@ -41,6 +44,7 @@ export function StatusSelector({ currentStatus, leadId, table }: StatusSelectorP
       case 'Pending': return 'bg-amber-100/80 text-amber-800 border-amber-200';
       case 'Contacted': return 'bg-blue-100/80 text-blue-800 border-blue-200';
       case 'Completed': return 'bg-emerald-100/80 text-emerald-800 border-emerald-200';
+      case 'Cancelled': return 'bg-red-100/80 text-red-600 border-red-200';
       default: return 'bg-gray-100/80 text-gray-800 border-gray-200';
     }
   };

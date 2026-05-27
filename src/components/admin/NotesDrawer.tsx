@@ -8,7 +8,7 @@ interface NotesDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   lead: any;
-  table: 'tenant_leads' | 'owner_leads' | 'instagram_leads';
+  table: 'tenant_leads' | 'owner_leads' | 'instagram_leads' | 'visit_slots';  // Extended to support visit_slots
 }
 
 export function NotesDrawer({ isOpen, onClose, lead, table }: NotesDrawerProps) {

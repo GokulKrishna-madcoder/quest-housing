@@ -140,8 +140,8 @@ export function TenantChatbot() {
                           className="flex-shrink-0 w-64 bg-white/5 border border-white/10 hover:border-primary/50 rounded-xl overflow-hidden group transition-all"
                         >
                           <div className="h-24 w-full bg-navy overflow-hidden relative">
-                            {prop.image_urls && prop.image_urls[0] ? (
-                              <img src={prop.image_urls[0]} alt={prop.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            {prop.images && prop.images[0] ? (
+                              <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-navy-dark text-white/20"><Bot size={24} /></div>
                             )}
@@ -153,12 +153,12 @@ export function TenantChatbot() {
                             <h4 className="font-display font-medium text-sm truncate mb-1 text-primary">{prop.title}</h4>
                             <div className="flex items-center text-[10px] text-white/50 mb-2">
                               <MapPin size={10} className="mr-1 shrink-0" />
-                              <span className="truncate">{prop.location}</span>
+                              <span className="truncate">{prop.locality}</span>
                             </div>
                             <div className="flex justify-between items-center mt-3 pt-2 border-t border-white/10">
                               <div className="flex items-center text-primary font-bold text-sm">
                                 <IndianRupee size={12} />
-                                {prop.rent_amount ? prop.rent_amount.toLocaleString() : 'Price on request'}
+                                {prop.price ? prop.price.toLocaleString() : 'Price on request'}
                               </div>
                               <div className="flex items-center text-[10px] uppercase tracking-wider text-white/70 group-hover:text-primary transition-colors">
                                 View <ChevronRight size={12} />

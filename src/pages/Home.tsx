@@ -43,12 +43,12 @@ export default function Home() {
           id: prop.id,
           name: prop.title,
           type: prop.type || "Property",
-          location: prop.location || "Unknown",
-          rent: `₹${prop.rent_amount?.toLocaleString()}`,
-          bedrooms: prop.bedrooms || "—",
+          location: prop.locality || "Unknown",
+          rent: `₹${prop.price?.toLocaleString()}`,
+          bedrooms: prop.bhk || "—",
           bathrooms: prop.bathrooms || "—",
-          image: (prop.image_urls && prop.image_urls.length > 0) 
-            ? prop.image_urls[0] 
+          image: (prop.images && prop.images.length > 0) 
+            ? prop.images[0] 
             : "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",
           amenities: prop.amenities || []
         }));

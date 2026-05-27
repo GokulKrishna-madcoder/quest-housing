@@ -24,9 +24,11 @@ import AdminProperties from './pages/admin/Properties';
 import AIAnalyst from './pages/admin/AIAnalyst';
 import ChatbotAnalytics from './pages/admin/ChatbotAnalytics';
 import UnifiedInbox from './pages/admin/UnifiedInbox';
+import ScheduledVisits from './pages/admin/ScheduledVisits';
 
 import { HelmetProvider } from 'react-helmet-async';
 import AnalyticsTracker from './components/AnalyticsTracker';
+import PostHogPageTracker from './components/PostHogProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient({
@@ -45,6 +47,7 @@ export default function App() {
     <HelmetProvider>
       <Router>
         <AnalyticsTracker />
+        <PostHogPageTracker />
         <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -64,9 +67,10 @@ export default function App() {
           <Route path="owner-leads" element={<OwnerLeads />} />
           <Route path="funnel-leads" element={<FunnelLeads />} />
           <Route path="properties" element={<AdminProperties />} />
-          <Route path="ai-analyst" element={<AIAnalyst />} />
-          <Route path="chat-analytics" element={<ChatbotAnalytics />} />
-          <Route path="inbox" element={<UnifiedInbox />} />
+<Route path="ai-analyst" element={<AIAnalyst />} />
+            <Route path="scheduled-visits" element={<ScheduledVisits />} />
+            <Route path="chat-analytics" element={<ChatbotAnalytics />} />
+            <Route path="inbox" element={<UnifiedInbox />} />
         </Route>
       </Routes>
       </Router>

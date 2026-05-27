@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Search, Download, FileText, Filter, Trash2, TrendingUp, MapPin, Calendar, MessageCircle, Phone, StickyNote } from 'lucide-react';
+import { Search, Download, FileText, Filter, Trash2, TrendingUp, MapPin, Calendar, MessageCircle, Phone, StickyNote, BarChart2, PieChart } from 'lucide-react';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -8,7 +8,8 @@ import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { NotesDrawer } from '../../components/admin/NotesDrawer';
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import CanvasJSReact from '@canvasjs/react-charts';
+const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 import { useFunnelLeads } from '../../hooks/useFunnelLeads';
 
 const PIE_COLORS = ['#161B40', '#F7D112', '#3b82f6', '#10b981', '#f59e0b'];
@@ -124,50 +125,65 @@ export default function FunnelLeads() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-white p-8 rounded-2xl border border-navy/5 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-navy mb-6">Budget Distribution</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={budgetChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#6B7280' }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#6B7280' }} />
-                    <RechartsTooltip cursor={{ fill: '#F3F4F6' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                    <Bar dataKey="value" fill="#161B40" radius={[4, 4, 0, 0]} barSize={40} />
-                  </BarChart>
-                </ResponsiveContainer>
+            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col">
+              <div className="bg-navy/5 border-stitch-b px-5 md:px-6 lg:px-8 py-4 flex items-center gap-2 relative z-10 backdrop-blur-xl rounded-t-2xl">
+                <BarChart2 size={16} className="text-primary" />
+                <h3 className="text-xs font-bold uppercase tracking-widest text-navy/80">Budget Distribution</h3>
+              </div>
+              <div className="p-5 md:p-6 lg:p-8 flex-1">
+                <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
+                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
+                  animationEnabled: true,
+                  toolTip: { shared: true },
+                  axisX: { gridThickness: 0, tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280" },
+                  axisY: { gridThickness: 1, gridColor: "#E5E7EB", tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280" },
+                  data: [{
+                    type: "column",
+                    color: "#161B40",
+                    dataPoints: budgetChartData.map(d => ({ label: d.name, y: d.value }))
+                  }]
+                }} />
+                </div>
               </div>
             </div>
-            <div className="bg-white p-8 rounded-2xl border border-navy/5 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-navy mb-6">Top Locations</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={locationPieData} innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value" stroke="none">
-                      {locationPieData.map((_, i) => (
-                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                    <Legend iconType="circle" layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: '12px' }} />
-                  </PieChart>
-                </ResponsiveContainer>
+            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col">
+              <div className="bg-navy/5 border-stitch-b px-5 md:px-6 lg:px-8 py-4 flex items-center gap-2 relative z-10 backdrop-blur-xl rounded-t-2xl">
+                <MapPin size={16} className="text-primary" />
+                <h3 className="text-xs font-bold uppercase tracking-widest text-navy/80">Top Locations</h3>
+              </div>
+              <div className="p-5 md:p-6 lg:p-8 flex-1">
+                <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
+                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
+                  animationEnabled: true,
+                  data: [{
+                    type: "pie",
+                    innerRadius: "70%",
+                    showInLegend: true,
+                    toolTipContent: "<b>{label}</b>: {y}",
+                    dataPoints: locationPieData.map((d, i) => ({ label: d.name, y: d.value, color: PIE_COLORS[i % PIE_COLORS.length] }))
+                  }]
+                }} />
+                </div>
               </div>
             </div>
-            <div className="bg-white p-8 rounded-2xl border border-navy/5 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-navy mb-6">Traffic Sources (UTM)</h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie data={utmPieData} innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value" stroke="none">
-                      {utmPieData.map((_, i) => (
-                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                    <Legend iconType="circle" layout="vertical" verticalAlign="middle" align="right" wrapperStyle={{ fontSize: '12px' }} />
-                  </PieChart>
-                </ResponsiveContainer>
+            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col">
+              <div className="bg-navy/5 border-stitch-b px-5 md:px-6 lg:px-8 py-4 flex items-center gap-2 relative z-10 backdrop-blur-xl rounded-t-2xl">
+                <PieChart size={16} className="text-primary" />
+                <h3 className="text-xs font-bold uppercase tracking-widest text-navy/80">Traffic Sources (UTM)</h3>
+              </div>
+              <div className="p-5 md:p-6 lg:p-8 flex-1">
+                <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
+                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
+                  animationEnabled: true,
+                  data: [{
+                    type: "pie",
+                    innerRadius: "70%",
+                    showInLegend: true,
+                    toolTipContent: "<b>{label}</b>: {y}",
+                    dataPoints: utmPieData.map((d, i) => ({ label: d.name, y: d.value, color: PIE_COLORS[i % PIE_COLORS.length] }))
+                  }]
+                }} />
+                </div>
               </div>
             </div>
           </div>

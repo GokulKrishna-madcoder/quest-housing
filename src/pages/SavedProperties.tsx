@@ -78,8 +78,8 @@ export default function SavedProperties() {
                   </button>
                   <Link to={`/properties/${p.id}`}>
                     <div className="aspect-video bg-navy/5 overflow-hidden">
-                      {p.image_urls?.length > 0 ? (
-                        <img src={p.image_urls[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      {p.images?.length > 0 ? (
+                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-navy/15"><Maximize size={40} /></div>
                       )}
@@ -87,14 +87,14 @@ export default function SavedProperties() {
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
                         <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.type}</span>
-                        <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.furnishing_status}</span>
+                        <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.furnishing}</span>
                       </div>
                       <h3 className="font-display font-medium text-navy text-xl mb-2">{p.title}</h3>
-                      <p className="text-xs text-navy/50 flex items-center gap-1 mb-4"><MapPin size={12} /> {p.location}</p>
+                      <p className="text-xs text-navy/50 flex items-center gap-1 mb-4"><MapPin size={12} /> {p.locality}</p>
                       <div className="flex items-center justify-between">
-                        <p className="text-2xl font-display font-medium text-navy">₹{p.rent_amount?.toLocaleString()}<span className="text-xs text-navy/40 font-normal">/mo</span></p>
+                        <p className="text-2xl font-display font-medium text-navy">₹{p.price?.toLocaleString()}<span className="text-xs text-navy/40 font-normal">/mo</span></p>
                         <div className="flex items-center gap-3 text-navy/40 text-xs">
-                          <span className="flex items-center gap-1"><BedDouble size={14} /> {p.bedrooms}</span>
+                          <span className="flex items-center gap-1"><BedDouble size={14} /> {p.bhk}</span>
                           <span className="flex items-center gap-1"><Bath size={14} /> {p.bathrooms}</span>
                         </div>
                       </div>

@@ -11,9 +11,9 @@ const FURNISHING_OPTS = ['Fully Furnished', 'Semi Furnished', 'Unfurnished'];
 const STATUS_OPTS = ['Available', 'Rented', 'Under Maintenance'];
 
 const emptyForm = {
-  title: '', description: '', type: '1 BHK', rent_amount: 0, deposit_amount: 0,
-  location: '', pincode: '', furnishing_status: 'Unfurnished', availability_status: 'Available',
-  amenities: '', bedrooms: 1, bathrooms: 1, area_sqft: 0,
+  title: '', description: '', type: '1 BHK', price: 0, deposit: 0,
+  locality: '', pincode: '', furnishing: 'Unfurnished', admin_status: 'Available',
+  amenities: '', bhk: 1, bathrooms: 1, area: 0,
 };
 
 export default function AdminProperties() {
@@ -61,18 +61,18 @@ export default function AdminProperties() {
     setEditId(p.id);
     setForm({
       title: p.title, description: p.description || '', type: p.type,
-      rent_amount: p.rent_amount, deposit_amount: p.deposit_amount || 0,
-      location: p.location, pincode: p.pincode || '',
-      furnishing_status: p.furnishing_status, availability_status: p.availability_status,
+      price: p.price, deposit: p.deposit || 0,
+      locality: p.locality, pincode: p.pincode || '',
+      furnishing: p.furnishing, admin_status: p.admin_status,
       amenities: (p.amenities || []).join(', '),
-      bedrooms: p.bedrooms || 1, bathrooms: p.bathrooms || 1, area_sqft: p.area_sqft || 0,
+      bhk: p.bhk || 1, bathrooms: p.bathrooms || 1, area: p.area || 0,
     });
-    setImages((p.image_urls || []).map((url: string) => ({ type: 'existing', url })));
+    setImages((p.images || []).map((url: string) => ({ type: 'existing', url })));
     setShowForm(true);
   };
 
   const handleSave = async () => {
-    if (!form.title || !form.location || !form.rent_amount) {
+    if (!form.title || !form.locality || !form.price) {
       toast.error('Title, Location, and Rent are required.');
       return;
     }
@@ -95,17 +95,18 @@ export default function AdminProperties() {
         title: form.title,
         description: form.description,
         type: form.type,
-        rent_amount: Number(form.rent_amount),
-        deposit_amount: Number(form.deposit_amount),
-        location: form.location,
+        price: Number(form.price),
+        deposit: Number(form.deposit),
+        locality: form.locality,
         pincode: form.pincode,
-        furnishing_status: form.furnishing_status,
-        availability_status: form.availability_status,
+        furnishing: form.furnishing,
+        admin_status: form.admin_status,
+        availability_status: form.admin_status,
         amenities: form.amenities.split(',').map(s => s.trim()).filter(Boolean),
-        bedrooms: Number(form.bedrooms),
+        bhk: Number(form.bhk),
         bathrooms: Number(form.bathrooms),
-        area_sqft: Number(form.area_sqft),
-        image_urls: finalUrls,
+        area: Number(form.area),
+        images: finalUrls,
         updated_at: new Date().toISOString(),
       };
 
@@ -167,8 +168,8 @@ export default function AdminProperties() {
   };
 
   const filtered = properties.filter(p =>
-    (statusFilter === 'All' || p.availability_status === statusFilter) &&
-    (p.title.toLowerCase().includes(search.toLowerCase()) || p.location.toLowerCase().includes(search.toLowerCase()))
+    (statusFilter === 'All' || p.admin_status === statusFilter) &&
+    (p.title.toLowerCase().includes(search.toLowerCase()) || p.locality.toLowerCase().includes(search.toLowerCase()))
   );
 
   const updateField = (key: string, val: any) => setForm(prev => ({ ...prev, [key]: val }));
@@ -214,24 +215,24 @@ export default function AdminProperties() {
             <motion.div key={p.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-xl border border-navy/10 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
               <div className="aspect-video bg-navy/5 overflow-hidden relative">
-                {p.image_urls?.length > 0 ? (
-                  <img src={p.image_urls[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {p.images?.length > 0 ? (
+                  <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center"><Home size={40} className="text-navy/15" /></div>
                 )}
                 <span className={`absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded ${
-                  p.availability_status === 'Available' ? 'bg-green-500 text-white' :
-                  p.availability_status === 'Rented' ? 'bg-red-500 text-white' : 'bg-yellow-500 text-navy'
-                }`}>{p.availability_status}</span>
+                  p.admin_status === 'Available' ? 'bg-green-500 text-white' :
+                  p.admin_status === 'Rented' ? 'bg-red-500 text-white' : 'bg-yellow-500 text-navy'
+                }`}>{p.admin_status}</span>
               </div>
               <div className="p-5">
                 <h3 className="font-display font-medium text-navy text-lg mb-1 truncate">{p.title}</h3>
-                <p className="text-xs text-navy/50 flex items-center gap-1 mb-3"><MapPin size={12} /> {p.location}</p>
-                <p className="text-2xl font-display font-medium text-navy mb-3">₹{p.rent_amount?.toLocaleString()}<span className="text-sm text-navy/40 font-normal">/month</span></p>
+                <p className="text-xs text-navy/50 flex items-center gap-1 mb-3"><MapPin size={12} /> {p.locality}</p>
+                <p className="text-2xl font-display font-medium text-navy mb-3">₹{p.price?.toLocaleString()}<span className="text-sm text-navy/40 font-normal">/month</span></p>
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.type}</span>
-                  <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.furnishing_status}</span>
-                  <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.bedrooms} Bed</span>
+                  <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.furnishing}</span>
+                  <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.bhk} Bed</span>
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => openEdit(p)}
@@ -284,24 +285,24 @@ export default function AdminProperties() {
                     </div>
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Furnishing</label>
-                      <select value={form.furnishing_status} onChange={e => updateField('furnishing_status', e.target.value)}
+                      <select value={form.furnishing} onChange={e => updateField('furnishing', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg cursor-pointer">
                         {FURNISHING_OPTS.map(f => <option key={f} value={f}>{f}</option>)}
                       </select>
                     </div>
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Rent (₹/month) *</label>
-                      <input type="number" value={form.rent_amount || ''} onChange={e => updateField('rent_amount', e.target.value)}
+                      <input type="number" value={form.price || ''} onChange={e => updateField('price', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="25000" />
                     </div>
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Deposit (₹)</label>
-                      <input type="number" value={form.deposit_amount || ''} onChange={e => updateField('deposit_amount', e.target.value)}
+                      <input type="number" value={form.deposit || ''} onChange={e => updateField('deposit', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="50000" />
                     </div>
                     <div>
-                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Location *</label>
-                      <input value={form.location} onChange={e => updateField('location', e.target.value)}
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Locality *</label>
+                      <input value={form.locality} onChange={e => updateField('locality', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="HSR Layout" />
                     </div>
                     <div>
@@ -310,8 +311,8 @@ export default function AdminProperties() {
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="560102" />
                     </div>
                     <div>
-                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Bedrooms</label>
-                      <input type="number" value={form.bedrooms} onChange={e => updateField('bedrooms', e.target.value)}
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">BHK</label>
+                      <input type="number" value={form.bhk} onChange={e => updateField('bhk', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" />
                     </div>
                     <div>
@@ -321,12 +322,12 @@ export default function AdminProperties() {
                     </div>
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Area (sqft)</label>
-                      <input type="number" value={form.area_sqft || ''} onChange={e => updateField('area_sqft', e.target.value)}
+                      <input type="number" value={form.area || ''} onChange={e => updateField('area', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="1200" />
                     </div>
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Status</label>
-                      <select value={form.availability_status} onChange={e => updateField('availability_status', e.target.value)}
+                      <select value={form.admin_status} onChange={e => updateField('admin_status', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg cursor-pointer">
                         {STATUS_OPTS.map(s => <option key={s} value={s}>{s}</option>)}
                       </select>

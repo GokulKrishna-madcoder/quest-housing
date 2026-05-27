@@ -1,61 +1,25 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Download, Image as ImageIcon, X, FileText, Trash2, Filter } from 'lucide-react';
+import { Search, Download, Image as ImageIcon, X, FileText, Trash2, Filter, MessageCircle, Phone, StickyNote } from 'lucide-react';
 import { format } from 'date-fns';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
+import { NotesDrawer } from '../../components/admin/NotesDrawer';
 import { toast } from 'sonner';
+import ResponsiveImage from '../../components/ResponsiveImage';
+
+import { useOwnerLeads } from '../../hooks/useOwnerLeads';
 
 export default function OwnerLeads() {
-  const [leads, setLeads] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: leads = [], isLoading, updateStatus, deleteLead } = useOwnerLeads();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
+  const [notesLead, setNotesLead] = useState<any | null>(null);
 
-  useEffect(() => {
-    fetchLeads();
-
-    // Subscribe to realtime updates
-    const channel = supabase.channel('public:owner_leads')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'owner_leads' }, (payload) => {
-        if (payload.eventType === 'INSERT') {
-          setLeads((current) => [payload.new, ...current]);
-        } else if (payload.eventType === 'UPDATE') {
-          setLeads((current) => current.map(lead => lead.id === payload.new.id ? payload.new : lead));
-        } else if (payload.eventType === 'DELETE') {
-          setLeads((current) => current.filter(lead => lead.id !== payload.old.id));
-        }
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  async function fetchLeads() {
-    const { data, error } = await supabase
-      .from('owner_leads')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (data) setLeads(data);
-    setLoading(false);
-  }
-
-  const handleDelete = async (id: string) => {
-    const { error } = await supabase.from('owner_leads').delete().eq('id', id);
-    if (error) {
-      toast.error('Failed to delete lead: ' + error.message);
-    } else {
-      toast.success('Lead deleted successfully.');
-    }
-  };
 
   const exportCSV = () => {
     const headers = ['Full Name', 'Email', 'Phone', 'WhatsApp', 'Property Type', 'Location', 'Status', 'Date Submitted'];
@@ -167,7 +131,7 @@ export default function OwnerLeads() {
               </tr>
             </thead>
             <tbody className="divide-y divide-navy/5">
-              {loading ? (
+              {isLoading ? (
                 <tr>
                   <td colSpan={6} className="px-6 py-10 text-center text-navy/50">Loading leads...</td>
                 </tr>
@@ -183,8 +147,25 @@ export default function OwnerLeads() {
                       <p className="text-xs text-navy/50">{lead.email}</p>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-navy">{lead.phone}</p>
-                      {lead.whatsapp && <p className="text-xs text-green-600">WA: {lead.whatsapp}</p>}
+                      <p className="text-navy font-medium mb-2">{lead.phone}</p>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={`https://wa.me/91${(lead.whatsapp || lead.phone || '').replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${lead.full_name}, this is Quest Housing Bangalore. We'd like to discuss listing your ${lead.property_type} property in ${lead.location}. When would be a good time to connect? 🏠`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Chat on WhatsApp"
+                          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-green-500 hover:bg-green-600 px-2.5 py-1.5 rounded transition-colors"
+                        >
+                          <MessageCircle size={12} /> WA
+                        </a>
+                        <a
+                          href={`tel:+91${(lead.phone || '').replace(/\D/g, '')}`}
+                          title="Call directly"
+                          className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-blue-500 hover:bg-blue-600 px-2.5 py-1.5 rounded transition-colors"
+                        >
+                          <Phone size={12} /> Call
+                        </a>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <p className="text-navy">{lead.property_type}</p>
@@ -197,6 +178,12 @@ export default function OwnerLeads() {
                       <StatusSelector currentStatus={lead.status} leadId={lead.id} table="owner_leads" />
                     </td>
                     <td className="px-6 py-4 text-right flex justify-end gap-2">
+                      <button 
+                         onClick={() => setNotesLead(lead)}
+                         className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-navy bg-navy/5 hover:bg-navy/10 px-3 py-1.5 rounded transition-colors"
+                      >
+                         <StickyNote size={14} /> Notes
+                      </button>
                       <button 
                          onClick={() => setSelectedLead(lead)}
                          className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary bg-navy px-3 py-1.5 rounded hover:bg-navy-dark transition-colors"
@@ -223,10 +210,11 @@ export default function OwnerLeads() {
           <ImageModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
         )}
       </AnimatePresence>
+      <NotesDrawer isOpen={!!notesLead} onClose={() => setNotesLead(null)} lead={notesLead} table="owner_leads" />
       <DeleteModal 
         isOpen={!!leadToDelete} 
         onClose={() => setLeadToDelete(null)} 
-        onConfirm={() => leadToDelete && handleDelete(leadToDelete)} 
+        onConfirm={() => { if (leadToDelete) { deleteLead.mutate(leadToDelete); setLeadToDelete(null); } }} 
       />
     </motion.div>
   );
@@ -296,7 +284,7 @@ function ImageModal({ lead, onClose }: { lead: any, onClose: () => void }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {images.map((url: string, index: number) => (
                 <div key={index} className="group relative aspect-video bg-navy/10 rounded-lg overflow-hidden">
-                  <img src={url} alt="Property" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <ResponsiveImage src={url} alt="Property" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/60 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                      <button onClick={() => handleDownload(url, index)} className="bg-white text-navy px-4 py-2 rounded font-bold text-xs uppercase tracking-widest hover:bg-primary transition-colors flex items-center gap-2">
                        <Download size={14} /> Download

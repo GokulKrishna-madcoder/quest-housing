@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Shield, MapPin, Users, ChevronRight, ChevronLeft, Plus, Home as HomeIcon, Headset, Search, ClipboardList, Sparkles, ShieldCheck } from 'lucide-react';
 import { testimonials } from '../data';
 import { useRef, useState, useEffect } from 'react';
-import { fetchFeaturedProperties } from '../lib/sanityAPI';
+import { supabase } from '../lib/supabase';
+import ResponsiveImage from '../components/ResponsiveImage';
+import SEO from '../components/SEO';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -29,20 +31,31 @@ export default function Home() {
   useEffect(() => {
     async function loadFeatured() {
       try {
-        const data = await fetchFeaturedProperties();
-        const mappedProperties = data.map((prop: any) => ({
-          id: prop.id || prop._id,
+        const { data, error } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('availability_status', 'Available')
+          .order('created_at', { ascending: false })
+          .limit(6);
+
+        if (error) throw error;
+
+        const mappedProperties = (data || []).map((prop: any) => ({
+          id: prop.id,
           name: prop.title,
-          type: prop.specs?.propertyType || "Property",
-          location: prop.location || "Unknown",
-          rent: prop.price || "Contact for Price",
-          bedrooms: prop.specs?.bedrooms || "—",
-          bathrooms: prop.specs?.bathrooms || "—",
-          image: prop.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80"
+          type: prop.type || "Property",
+          location: prop.locality || "Unknown",
+          rent: `₹${prop.price?.toLocaleString()}`,
+          bedrooms: prop.bhk || "—",
+          bathrooms: prop.bathrooms || "—",
+          image: (prop.images && prop.images.length > 0) 
+            ? prop.images[0] 
+            : "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&auto=format&fit=crop&q=80",
+          amenities: prop.amenities || []
         }));
         setFeaturedProperties(mappedProperties);
       } catch (error) {
-        console.error("Failed to fetch featured properties from Sanity:", error);
+        console.error("Failed to fetch featured properties from Supabase:", error);
       }
     }
     loadFeatured();
@@ -68,13 +81,17 @@ export default function Home() {
 
   return (
     <div className="w-full flex-col flex overflow-hidden bg-light text-navy">
+      <SEO 
+        title="Luxury Rentals & Property Management in Bengaluru" 
+        description="Quest Housing offers zero upfront cost, premium rentals, and 100% verified properties in Bengaluru. Find your dream home or list your property with us today." 
+      />
       
       {/* Cinematic Hero Section */}
       <section className="relative min-h-[100vh] w-full flex flex-col justify-end pt-32 pb-16 overflow-hidden bg-navy-dark group">
         
         {/* Cinematic Background Image & Gradient */}
         <div className="absolute inset-0 z-0">
-           <img 
+           <ResponsiveImage 
              src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2600" 
              alt="Luxury Cinematic Property" 
              className="w-full h-full object-cover scale-105 transition-transform duration-[4s] ease-out group-hover:scale-100"
@@ -123,7 +140,7 @@ export default function Home() {
               Immersive spaces designed for better living. Discover an exclusive collection of architectural masterpieces.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-5">
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row flex-wrap gap-5">
                <Link to="/properties" className="bg-primary hover:bg-white text-navy px-10 py-5 rounded-full font-black uppercase text-xs tracking-[0.2em] shadow-[0_8px_30px_rgba(247,209,18,0.3)] hover:shadow-[0_15px_40px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-3 w-full sm:w-auto">
                   Explore Properties
                   <div className="w-6 h-6 rounded-full bg-navy/10 flex items-center justify-center">
@@ -132,6 +149,10 @@ export default function Home() {
                </Link>
                <Link to="/register" className="bg-white/10 hover:bg-white/20 backdrop-blur-2xl border border-white/20 text-white px-10 py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-2 w-full sm:w-auto">
                   Register as Owner
+               </Link>
+               <Link to="/find-my-home" className="bg-white/10 hover:bg-primary hover:text-navy backdrop-blur-2xl border border-primary/40 text-primary px-10 py-5 rounded-full font-bold uppercase text-xs tracking-[0.2em] shadow-xl hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-3 w-full sm:w-auto">
+                  <ClipboardList size={16} />
+                  Tenants Share Your Requirement
                </Link>
             </motion.div>
           </motion.div>
@@ -152,7 +173,7 @@ export default function Home() {
                   </div>
                   <div>
                      <p className="text-[10px] uppercase tracking-[0.25em] text-white/50 font-bold mb-1">Prime Locations</p>
-                     <p className="font-display text-2xl md:text-3xl font-medium tracking-tight">Across India</p>
+                     <p className="font-display text-2xl md:text-3xl font-medium tracking-tight">Across Bangalore</p>
                   </div>
                </div>
                <div className="h-[1px] w-full bg-white/10 mb-6 relative z-10" />
@@ -216,15 +237,15 @@ export default function Home() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: idx * 0.1, ease: "easeOut" }}
                 viewport={{ once: true, margin: "-50px" }}
-                className="snap-center shrink-0 w-[85vw] md:w-[50vw] lg:w-[40vw] group cursor-pointer relative"
+                className="snap-center shrink-0 w-[85vw] md:w-[50vw] lg:w-[25vw] group cursor-pointer relative"
               >
                 <Link to={`/properties/${prop.id}`} className="block">
                   <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-white"></div>
                   <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-white"></div>
                   
-                  <div className="relative aspect-[4/5] overflow-hidden mb-6 border-stitch-dark p-2 bg-white/5 backdrop-blur-sm">
+                  <div className="relative aspect-square overflow-hidden mb-6 border-stitch-dark p-2 bg-white/5 backdrop-blur-sm">
                     <div className="absolute inset-0 bg-navy/40 z-10 group-hover:bg-transparent transition-colors duration-700" />
-                    <img 
+                    <ResponsiveImage 
                       src={prop.image} 
                       alt={prop.name} 
                       className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105"
@@ -240,10 +261,24 @@ export default function Home() {
                   </div>
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-3xl lg:text-4xl font-display font-medium mb-3 text-white group-hover:text-primary transition-colors">{prop.name}</h3>
+                      <h3 className="text-xl lg:text-2xl font-display font-medium mb-3 text-white group-hover:text-primary transition-colors">{prop.name}</h3>
                       <p className="text-white/50 flex items-center gap-2 text-xs uppercase tracking-widest font-bold">
                         <MapPin size={14} /> {prop.location}
                       </p>
+                      {prop.amenities && prop.amenities.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mt-4">
+                          {prop.amenities.slice(0, 3).map((amenity: string, i: number) => (
+                            <span key={i} className="text-[9px] uppercase tracking-widest border border-white/20 text-white/70 px-2 py-1 bg-white/5">
+                              {amenity}
+                            </span>
+                          ))}
+                          {prop.amenities.length > 3 && (
+                            <span className="text-[9px] uppercase tracking-widest text-white/50 py-1">
+                              +{prop.amenities.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -267,7 +302,7 @@ export default function Home() {
               <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
               <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-navy"></div>
               
-              <img 
+              <ResponsiveImage 
                 src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop&q=80" 
                 alt="Modern Architecture" 
                 className="w-full h-full object-cover grayscale-[20%]"
@@ -510,8 +545,8 @@ export default function Home() {
               viewport={{ once: true }}
               className="md:col-span-8 relative overflow-hidden group border border-navy/10"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1600607687931-cebf09633e9d?w=1200&auto=format&fit=crop&q=80" 
+              <ResponsiveImage 
+                src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&auto=format&fit=crop&q=80" 
                 alt="Interior Design" 
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
               />
@@ -565,7 +600,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-t border-white/10 pt-16">
              <div className="md:col-span-4 flex flex-col items-start gap-6">
                 <div className="w-32 h-32 overflow-hidden border border-white/20 bg-white/5 p-2 grayscale hover:grayscale-0 transition-all duration-500">
-                  <img src={testimonials[activeTestimonial].image} alt={testimonials[activeTestimonial].name} className="w-full h-full object-cover" />
+                  <ResponsiveImage src={testimonials[activeTestimonial].image} alt={testimonials[activeTestimonial].name} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h4 className="text-3xl font-display font-medium tracking-tight mb-2 uppercase text-white">{testimonials[activeTestimonial].name}</h4>
@@ -588,6 +623,45 @@ export default function Home() {
         </div>
       </section>
       
+      {/* Service Fee Banner */}
+      <section className="py-20 bg-primary relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 mix-blend-overlay"></div>
+        <div className="container mx-auto px-6 md:px-12 relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex-1"
+          >
+            <h2 className="text-4xl md:text-5xl font-display font-black text-navy uppercase tracking-tighter mb-4">
+              Transparent <br />Fee for Services
+            </h2>
+            <p className="text-navy/80 font-sans text-lg max-w-xl font-medium">
+              We charge a flat fee equivalent to <span className="font-bold border-b-2 border-navy pb-1">22 Days of Rent</span> for our end-to-end premium concierge services. 
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex-1 w-full flex justify-start md:justify-end"
+          >
+            <div className="bg-white/90 backdrop-blur-md p-8 border-2 border-navy shadow-[8px_8px_0px_rgba(10,25,47,1)] inline-flex items-start gap-6 max-w-md">
+              <div className="w-12 h-12 bg-navy text-primary flex items-center justify-center shrink-0">
+                <ShieldCheck size={24} />
+              </div>
+              <div>
+                <h4 className="font-display font-bold text-xl text-navy uppercase mb-2">Zero Upfront Costs</h4>
+                <p className="text-navy/70 text-sm font-sans font-medium">
+                  We don't charge a single rupee until you successfully secure the property. Our incentives are perfectly aligned with yours.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* CTA Section (LIGHT LUXURY) */}
       <section className="py-40 relative flex items-center justify-center overflow-hidden bg-light border-y border-navy/10 stitch-grid">
         <div className="container mx-auto px-6 md:px-12 relative z-20 text-center max-w-4xl">
@@ -607,7 +681,7 @@ export default function Home() {
               <Link to="/register" className="px-12 py-5 bg-navy text-white font-bold text-xs uppercase tracking-[0.2em] text-center hover:bg-navy-dark transition-all shadow-[8px_8px_0px_rgba(247,209,18,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-[4px_4px_0px_rgba(247,209,18,1)]">
                 Register Your Interest
               </Link>
-              <a href="https://wa.me/919876543210" target="_blank" rel="noreferrer" className="flex items-center gap-4 px-12 py-5 bg-transparent text-navy font-bold text-xs uppercase tracking-[0.2em] text-center border-2 border-navy hover:bg-navy/5 transition-all">
+              <a href="https://wa.me/918886131316" target="_blank" rel="noreferrer" className="flex items-center gap-4 px-12 py-5 bg-transparent text-navy font-bold text-xs uppercase tracking-[0.2em] text-center border-2 border-navy hover:bg-navy/5 transition-all">
                 <div className="w-2 h-2 rounded-full bg-navy animate-pulse"></div>
                 Chat With Concierge
               </a>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Heart, LogIn, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
+import { useAuth } from '../hooks/useAuth';
 
 const links = [
   { name: 'Home', path: '/' },
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState('');
   const location = useLocation();
+  const { user, signInWithGoogle, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,6 +117,25 @@ export default function Navbar() {
           >
             Register
           </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <Link to="/saved" className={cn("p-2 rounded-full transition-colors", isLightText ? "text-white/70 hover:text-white" : "text-navy/70 hover:text-navy")}>
+                <Heart size={18} />
+              </Link>
+              <button onClick={signOut}
+                className={cn("p-2 rounded-full transition-colors cursor-pointer", isLightText ? "text-white/70 hover:text-white" : "text-navy/70 hover:text-navy")}>
+                <LogOut size={18} />
+              </button>
+            </div>
+          ) : (
+            <button onClick={signInWithGoogle}
+              className={cn(
+                "flex items-center gap-2 px-5 py-2.5 text-[10px] uppercase tracking-[0.15em] font-bold transition-all rounded-full cursor-pointer",
+                isLightText ? "text-white/70 border border-white/20 hover:bg-white/10" : "text-navy/70 border border-navy/20 hover:bg-navy/5"
+              )}>
+              <LogIn size={14} /> Sign In
+            </button>
+          )}
         </nav>
 
         {/* Mobile Toggle */}
@@ -160,6 +181,17 @@ export default function Navbar() {
               >
                 Register Now
               </Link>
+              {user ? (
+                <div className="flex items-center gap-4 mt-2">
+                  <Link to="/saved" className="flex items-center gap-2 text-white/80 text-sm"><Heart size={16} /> Saved</Link>
+                  <button onClick={signOut} className="flex items-center gap-2 text-red-400 text-sm cursor-pointer"><LogOut size={16} /> Sign Out</button>
+                </div>
+              ) : (
+                <button onClick={signInWithGoogle}
+                  className="mt-2 flex items-center justify-center gap-2 px-6 py-3 border border-white/20 text-white text-xs uppercase tracking-widest font-bold rounded-full hover:bg-white/10 transition-all cursor-pointer">
+                  <LogIn size={14} /> Sign In with Google
+                </button>
+              )}
             </nav>
           </motion.div>
         )}

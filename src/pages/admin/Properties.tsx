@@ -128,6 +128,10 @@ export default function AdminProperties() {
   };
 
   const handleDelete = async (id: string) => {
+    // Manually cascade deletes to prevent FK constraint violations if DB is missing ON DELETE CASCADE
+    await supabase.from('visit_slots').delete().eq('property_id', id);
+    await supabase.from('property_embeddings').delete().eq('property_id', id);
+
     const { error } = await supabase.from('properties').delete().eq('id', id);
     if (error) toast.error('Delete failed: ' + error.message);
     else toast.success('Property deleted.');

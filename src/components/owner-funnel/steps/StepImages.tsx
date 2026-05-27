@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useOwnerFormStore } from '../../../store/useOwnerFormStore';
+import { useDropzone } from 'react-dropzone';
 import { supabase } from '../../../lib/supabase';
 import { uploadMedia } from '../../../lib/mediaUpload';
 import { toast } from 'sonner';
+import ResponsiveImage from '../../ResponsiveImage';
 import { UploadCloud, X } from 'lucide-react';
 
 export default function StepImages() {
@@ -103,7 +105,7 @@ export default function StepImages() {
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 max-w-xl mx-auto mb-12">
           {formData.images.map((file, i) => (
             <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-white/10 group">
-              <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+              <ResponsiveImage src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
               <button 
                 onClick={() => removeImage(i)}
                 className="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"

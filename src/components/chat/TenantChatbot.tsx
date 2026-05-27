@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, User, Bot, Loader2, MapPin, ChevronRight, IndianRupee } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import ResponsiveImage from '../ResponsiveImage';
 import OwnerFunnelLayout from '../owner-funnel/OwnerFunnelLayout';
 import FunnelLayout from '../lead-funnel/FunnelLayout';
 
@@ -141,7 +142,7 @@ export function TenantChatbot() {
                         >
                           <div className="h-24 w-full bg-navy overflow-hidden relative">
                             {prop.images && prop.images[0] ? (
-                              <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                              <ResponsiveImage src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-navy-dark text-white/20"><Bot size={24} /></div>
                             )}

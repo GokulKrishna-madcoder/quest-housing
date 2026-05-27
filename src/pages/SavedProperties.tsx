@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import ResponsiveImage from '../components/ResponsiveImage';
 import { motion } from 'motion/react';
 import { MapPin, BedDouble, Bath, Maximize, Heart, ArrowLeft } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
@@ -79,7 +80,7 @@ export default function SavedProperties() {
                   <Link to={`/properties/${p.id}`}>
                     <div className="aspect-video bg-navy/5 overflow-hidden">
                       {p.images?.length > 0 ? (
-                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <ResponsiveImage src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-navy/15"><Maximize size={40} /></div>
                       )}

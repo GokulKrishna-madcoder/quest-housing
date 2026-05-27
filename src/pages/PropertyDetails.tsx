@@ -9,6 +9,7 @@ import { useFavorites } from '../hooks/useFavorites';
 import { useTracker } from '../hooks/useTracker';
 import { toast } from 'sonner';
 import SEO from '../components/SEO';
+import ResponsiveImage from '../components/ResponsiveImage';
 
 export default function PropertyDetails() {
   const { id } = useParams();
@@ -180,7 +181,7 @@ export default function PropertyDetails() {
                         className={`w-20 h-14 rounded-lg overflow-hidden border-2 cursor-pointer shrink-0 transition-all ${
                           i === activeImage ? 'border-primary shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
                         }`}>
-                        <img src={url} alt="" className="w-full h-full object-cover" />
+                        <ResponsiveImage src={url} alt="" className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>
@@ -505,7 +506,7 @@ export default function PropertyDetails() {
                       className={`w-14 h-10 rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
                         i === activeImage ? 'border-primary opacity-100' : 'border-transparent opacity-40 hover:opacity-100'
                       }`}>
-                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <ResponsiveImage src={url} alt="" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>

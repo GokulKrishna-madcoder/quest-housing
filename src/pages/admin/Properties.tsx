@@ -5,6 +5,8 @@ import { Search, Plus, Edit2, Trash2, X, Upload, Home, MapPin, Filter, ArrowLeft
 import { format } from 'date-fns';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { toast } from 'sonner';
+import { uploadMedia } from '../../lib/mediaUpload';
+import ResponsiveImage from '../../components/ResponsiveImage';
 
 const PROPERTY_TYPES = ['1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
 const FURNISHING_OPTS = ['Fully Furnished', 'Semi Furnished', 'Unfurnished'];
@@ -83,11 +85,8 @@ export default function AdminProperties() {
         if (img.type === 'existing') {
           finalUrls.push(img.url);
         } else {
-          const fileName = `${Date.now()}-${img.file.name.replace(/\s+/g, '-')}`;
-          const { error: upErr } = await supabase.storage.from('property-images').upload(fileName, img.file);
-          if (upErr) throw upErr;
-          const { data: urlData } = supabase.storage.from('property-images').getPublicUrl(fileName);
-          finalUrls.push(urlData.publicUrl);
+          const publicUrl = await uploadMedia(img.file, { bucket: 'property-images' });
+          finalUrls.push(publicUrl);
         }
       }
 
@@ -231,7 +230,7 @@ export default function AdminProperties() {
               className="bg-white rounded-xl border border-navy/10 shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
               <div className="aspect-video bg-navy/5 overflow-hidden relative">
                 {p.images?.length > 0 ? (
-                  <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <ResponsiveImage src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center"><Home size={40} className="text-navy/15" /></div>
                 )}

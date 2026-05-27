@@ -7,6 +7,8 @@ import autoTable from 'jspdf-autotable';
 import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { NotesDrawer } from '../../components/admin/NotesDrawer';
+import { toast } from 'sonner';
+import ResponsiveImage from '../../components/ResponsiveImage';
 
 import { useOwnerLeads } from '../../hooks/useOwnerLeads';
 
@@ -282,7 +284,7 @@ function ImageModal({ lead, onClose }: { lead: any, onClose: () => void }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {images.map((url: string, index: number) => (
                 <div key={index} className="group relative aspect-video bg-navy/10 rounded-lg overflow-hidden">
-                  <img src={url} alt="Property" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <ResponsiveImage src={url} alt="Property" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-navy/0 group-hover:bg-navy/60 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                      <button onClick={() => handleDownload(url, index)} className="bg-white text-navy px-4 py-2 rounded font-bold text-xs uppercase tracking-widest hover:bg-primary transition-colors flex items-center gap-2">
                        <Download size={14} /> Download

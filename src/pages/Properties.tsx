@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { Search, MapPin, BedDouble, Bath, Maximize, Filter, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFavorites } from '../hooks/useFavorites';
+import ResponsiveImage from '../components/ResponsiveImage';
 import SEO from '../components/SEO';
 
 const BHK_FILTERS = ['All', '1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
@@ -112,7 +113,7 @@ export default function Properties() {
                   <Link to={`/properties/${p.id}`}>
                     <div className="aspect-video bg-navy/5 overflow-hidden">
                       {p.images?.length > 0 ? (
-                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <ResponsiveImage src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-navy/15">
                           <Maximize size={40} />

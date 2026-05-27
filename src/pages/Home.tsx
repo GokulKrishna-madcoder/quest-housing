@@ -4,6 +4,7 @@ import { ArrowRight, Star, Shield, MapPin, Users, ChevronRight, ChevronLeft, Plu
 import { testimonials } from '../data';
 import { useRef, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import ResponsiveImage from '../components/ResponsiveImage';
 import SEO from '../components/SEO';
 
 const fadeUp = {
@@ -90,7 +91,7 @@ export default function Home() {
         
         {/* Cinematic Background Image & Gradient */}
         <div className="absolute inset-0 z-0">
-           <img 
+           <ResponsiveImage 
              src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=2600" 
              alt="Luxury Cinematic Property" 
              className="w-full h-full object-cover scale-105 transition-transform duration-[4s] ease-out group-hover:scale-100"
@@ -244,7 +245,7 @@ export default function Home() {
                   
                   <div className="relative aspect-square overflow-hidden mb-6 border-stitch-dark p-2 bg-white/5 backdrop-blur-sm">
                     <div className="absolute inset-0 bg-navy/40 z-10 group-hover:bg-transparent transition-colors duration-700" />
-                    <img 
+                    <ResponsiveImage 
                       src={prop.image} 
                       alt={prop.name} 
                       className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105"
@@ -301,7 +302,7 @@ export default function Home() {
               <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-navy"></div>
               <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-navy"></div>
               
-              <img 
+              <ResponsiveImage 
                 src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&auto=format&fit=crop&q=80" 
                 alt="Modern Architecture" 
                 className="w-full h-full object-cover grayscale-[20%]"
@@ -544,7 +545,7 @@ export default function Home() {
               viewport={{ once: true }}
               className="md:col-span-8 relative overflow-hidden group border border-navy/10"
             >
-              <img 
+              <ResponsiveImage 
                 src="https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&auto=format&fit=crop&q=80" 
                 alt="Interior Design" 
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105"
@@ -599,7 +600,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-t border-white/10 pt-16">
              <div className="md:col-span-4 flex flex-col items-start gap-6">
                 <div className="w-32 h-32 overflow-hidden border border-white/20 bg-white/5 p-2 grayscale hover:grayscale-0 transition-all duration-500">
-                  <img src={testimonials[activeTestimonial].image} alt={testimonials[activeTestimonial].name} className="w-full h-full object-cover" />
+                  <ResponsiveImage src={testimonials[activeTestimonial].image} alt={testimonials[activeTestimonial].name} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <h4 className="text-3xl font-display font-medium tracking-tight mb-2 uppercase text-white">{testimonials[activeTestimonial].name}</h4>

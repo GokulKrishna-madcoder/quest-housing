@@ -53,7 +53,7 @@ export default function About() {
             <div className="w-full h-full relative overflow-hidden">
               <div className="absolute inset-0 bg-navy/10 z-10 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
               <img 
-                src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&auto=format&fit=crop&q=80" 
+                src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&fm=webp&fit=crop&q=80" 
                 alt="Quest Housing Office Minimalist" 
                 className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-[1.05] grayscale-[20%]"
               />

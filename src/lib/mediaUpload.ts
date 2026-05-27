@@ -27,7 +27,10 @@ export async function uploadMedia(file: File, options: UploadOptions): Promise<s
 
   const fileName = `${path}${Date.now()}_${Math.random().toString(36).substring(7)}.${ext}`;
 
-  const { error } = await supabase.storage.from(bucket).upload(fileName, compressed);
+  const { error } = await supabase.storage.from(bucket).upload(fileName, compressed, {
+    contentType: ext === 'webp' ? 'image/webp' : compressed.type,
+    upsert: false
+  });
   if (error) throw new Error(error.message);
 
   const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);

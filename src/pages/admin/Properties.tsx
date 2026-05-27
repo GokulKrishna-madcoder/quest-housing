@@ -61,13 +61,13 @@ export default function AdminProperties() {
     setEditId(p.id);
     setForm({
       title: p.title, description: p.description || '', type: p.type,
-      price: p.price, deposit: p.deposit || 0,
-      locality: p.locality, pincode: p.pincode || '',
-      furnishing: p.furnishing, admin_status: p.admin_status,
+      price: p.price || p.rent_amount || 0, deposit: p.deposit || p.deposit_amount || 0,
+      locality: p.locality || p.location || '', pincode: p.pincode || '',
+      furnishing: p.furnishing || p.furnishing_status || '', admin_status: p.admin_status || p.availability_status || 'available',
       amenities: (p.amenities || []).join(', '),
-      bhk: p.bhk || 1, bathrooms: p.bathrooms || 1, area: p.area || 0,
+      bhk: p.bhk || p.bedrooms || 1, bathrooms: p.bathrooms || 1, area: p.area || p.area_sqft || 0,
     });
-    setImages((p.images || []).map((url: string) => ({ type: 'existing', url })));
+    setImages((p.images || p.image_urls || []).map((url: string) => ({ type: 'existing', url })));
     setShowForm(true);
   };
 
@@ -107,6 +107,16 @@ export default function AdminProperties() {
         bathrooms: Number(form.bathrooms),
         area: Number(form.area),
         images: finalUrls,
+        
+        // Backwards compatibility with Phase 2 Schema
+        rent_amount: Number(form.price),
+        deposit_amount: Number(form.deposit),
+        location: form.locality,
+        bedrooms: Number(form.bhk),
+        image_urls: finalUrls,
+        furnishing_status: form.furnishing,
+        area_sqft: Number(form.area),
+        
         updated_at: new Date().toISOString(),
       };
 

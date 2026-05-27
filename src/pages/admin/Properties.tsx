@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Plus, Edit2, Trash2, X, Upload, Home, MapPin, Filter, ArrowLeft, ArrowRight } from 'lucide-react';
@@ -157,14 +157,15 @@ export default function AdminProperties() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    const newImages: UnifiedImage[] = files.map(file => ({
-      type: 'new',
-      file,
-      preview: URL.createObjectURL(file),
-      id: Math.random().toString(36).substring(7)
-    }));
-    setImages(prev => [...prev, ...newImages]);
+    if (e.target.files) {
+      const newImages = (Array.from(e.target.files) as File[]).map(file => ({
+        type: 'new' as const,
+        file,
+        preview: URL.createObjectURL(file),
+        id: Math.random().toString(36).substring(7)
+      }));
+      setImages(prev => [...prev, ...newImages]);
+    }
   };
 
   const filtered = properties.filter(p =>

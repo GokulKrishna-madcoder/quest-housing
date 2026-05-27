@@ -5,9 +5,9 @@ export default function AnalyticsTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID, {
-        page_path: location.pathname + location.search,
+    if (import.meta.env.VITE_GA_MEASUREMENT_ID && typeof (window as any).gtag === 'function') {
+      (window as any).gtag('config', import.meta.env.VITE_GA_MEASUREMENT_ID, {
+        page_path: location.pathname + location.search
       });
     }
   }, [location]);

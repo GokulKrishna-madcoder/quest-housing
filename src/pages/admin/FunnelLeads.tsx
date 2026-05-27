@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Search, Download, FileText, Filter, Trash2, TrendingUp, MapPin, Calendar, MessageCircle, Phone, StickyNote, BarChart2, PieChart } from 'lucide-react';
 import { format } from 'date-fns';

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useOwnerFormStore } from '../../../store/useOwnerFormStore';
 import { supabase } from '../../../lib/supabase';
@@ -12,7 +12,7 @@ export default function StepImages() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files);
+      const newFiles = Array.from(e.target.files) as File[];
       if (formData.images.length + newFiles.length > 6) {
         toast.error('You can only upload up to 6 images.');
         return;

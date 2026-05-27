@@ -11,6 +11,7 @@ interface OwnerFormData {
   utmSource: string;
   utmMedium: string;
   utmCampaign: string;
+  location: string;
 }
 
 interface OwnerFormState {
@@ -29,6 +30,7 @@ const initialData: OwnerFormData = {
   email: '',
   whatsapp: '',
   location: '',
+  propertyType: '',
   description: '',
   images: [],
   utmSource: '',

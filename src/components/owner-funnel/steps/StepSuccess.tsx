@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import { CheckCircle2 } from 'lucide-react';
 import { useOwnerFormStore } from '../../../store/useOwnerFormStore';
 
-export default function StepSuccess({ onClose }: { onClose: () => void }) {
+export default function StepSuccess({ onClose, key }: { onClose: () => void; key?: string }) {
   const { formData, reset } = useOwnerFormStore();
 
   const handleClose = () => {

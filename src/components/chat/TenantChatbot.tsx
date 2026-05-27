@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, User, Bot, Loader2, MapPin, ChevronRight, IndianRupee } from 'lucide-react';
 import { Link } from 'react-router-dom';

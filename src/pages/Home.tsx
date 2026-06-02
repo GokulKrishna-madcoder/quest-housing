@@ -633,12 +633,20 @@ export default function Home() {
             viewport={{ once: true }}
             className="flex-1"
           >
-            <h2 className="text-4xl md:text-5xl font-display font-black text-navy uppercase tracking-tighter mb-4">
-              Transparent <br />Fee for Services
+            <h2 className="text-4xl md:text-5xl font-display font-black text-navy uppercase tracking-tighter mb-6">
+              Radical <br />Transparency
             </h2>
-            <p className="text-navy/80 font-sans text-lg max-w-xl font-medium">
-              We charge a flat fee equivalent to <span className="font-bold border-b-2 border-navy pb-1">22 Days of Rent</span> for our end-to-end premium concierge services. 
-            </p>
+            <div className="space-y-4">
+              <p className="text-navy/80 font-sans text-base max-w-xl">
+                The traditional real estate market is often filled with hidden costs, unexpected charges, and unclear processes. We believe finding a home or tenant should be straightforward and transparent.
+              </p>
+              <p className="text-navy/80 font-sans text-base max-w-xl">
+                Quest Housing operates on a simple <span className="font-bold text-navy">success-based service model</span>. We charge a professional service fee only after we successfully help you secure a property or find the right tenant. There are no upfront payments, hidden commissions, or surprise charges along the way.
+              </p>
+              <p className="text-navy/80 font-sans text-base max-w-xl">
+                No hidden fees. No last-minute surprises. Just a reliable partner focused on helping you find the right match with confidence.
+              </p>
+            </div>
           </motion.div>
           
           <motion.div 

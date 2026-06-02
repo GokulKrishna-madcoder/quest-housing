@@ -350,10 +350,10 @@ export default function UnifiedInbox() {
       </div>
 
       {/* ── Dual Pane ── */}
-      <div className="flex-1 flex gap-6 overflow-hidden min-h-0">
+      <div className="flex-1 flex gap-0 md:gap-6 overflow-hidden min-h-0">
 
           {/* ════ LEFT PANE: Lead List ════ */}
-          <div className="w-80 shrink-0 flex flex-col border-r border-navy/5 min-h-0">
+          <div className={`w-full md:w-80 shrink-0 flex-col border-r border-navy/5 min-h-0 ${selectedLead ? 'hidden md:flex' : 'flex'}`}>
             {/* Search */}
             <div className="p-4 border-b border-navy/5 shrink-0">
               <div className="relative">
@@ -451,7 +451,7 @@ export default function UnifiedInbox() {
         </div>
 
         {/* ════ RIGHT PANE: Lead Detail ════ */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl border border-navy/5 shadow-sm overflow-hidden min-w-0">
+        <div className={`flex-1 flex-col bg-white rounded-2xl md:border border-navy/5 shadow-sm overflow-hidden min-w-0 ${!selectedLead ? 'hidden md:flex' : 'flex'}`}>
           {!selectedLead ? (
             <div className="flex-1 flex items-center justify-center flex-col gap-4 text-navy/30">
               <Users size={48} />
@@ -460,11 +460,17 @@ export default function UnifiedInbox() {
           ) : (
             <>
               {/* ── Lead Header ── */}
-              <div className="p-6 border-b border-navy/5 shrink-0">
+              <div className="p-4 md:p-6 border-b border-navy/5 shrink-0">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-1 flex-wrap">
+                      <button 
+                        onClick={() => setSelectedLead(null)} 
+                        className="md:hidden flex items-center justify-center w-8 h-8 -ml-2 text-navy/50 hover:text-navy hover:bg-navy/5 rounded-full transition-colors"
+                      >
+                        <X size={18} />
+                      </button>
                       <h3 className="text-2xl font-display text-navy font-medium tracking-tight">
                         {selectedLead.full_name}
                       </h3>

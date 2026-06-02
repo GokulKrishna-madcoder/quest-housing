@@ -117,13 +117,16 @@ export default function About() {
               </div>
               <h3 className="text-3xl font-display text-navy mb-4 uppercase tracking-tight">Radical Transparency</h3>
               <p className="text-navy/70 leading-relaxed font-sans mb-6">
-                The traditional real estate market thrives on opaque costs. We believe you deserve better. Our model is clean, simple, and strictly upfront: <span className="font-bold text-navy">a flat Fee for Services equal to exactly 22 Days of Rent.</span>
+                The traditional real estate market is often filled with hidden costs, unexpected charges, and unclear processes. We believe finding a home or tenant should be straightforward and transparent.
               </p>
               <p className="text-navy/70 leading-relaxed font-sans mb-6">
-                This is exclusively a fee for the premium end-to-end services we provide. We do not charge a single rupee upfront. <span className="font-bold text-primary">You only pay the fee once you have successfully secured the property.</span>
+                Quest Housing operates on a simple success-based service model. We charge a professional service fee only after we successfully help you secure a property or find the right tenant. There are no upfront payments, hidden commissions, or surprise charges along the way.
+              </p>
+              <p className="text-navy/70 leading-relaxed font-sans mb-6">
+                From your first inquiry to the final agreement, we keep every step clear, honest, and transparent. Our goal is to build trust through exceptional service, open communication, and complete clarity on costs before any commitment is made.
               </p>
               <p className="text-navy/70 leading-relaxed font-sans">
-                No last-minute surprises. No endless negotiations. Just honest matchmaking that aligns our incentives perfectly with finding you the ideal space or tenant.
+                No hidden fees. No last-minute surprises. Just a reliable partner focused on helping you find the right match with confidence.
               </p>
             </motion.div>
 

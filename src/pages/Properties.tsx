@@ -93,7 +93,25 @@ export default function Properties() {
       {/* Results */}
       <div className="max-w-7xl mx-auto px-6 pb-24">
         {loading ? (
-          <div className="text-center py-20 text-navy/50">Loading properties...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-navy/10 overflow-hidden animate-pulse">
+                <div className="aspect-video bg-navy/5" />
+                <div className="p-6 space-y-3">
+                  <div className="flex gap-2">
+                    <div className="h-5 w-16 bg-navy/5 rounded-md" />
+                    <div className="h-5 w-24 bg-navy/5 rounded-md" />
+                  </div>
+                  <div className="h-6 w-3/4 bg-navy/5 rounded" />
+                  <div className="h-4 w-1/2 bg-navy/5 rounded" />
+                  <div className="flex justify-between pt-3 border-t border-navy/5">
+                    <div className="h-7 w-28 bg-navy/5 rounded" />
+                    <div className="h-4 w-20 bg-navy/5 rounded" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-navy/40 text-lg mb-2">No properties match your filters.</p>
@@ -104,16 +122,16 @@ export default function Properties() {
             <p className="text-xs uppercase tracking-widest text-navy/40 font-bold mb-8">{filtered.length} {filtered.length === 1 ? 'property' : 'properties'} found</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filtered.map((p, i) => (
-              <motion.div key={p.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <div className="bg-white rounded-2xl border border-navy/10 shadow-sm hover:shadow-lg transition-all overflow-hidden group relative">
+              <motion.div key={p.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, ease: [0.16, 1, 0.3, 1] }}>
+                <div className="bg-white rounded-2xl border border-navy/10 shadow-sm hover:shadow-[0_20px_40px_rgba(22,27,64,0.1)] hover:-translate-y-1.5 transition-all duration-500 overflow-hidden group relative gradient-border-glow">
                   <button onClick={(e) => { e.preventDefault(); toggleFavorite(p.id); }}
-                    className="absolute top-4 right-4 z-10 p-2 bg-white/90 rounded-full shadow-md hover:scale-110 transition-transform cursor-pointer">
+                    className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:scale-110 transition-transform cursor-pointer">
                     <Heart size={18} className={isFavorite(p.id) ? 'fill-red-500 text-red-500' : 'text-navy/30'} />
                   </button>
                   <Link to={`/properties/${p.id}`}>
-                    <div className="aspect-video bg-navy/5 overflow-hidden">
+                    <div className="aspect-video bg-navy/5 overflow-hidden image-zoom">
                       {p.images?.length > 0 ? (
-                        <ResponsiveImage src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <ResponsiveImage src={p.images[0]} alt={p.title} className="w-full h-full object-cover transition-transform duration-700" style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }} />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-navy/15">
                           <Maximize size={40} />
@@ -122,12 +140,12 @@ export default function Properties() {
                     </div>
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.type}</span>
-                        <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.furnishing}</span>
+                        <span className="text-[10px] bg-navy/5 text-navy px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">{p.type}</span>
+                        <span className="text-[10px] bg-primary/10 text-navy px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">{p.furnishing}</span>
                       </div>
-                      <h3 className="font-display font-medium text-navy text-xl mb-2 group-hover:text-primary transition-colors">{p.title}</h3>
-                      <p className="text-xs text-navy/50 flex items-center gap-1 mb-4"><MapPin size={12} /> {p.locality}</p>
-                      <div className="flex items-center justify-between">
+                      <h3 className="font-display font-medium text-navy text-xl mb-2 group-hover:text-primary transition-colors duration-300">{p.title}</h3>
+                      <p className="text-xs text-navy/50 flex items-center gap-1.5 mb-4"><MapPin size={12} className="group-hover:text-primary transition-colors" /> {p.locality}</p>
+                      <div className="flex items-center justify-between border-t border-navy/5 pt-4">
                         <p className="text-2xl font-display font-medium text-navy">₹{p.price?.toLocaleString()}<span className="text-xs text-navy/40 font-normal">/mo</span></p>
                         <div className="flex items-center gap-3 text-navy/40 text-xs">
                           <span className="flex items-center gap-1"><BedDouble size={14} /> {p.bhk}</span>

@@ -1,11 +1,44 @@
-import { motion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Shield, MapPin, Users, ChevronRight, ChevronLeft, Plus, Home as HomeIcon, Headset, Search, ClipboardList, Sparkles, ShieldCheck } from 'lucide-react';
 import { testimonials } from '../data';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import ResponsiveImage from '../components/ResponsiveImage';
 import SEO from '../components/SEO';
+
+/* ── Animated Counter Component ── */
+function AnimatedCounter({ target, suffix = '', prefix = '' }: { target: number; suffix?: string; prefix?: string }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const hasAnimated = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasAnimated.current) {
+          hasAnimated.current = true;
+          const duration = 2000;
+          const startTime = performance.now();
+          const animate = (currentTime: number) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            setCount(Math.floor(eased * target));
+            if (progress < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target]);
+
+  return <span ref={ref}>{prefix}{count}{suffix}</span>;
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -89,6 +122,9 @@ export default function Home() {
       {/* Cinematic Hero Section */}
       <section className="relative min-h-[100vh] w-full flex flex-col justify-end pt-32 pb-16 overflow-hidden bg-navy-dark group">
         
+        {/* Aurora Glow Background */}
+        <div className="aurora-glow" />
+
         {/* Cinematic Background Image & Gradient */}
         <div className="absolute inset-0 z-0">
            <ResponsiveImage 
@@ -132,13 +168,26 @@ export default function Home() {
              className="max-w-4xl lg:max-w-5xl w-full"
           >
             <motion.h1 variants={fadeUp} className="text-6xl sm:text-8xl md:text-[110px] lg:text-[140px] font-display font-black text-white leading-[0.85] tracking-tighter mb-8 xl:whitespace-nowrap">
-              <span className="tracking-wide">Find Your</span> <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-white font-medium inline-block mt-2 md:mt-4 tracking-tighter pr-4">Perfect Home</span>
+              <span className="tracking-wide">Finding</span> <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-white font-medium inline-block mt-2 md:mt-4 tracking-tighter pr-4">Premium Rentals</span>
+              <br/>
+              <span className="text-white/90 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light italic tracking-tight inline-block mt-2">Should Feel Premium.</span>
             </motion.h1>
 
-            <motion.p variants={fadeUp} className="text-xl md:text-3xl text-white/80 max-w-2xl font-sans font-light leading-relaxed mb-12">
-              Immersive spaces designed for better living. Discover an exclusive collection of architectural masterpieces.
-            </motion.p>
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-start gap-4 mb-12">
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(247,209,18,0.6)]" />
+                <span className="text-white/60 text-sm font-sans">Transparent process.</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(247,209,18,0.6)]" />
+                <span className="text-white/60 text-sm font-sans">Verified properties.</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(247,209,18,0.6)]" />
+                <span className="text-white/60 text-sm font-sans">Zero surprises.</span>
+              </div>
+            </motion.div>
 
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row flex-wrap gap-5">
                <Link to="/properties" className="bg-primary hover:bg-white text-navy px-10 py-5 rounded-full font-black uppercase text-xs tracking-[0.2em] shadow-[0_8px_30px_rgba(247,209,18,0.3)] hover:shadow-[0_15px_40px_rgba(255,255,255,0.4)] hover:-translate-y-1 transition-all duration-300 text-center flex justify-center items-center gap-3 w-full sm:w-auto">
@@ -333,11 +382,11 @@ export default function Home() {
               
               <motion.div variants={fadeUp} className="grid grid-cols-2 gap-12 mb-12 border-stitch-b pb-12">
                 <div>
-                  <h4 className="text-6xl font-display text-navy mb-2 tracking-tighter">500<span className="text-primary">+</span></h4>
+                  <h4 className="text-6xl font-display text-navy mb-2 tracking-tighter"><AnimatedCounter target={500} suffix="" /><span className="text-primary">+</span></h4>
                   <p className="text-[10px] uppercase tracking-widest text-navy/60 font-bold">Verified Properties</p>
                 </div>
                 <div>
-                  <h4 className="text-6xl font-display text-navy mb-2 tracking-tighter">10<span className="text-primary">k</span></h4>
+                  <h4 className="text-6xl font-display text-navy mb-2 tracking-tighter"><AnimatedCounter target={10} /><span className="text-primary">k</span></h4>
                   <p className="text-[10px] uppercase tracking-widest text-navy/60 font-bold">Happy Tenants</p>
                 </div>
               </motion.div>

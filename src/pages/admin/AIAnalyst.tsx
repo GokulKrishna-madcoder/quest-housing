@@ -4,7 +4,12 @@ import { motion } from 'motion/react';
 import { Send, User, Bot, Loader2, Sparkles, Database, BarChart2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import CanvasJSChart from '../../components/CanvasJSChart';
+import {
+  Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip as ChartTooltip, Legend, Filler, ArcElement
+} from 'chart.js';
+import { Bar, Line, Pie } from 'react-chartjs-2';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, ChartTooltip, Legend, Filler, ArcElement);
 
 interface Message {
   role: 'user' | 'assistant';
@@ -161,18 +166,102 @@ export default function AIAnalyst() {
                         </div>
                         <div className="p-4 md:p-5 flex-1">
                           <div className="h-[250px] md:h-[300px] w-full">
-                            <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                              animationEnabled: true,
-                              toolTip: { shared: true },
-                              axisX: { gridThickness: 0, tickLength: 0, lineThickness: 0, labelFontColor: "#64748b" },
-                              axisY: { gridThickness: 1, gridColor: "#e2e8f0", tickLength: 0, lineThickness: 0, labelFontColor: "#64748b" },
-                              data: [{
-                                type: chart.type === 'line' ? 'line' : 'column',
-                                color: "#f7d112",
-                                markerSize: chart.type === 'line' ? 8 : 0,
-                                dataPoints: chart.data.map((d: any) => ({ label: d[chart.xKey], y: Number(d[chart.yKey]) }))
-                              }]
-                            }} />
+                            {chart.type === 'line' ? (
+                              <Line
+                                data={{
+                                  labels: chart.data.map((d: any) => d[chart.xKey]),
+                                  datasets: [{
+                                    label: chart.title,
+                                    data: chart.data.map((d: any) => Number(d[chart.yKey])),
+                                    borderColor: '#f7d112',
+                                    backgroundColor: 'rgba(247, 209, 18, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointBackgroundColor: '#f7d112',
+                                    pointBorderColor: '#fff',
+                                    pointHoverBackgroundColor: '#fff',
+                                    pointHoverBorderColor: '#f7d112',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                  }]
+                                }}
+                                options={{
+                                  responsive: true,
+                                  maintainAspectRatio: false,
+                                  interaction: {
+                                    mode: 'index',
+                                    intersect: false,
+                                  },
+                                  plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                      backgroundColor: 'rgba(22, 27, 64, 0.9)',
+                                      titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                      bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                                      padding: 12,
+                                      cornerRadius: 8,
+                                      displayColors: false,
+                                    }
+                                  },
+                                  scales: {
+                                    x: {
+                                      grid: { display: false },
+                                      ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" } },
+                                      border: { display: false }
+                                    },
+                                    y: {
+                                      grid: { color: '#e2e8f0' },
+                                      ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" }, padding: 10 },
+                                      border: { display: false }
+                                    }
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <Bar
+                                data={{
+                                  labels: chart.data.map((d: any) => d[chart.xKey]),
+                                  datasets: [{
+                                    label: chart.title,
+                                    data: chart.data.map((d: any) => Number(d[chart.yKey])),
+                                    backgroundColor: '#f7d112',
+                                    borderRadius: 4,
+                                    barPercentage: 0.6,
+                                  }]
+                                }}
+                                options={{
+                                  responsive: true,
+                                  maintainAspectRatio: false,
+                                  interaction: {
+                                    mode: 'index',
+                                    intersect: false,
+                                  },
+                                  plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                      backgroundColor: 'rgba(22, 27, 64, 0.9)',
+                                      titleFont: { size: 13, family: "'Inter', sans-serif" },
+                                      bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                                      padding: 12,
+                                      cornerRadius: 8,
+                                      displayColors: false,
+                                    }
+                                  },
+                                  scales: {
+                                    x: {
+                                      grid: { display: false },
+                                      ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" } },
+                                      border: { display: false }
+                                    },
+                                    y: {
+                                      grid: { color: '#e2e8f0' },
+                                      ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" }, padding: 10 },
+                                      border: { display: false }
+                                    }
+                                  }
+                                }}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>

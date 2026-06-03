@@ -2,7 +2,12 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'motion/react';
 import { Users, Home, TrendingUp, CheckCircle, Clock, PhoneCall, Timer, Activity, Zap, BarChart2, PieChart } from 'lucide-react';
-import CanvasJSChart from '../../components/CanvasJSChart';
+import {
+  Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip as ChartTooltip, Legend, Filler, ArcElement
+} from 'chart.js';
+import { Bar, Line, Doughnut, Pie } from 'react-chartjs-2';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, ChartTooltip, Legend, Filler, ArcElement);
 
 export default function AdminDashboard() {
   const [data, setData] = useState({
@@ -100,7 +105,7 @@ export default function AdminDashboard() {
   ];
 
   // Group data by status for bar chart
-  const barData = [
+  const barDataRaw = [
     { name: 'Pending', Owners: ownerStats.pending, Funnel: funnelStats.pending },
     { name: 'Contacted', Owners: ownerStats.contacted, Funnel: funnelStats.contacted },
     { name: 'Completed', Owners: ownerStats.completed, Funnel: funnelStats.completed },
@@ -133,6 +138,117 @@ export default function AdminDashboard() {
   }));
 
   const COLORS = ['#161B40', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+
+  const chartDefaults = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom' as const,
+        labels: { usePointStyle: true, boxWidth: 6, padding: 20, font: { family: 'Inter', size: 11 } }
+      },
+      tooltip: {
+        backgroundColor: '#0a0f1c',
+        titleFont: { family: 'Inter', size: 13 },
+        bodyFont: { family: 'Inter', size: 12 },
+        padding: 12,
+        cornerRadius: 8,
+        displayColors: true
+      }
+    }
+  };
+
+  const lineChartData = {
+    labels: barDataRaw.map(d => d.name),
+    datasets: [
+      {
+        label: 'Owners',
+        data: barDataRaw.map(d => d.Owners),
+        borderColor: '#161B40',
+        backgroundColor: '#161B40',
+        tension: 0.4,
+        pointHoverRadius: 6,
+        borderWidth: 2
+      },
+      {
+        label: 'Funnel',
+        data: barDataRaw.map(d => d.Funnel),
+        borderColor: '#f59e0b',
+        backgroundColor: '#f59e0b',
+        tension: 0.4,
+        pointHoverRadius: 6,
+        borderWidth: 2
+      }
+    ]
+  };
+
+  const lineChartOptions = {
+    ...chartDefaults,
+    scales: {
+      x: { grid: { display: false }, border: { display: false } },
+      y: { grid: { color: '#e2e8f0' }, border: { display: false }, beginAtZero: true }
+    }
+  };
+
+  const doughnutChartData = {
+    labels: pieData.map(d => d.name),
+    datasets: [{
+      data: pieData.map(d => d.value),
+      backgroundColor: pieData.map(d => d.color),
+      borderWidth: 0,
+      hoverOffset: 4
+    }]
+  };
+
+  const doughnutChartOptions = {
+    ...chartDefaults,
+    cutout: '75%',
+    plugins: {
+      ...chartDefaults.plugins,
+      legend: { position: 'bottom' as const, labels: { usePointStyle: true, padding: 20, font: { family: 'Inter', size: 11 } } }
+    }
+  };
+
+  const safeLeadVelocity = Array.isArray(rpcData.leadVelocity) ? rpcData.leadVelocity : [];
+
+  const velocityChartData = {
+    labels: safeLeadVelocity.map(d => new Date(d.day).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })),
+    datasets: [{
+      fill: false,
+      label: 'New Leads',
+      data: safeLeadVelocity.map(d => d.count),
+      borderColor: '#3b82f6',
+      backgroundColor: '#3b82f6',
+      tension: 0.4,
+      pointRadius: 0,
+      pointHoverRadius: 6,
+      borderWidth: 2
+    }]
+  };
+
+  const velocityChartOptions = {
+    ...chartDefaults,
+    plugins: {
+      ...chartDefaults.plugins,
+      legend: { display: false },
+      tooltip: { ...chartDefaults.plugins.tooltip, mode: 'index' as const, intersect: false }
+    },
+    scales: {
+      x: { grid: { display: false }, border: { display: false }, ticks: { maxTicksLimit: 7 } },
+      y: { grid: { color: '#e2e8f0' }, border: { display: false }, beginAtZero: true }
+    },
+    interaction: { mode: 'nearest' as const, axis: 'x' as const, intersect: false }
+  };
+
+  const propChartData = {
+    labels: propTypesData.map(d => d.name),
+    datasets: [{
+      data: propTypesData.map(d => d.value),
+      backgroundColor: propTypesData.map((_, i) => COLORS[i % COLORS.length]),
+      borderWidth: 0,
+      hoverOffset: 4
+    }]
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-10">
@@ -181,47 +297,35 @@ export default function AdminDashboard() {
 
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col">
+            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col hover:shadow-lg transition-all">
               <div className="bg-navy/5 border-stitch-b px-5 md:px-6 lg:px-8 py-4 flex items-center gap-2 relative z-10 backdrop-blur-xl rounded-t-2xl">
-                <BarChart2 size={16} className="text-primary" />
+                <TrendingUp size={16} className="text-primary" />
                 <h3 className="text-xs font-bold uppercase tracking-widest text-navy/80">Status Breakdown</h3>
               </div>
               <div className="p-5 md:p-6 lg:p-8 flex-1">
                 <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
-                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                  animationEnabled: true,
-                  toolTip: { shared: true },
-                  axisX: { gridThickness: 0, tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280" },
-                  axisY: { gridThickness: 1, gridColor: "#E5E7EB", tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280" },
-                  data: [
-                    { type: "column", name: "Owners", showInLegend: true, color: "#161B40", dataPoints: barData.map(d => ({ label: d.name, y: d.Owners })) },
-                    { type: "column", name: "Funnel", showInLegend: true, color: "#F7D112", dataPoints: barData.map(d => ({ label: d.name, y: d.Funnel })) }
-                  ]
-                }} />
+                  <Line data={lineChartData} options={lineChartOptions} />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col">
+            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col hover:shadow-lg transition-all">
               <div className="bg-navy/5 border-stitch-b px-5 md:px-6 lg:px-8 py-4 flex items-center gap-2 relative z-10 backdrop-blur-xl rounded-t-2xl">
                 <PieChart size={16} className="text-primary" />
                 <h3 className="text-xs font-bold uppercase tracking-widest text-navy/80">Overall Pipeline Health</h3>
               </div>
               <div className="p-5 md:p-6 lg:p-8 flex-1">
-                <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
-                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                  animationEnabled: true,
-                  data: [{
-                    type: "pie",
-                    showInLegend: true,
-                    innerRadius: "70%",
-                    toolTipContent: "<b>{label}</b>: {y}",
-                    dataPoints: pieData.map(d => ({ label: d.name, y: d.value, color: d.color }))
-                  }]
-                }} />
+                <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full relative">
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="text-center">
+                      <p className="text-3xl font-display font-medium text-navy">{getRecentTotal()}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold">New Today</p>
+                    </div>
+                  </div>
+                  <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
+                </div>
               </div>
             </div>
-          </div>
           </div>
 
           {/* Phase 4: CRO Analytics Widgets */}
@@ -235,39 +339,28 @@ export default function AdminDashboard() {
             />
             <StatCard
               title="Visit Conversion"
-              value={visitConversionRate}
+              value={visitConversionRate + '%'}
               icon={<Activity size={20} />}
               trend={`${conversion.visits_requested} visits from ${conversion.total_leads} leads`}
             />
             <StatCard
               title="WhatsApp Engagement"
-              value={whatsappRate}
+              value={whatsappRate + '%'}
               icon={<Zap size={20} />}
               trend={`${conversion.whatsapp_opened} WhatsApp opens`}
             />
           </div>
 
           {/* Lead Velocity Chart */}
-          {rpcData.leadVelocity.length > 0 && (
-            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col">
+          {safeLeadVelocity.length > 0 && (
+            <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col hover:shadow-lg transition-all">
               <div className="bg-navy/5 border-stitch-b px-5 md:px-6 lg:px-8 py-4 flex items-center gap-2 relative z-10 backdrop-blur-xl rounded-t-2xl">
                 <TrendingUp size={16} className="text-primary" />
                 <h3 className="text-xs font-bold uppercase tracking-widest text-navy/80">Lead Velocity (Last 30 Days)</h3>
               </div>
               <div className="p-5 md:p-6 lg:p-8 flex-1">
                 <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
-                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                  animationEnabled: true,
-                  axisX: { gridThickness: 0, tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280" },
-                  axisY: { gridThickness: 1, gridColor: "#E5E7EB", tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280", includeZero: true },
-                  toolTip: { shared: true },
-                  data: [{
-                    type: "area",
-                    color: "#161B40",
-                    fillOpacity: 0.1,
-                    dataPoints: rpcData.leadVelocity.map(d => ({ x: new Date(d.day), y: d.count }))
-                  }]
-                }} />
+                  <Line data={velocityChartData} options={velocityChartOptions} />
                 </div>
               </div>
             </div>
@@ -295,22 +388,14 @@ export default function AdminDashboard() {
             />
           </div>
 
-          <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col max-w-2xl">
+          <div className="bg-white rounded-2xl border-stitch shadow-md relative stitch-grid flex flex-col max-w-2xl hover:shadow-lg transition-all">
             <div className="bg-navy/5 border-stitch-b px-5 md:px-6 lg:px-8 py-4 flex items-center gap-2 relative z-10 backdrop-blur-xl rounded-t-2xl">
               <Home size={16} className="text-primary" />
               <h3 className="text-xs font-bold uppercase tracking-widest text-navy/80">Property Types</h3>
             </div>
             <div className="p-5 md:p-6 lg:p-8 flex-1">
               <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
-              <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                animationEnabled: true,
-                data: [{
-                  type: "pie",
-                  showInLegend: true,
-                  toolTipContent: "<b>{label}</b>: {y}",
-                  dataPoints: propTypesData.map((d, i) => ({ label: d.name, y: d.value, color: COLORS[i % COLORS.length] }))
-                }]
-              }} />
+                <Pie data={propChartData} options={{...chartDefaults, plugins: { ...chartDefaults.plugins, legend: { position: 'right' as const, labels: { usePointStyle: true, padding: 20 } } }}} />
               </div>
             </div>
           </div>
@@ -322,16 +407,16 @@ export default function AdminDashboard() {
 
 function StatCard({ title, value, icon, trend, highlight = false }: { title: string, value: number | string, icon: ReactNode, trend: string, highlight?: boolean }) {
   return (
-    <div className={`p-8 rounded-2xl border flex flex-col justify-between ${highlight ? 'bg-navy text-white border-navy shadow-xl' : 'bg-white text-navy border-navy/5 shadow-sm'}`}>
+    <div className={`p-8 rounded-2xl border flex flex-col justify-between transition-all hover:-translate-y-1 ${highlight ? 'bg-navy text-white border-navy shadow-xl shadow-navy/20' : 'bg-white text-navy border-navy/5 shadow-sm hover:shadow-md stitch-grid'}`}>
       <div className="flex justify-between items-start mb-6">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${highlight ? 'bg-white/10 text-primary' : 'bg-navy/5 text-navy'}`}>
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center relative z-10 ${highlight ? 'bg-white/10 text-primary' : 'bg-navy/5 text-navy'}`}>
           {icon}
         </div>
       </div>
-      <div>
+      <div className="relative z-10">
         <p className="text-4xl font-display font-medium mb-1">{value}</p>
         <h3 className={`text-xs font-bold uppercase tracking-[0.1em] mb-2 ${highlight ? 'text-white/70' : 'text-navy/50'}`}>{title}</h3>
-        <p className={`text-xs ${highlight ? 'text-primary' : 'text-green-600'}`}>{trend}</p>
+        <p className={`text-xs font-medium ${highlight ? 'text-primary' : 'text-emerald-600'}`}>{trend}</p>
       </div>
     </div>
   );
@@ -339,20 +424,20 @@ function StatCard({ title, value, icon, trend, highlight = false }: { title: str
 
 function PipelineCard({ title, owners, funnel, icon, color, bg, border }: any) {
   return (
-    <div className={`p-6 rounded-2xl border backdrop-blur-sm shadow-sm ${bg} ${border}`}>
-      <div className="flex items-center gap-2 mb-4">
+    <div className={`p-6 rounded-2xl border backdrop-blur-sm shadow-sm transition-all hover:shadow-md stitch-grid hover:-translate-y-1 ${bg} ${border}`}>
+      <div className="flex items-center gap-2 mb-4 relative z-10">
         <div className={color}>{icon}</div>
         <h4 className={`text-xs font-bold uppercase tracking-widest ${color}`}>{title}</h4>
       </div>
-      <div className="flex justify-between items-end">
+      <div className="flex justify-between items-end relative z-10">
         <div>
-           <p className="text-[10px] text-navy/60 uppercase tracking-widest font-bold mb-1">Owners</p>
-           <p className={`text-2xl font-display font-medium text-navy`}>{owners}</p>
+           <p className={`text-[10px] ${color} opacity-60 uppercase tracking-widest font-bold mb-1`}>Owners</p>
+           <p className={`text-2xl font-display font-medium ${color}`}>{owners}</p>
         </div>
-        <div className="w-[1px] h-10 bg-navy/10 mx-2"></div>
+        <div className={`w-[1px] h-10 ${color} opacity-20 mx-2`}></div>
         <div>
-           <p className="text-[10px] text-navy/60 uppercase tracking-widest font-bold mb-1">Funnel</p>
-           <p className={`text-2xl font-display font-medium text-navy`}>{funnel}</p>
+           <p className={`text-[10px] ${color} opacity-60 uppercase tracking-widest font-bold mb-1`}>Funnel</p>
+           <p className={`text-2xl font-display font-medium ${color}`}>{funnel}</p>
         </div>
       </div>
     </div>

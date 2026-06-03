@@ -8,7 +8,12 @@ import { StatusSelector } from '../../components/admin/StatusSelector';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { NotesDrawer } from '../../components/admin/NotesDrawer';
 
-import CanvasJSChart from '../../components/CanvasJSChart';
+import {
+  Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip as ChartTooltip, Legend, Filler, ArcElement
+} from 'chart.js';
+import { Bar, Line, Pie } from 'react-chartjs-2';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, ChartTooltip, Legend, Filler, ArcElement);
 import { useFunnelLeads } from '../../hooks/useFunnelLeads';
 
 const PIE_COLORS = ['#161B40', '#F7D112', '#3b82f6', '#10b981', '#f59e0b'];
@@ -131,17 +136,49 @@ export default function FunnelLeads() {
               </div>
               <div className="p-5 md:p-6 lg:p-8 flex-1">
                 <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
-                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                  animationEnabled: true,
-                  toolTip: { shared: true },
-                  axisX: { gridThickness: 0, tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280" },
-                  axisY: { gridThickness: 1, gridColor: "#E5E7EB", tickLength: 0, lineThickness: 0, labelFontColor: "#6B7280" },
-                  data: [{
-                    type: "column",
-                    color: "#161B40",
-                    dataPoints: budgetChartData.map(d => ({ label: d.name, y: d.value }))
-                  }]
-                }} />
+                <Bar
+                  data={{
+                    labels: budgetChartData.map(d => d.name),
+                    datasets: [{
+                      label: 'Leads',
+                      data: budgetChartData.map(d => d.value),
+                      backgroundColor: '#161B40',
+                      borderRadius: 4,
+                      barPercentage: 0.6,
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                      mode: 'index',
+                      intersect: false,
+                    },
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: {
+                        backgroundColor: 'rgba(22, 27, 64, 0.9)',
+                        titleFont: { size: 13, family: "'Inter', sans-serif" },
+                        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                      }
+                    },
+                    scales: {
+                      x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" } },
+                        border: { display: false }
+                      },
+                      y: {
+                        grid: { color: '#e2e8f0' },
+                        ticks: { color: '#64748b', font: { family: "'Inter', sans-serif" }, padding: 10 },
+                        border: { display: false }
+                      }
+                    }
+                  }}
+                />
                 </div>
               </div>
             </div>
@@ -152,16 +189,41 @@ export default function FunnelLeads() {
               </div>
               <div className="p-5 md:p-6 lg:p-8 flex-1">
                 <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
-                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                  animationEnabled: true,
-                  data: [{
-                    type: "pie",
-                    innerRadius: "70%",
-                    showInLegend: true,
-                    toolTipContent: "<b>{label}</b>: {y}",
-                    dataPoints: locationPieData.map((d, i) => ({ label: d.name, y: d.value, color: PIE_COLORS[i % PIE_COLORS.length] }))
-                  }]
-                }} />
+                <Pie
+                  data={{
+                    labels: locationPieData.map(d => d.name),
+                    datasets: [{
+                      data: locationPieData.map(d => d.value),
+                      backgroundColor: PIE_COLORS,
+                      borderWidth: 0,
+                      hoverOffset: 4
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                      legend: {
+                        position: 'right',
+                        labels: {
+                          usePointStyle: true,
+                          padding: 20,
+                          color: '#64748b',
+                          font: { family: "'Inter', sans-serif", size: 12 }
+                        }
+                      },
+                      tooltip: {
+                        backgroundColor: 'rgba(22, 27, 64, 0.9)',
+                        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        usePointStyle: true,
+                      }
+                    }
+                  }}
+                />
                 </div>
               </div>
             </div>
@@ -172,16 +234,41 @@ export default function FunnelLeads() {
               </div>
               <div className="p-5 md:p-6 lg:p-8 flex-1">
                 <div className="h-[300px] md:h-[350px] lg:h-[400px] w-full">
-                <CanvasJSChart containerProps={{ width: '100%', height: '100%' }} options={{
-                  animationEnabled: true,
-                  data: [{
-                    type: "pie",
-                    innerRadius: "70%",
-                    showInLegend: true,
-                    toolTipContent: "<b>{label}</b>: {y}",
-                    dataPoints: utmPieData.map((d, i) => ({ label: d.name, y: d.value, color: PIE_COLORS[i % PIE_COLORS.length] }))
-                  }]
-                }} />
+                <Pie
+                  data={{
+                    labels: utmPieData.map(d => d.name),
+                    datasets: [{
+                      data: utmPieData.map(d => d.value),
+                      backgroundColor: PIE_COLORS,
+                      borderWidth: 0,
+                      hoverOffset: 4
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                      legend: {
+                        position: 'right',
+                        labels: {
+                          usePointStyle: true,
+                          padding: 20,
+                          color: '#64748b',
+                          font: { family: "'Inter', sans-serif", size: 12 }
+                        }
+                      },
+                      tooltip: {
+                        backgroundColor: 'rgba(22, 27, 64, 0.9)',
+                        bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        usePointStyle: true,
+                      }
+                    }
+                  }}
+                />
                 </div>
               </div>
             </div>

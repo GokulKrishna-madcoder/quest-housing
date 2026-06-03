@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface ResponsiveImageProps {
   src: string;
   alt: string;
   className?: string;
   placeholderClass?: string;
+  style?: React.CSSProperties;
 }
 
-export default function ResponsiveImage({ src, alt, className = '', placeholderClass = '' }: ResponsiveImageProps) {
+export default function ResponsiveImage({ src, alt, className = '', placeholderClass = '', style }: ResponsiveImageProps) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
 
@@ -20,7 +21,7 @@ export default function ResponsiveImage({ src, alt, className = '', placeholderC
   }
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div className={`relative overflow-hidden ${className}`} style={style}>
       {!loaded && (
         <div className="absolute inset-0 bg-navy/5 animate-pulse" />
       )}

@@ -108,6 +108,18 @@ export default function PropertyDetails() {
         title={`${property.type} for rent in ${property.locality || property.city}`}
         description={`Check out this ${property.bhk} BHK ${property.type} available for rent in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`}
         image={images.length > 0 ? images[0] : undefined}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "RealEstateListing",
+          "name": property.title,
+          "description": property.description || `Check out this ${property.bhk} BHK ${property.type} available for rent in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`,
+          "image": images,
+          "offers": {
+            "@type": "Offer",
+            "price": property.price,
+            "priceCurrency": "INR"
+          }
+        }}
       />
 
       <div className="max-w-7xl mx-auto px-6 pt-28 pb-24">

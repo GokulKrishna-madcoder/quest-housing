@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -25,6 +26,8 @@ import AIAnalyst from './pages/admin/AIAnalyst';
 import ChatbotAnalytics from './pages/admin/ChatbotAnalytics';
 import UnifiedInbox from './pages/admin/UnifiedInbox';
 import ScheduledVisits from './pages/admin/ScheduledVisits';
+
+const SEOManager = lazy(() => import('./pages/admin/SEOManager'));
 
 import { HelmetProvider } from 'react-helmet-async';
 import AnalyticsTracker from './components/AnalyticsTracker';
@@ -71,6 +74,7 @@ export default function App() {
             <Route path="scheduled-visits" element={<ScheduledVisits />} />
             <Route path="chat-analytics" element={<ChatbotAnalytics />} />
             <Route path="inbox" element={<UnifiedInbox />} />
+            <Route path="seo" element={<SEOManager />} />
         </Route>
       </Routes>
       </Router>

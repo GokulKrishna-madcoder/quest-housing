@@ -6,9 +6,10 @@ interface SEOProps {
   type?: string;
   name?: string;
   image?: string;
+  jsonLd?: Record<string, any>;
 }
 
-export default function SEO({ title, description, type = 'website', name = 'Quest Housing', image = '/logos/dark_logo.png' }: SEOProps) {
+export default function SEO({ title, description, type = 'website', name = 'Quest Housing', image = '/logos/dark_logo.png', jsonLd }: SEOProps) {
   const fullTitle = `${title} | Quest Housing`;
   
   return (
@@ -30,6 +31,8 @@ export default function SEO({ title, description, type = 'website', name = 'Ques
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+      
+      {jsonLd && <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>}
     </Helmet>
   );
 }

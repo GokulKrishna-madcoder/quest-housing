@@ -1,5 +1,6 @@
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { generatePropertySlug } from '../utils/seoUtils';
 import { ArrowRight, Star, Shield, MapPin, Users, ChevronRight, ChevronLeft, Plus, Home as HomeIcon, Headset, Search, ClipboardList, Sparkles, ShieldCheck } from 'lucide-react';
 import { testimonials } from '../data';
 import { useRef, useState, useEffect, useCallback } from 'react';
@@ -288,7 +289,7 @@ export default function Home() {
                 viewport={{ once: true, margin: "-50px" }}
                 className="snap-center shrink-0 w-[85vw] md:w-[50vw] lg:w-[25vw] group cursor-pointer relative"
               >
-                <Link to={`/properties/${prop.id}`} className="block">
+                <Link to={`/properties/${generatePropertySlug({ title: prop.name, type: prop.type, locality: prop.location })}/${prop.id}`} className="block">
                   <div className="cross-mark top-0 left-0 -translate-x-1/2 -translate-y-1/2 text-white"></div>
                   <div className="cross-mark bottom-0 right-0 translate-x-1/2 translate-y-1/2 text-white"></div>
                   

@@ -57,6 +57,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="properties" element={<Properties />} />
+          <Route path="properties/:slug/:id" element={<PropertyDetails />} />
           <Route path="properties/:id" element={<PropertyDetails />} />
           <Route path="register" element={<Registration />} />
           <Route path="find-my-home" element={<FindMyHome />} />

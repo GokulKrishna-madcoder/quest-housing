@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, X, Send, User, Bot, Loader2, MapPin, ChevronRight, IndianRupee } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { generatePropertySlug } from '../../utils/seoUtils';
 import { supabase } from '../../lib/supabase';
 import ResponsiveImage from '../ResponsiveImage';
 import OwnerFunnelLayout from '../owner-funnel/OwnerFunnelLayout';
@@ -137,7 +138,7 @@ export function TenantChatbot() {
                       {msg.recommended_properties.map((prop, pIdx) => (
                         <Link 
                           key={pIdx}
-                          to={`/properties/${prop.id}`}
+                          to={`/properties/${generatePropertySlug(prop)}/${prop.id}`}
                           className="flex-shrink-0 w-64 bg-white/5 border border-white/10 hover:border-primary/50 rounded-xl overflow-hidden group transition-all"
                         >
                           <div className="h-24 w-full bg-navy overflow-hidden relative">

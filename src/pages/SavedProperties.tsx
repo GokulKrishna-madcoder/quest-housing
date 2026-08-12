@@ -4,6 +4,7 @@ import ResponsiveImage from '../components/ResponsiveImage';
 import { motion } from 'motion/react';
 import { MapPin, BedDouble, Bath, Maximize, Heart, ArrowLeft } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
+import { generatePropertySlug } from '../utils/seoUtils';
 import { useAuth } from '../hooks/useAuth';
 import { useFavorites } from '../hooks/useFavorites';
 
@@ -77,7 +78,7 @@ export default function SavedProperties() {
                     className="absolute top-4 right-4 z-10 p-2 bg-white/90 rounded-full shadow-md hover:scale-110 transition-transform cursor-pointer">
                     <Heart size={18} className={isFavorite(p.id) ? 'fill-red-500 text-red-500' : 'text-navy/30'} />
                   </button>
-                  <Link to={`/properties/${p.id}`}>
+                  <Link to={`/properties/${generatePropertySlug(p)}/${p.id}`}>
                     <div className="aspect-video bg-navy/5 overflow-hidden">
                       {p.images?.length > 0 ? (
                         <ResponsiveImage src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

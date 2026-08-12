@@ -10,8 +10,9 @@ export default async function middleware(request: Request) {
   const path = url.pathname;
   
   if (path.startsWith('/properties/')) {
-    const id = path.split('/')[2];
-    if (id) {
+    const segments = path.split('/');
+    const id = segments[segments.length - 1];
+    if (id && /^[0-9a-f-]{36}$/.test(id)) {
       const sbUrl = process.env.VITE_SUPABASE_URL;
       const sbKey = process.env.VITE_SUPABASE_ANON_KEY;
       if (sbUrl && sbKey) {
@@ -74,5 +75,5 @@ export default async function middleware(request: Request) {
 }
 
 export const config = {
-  matcher: ['/', '/properties', '/properties/:id*', '/about', '/services'],
+  matcher: ['/', '/properties', '/properties/:slug/:id*', '/about', '/services'],
 };

@@ -6,6 +6,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { supabase } from '../../lib/supabase';
 import { DeleteModal } from '../../components/admin/DeleteModal';
+import { generatePropertySlug } from '../../utils/seoUtils';
 import { toast } from 'sonner';
 
 // Status config
@@ -323,7 +324,7 @@ export default function ScheduledVisits() {
                       </td>
                       <td className="px-5 py-4">
                         <a
-                          href={`/properties/${v.property?.id}`}
+                          href={v.property ? `/properties/${generatePropertySlug(v.property)}/${v.property.id}` : '#'}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-xs font-medium text-navy hover:text-primary transition-colors underline decoration-navy/20 hover:decoration-primary"

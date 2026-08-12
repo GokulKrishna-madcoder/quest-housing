@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { motion } from 'motion/react';
 import { Search, MapPin, BedDouble, Bath, Maximize, Filter, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { generatePropertySlug } from '../utils/seoUtils';
 import { useFavorites } from '../hooks/useFavorites';
 import ResponsiveImage from '../components/ResponsiveImage';
 import SEO from '../components/SEO';
@@ -128,7 +129,7 @@ export default function Properties() {
                     className="absolute top-4 right-4 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:scale-110 transition-transform cursor-pointer">
                     <Heart size={18} className={isFavorite(p.id) ? 'fill-red-500 text-red-500' : 'text-navy/30'} />
                   </button>
-                  <Link to={`/properties/${p.id}`}>
+                  <Link to={`/properties/${generatePropertySlug(p)}/${p.id}`}>
                     <div className="aspect-video bg-navy/5 overflow-hidden image-zoom">
                       {p.images?.length > 0 ? (
                         <ResponsiveImage src={p.images[0]} alt={p.title} className="w-full h-full object-cover transition-transform duration-700" style={{ transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)' }} />

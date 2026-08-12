@@ -1,22 +1,28 @@
+function generatePropertySlug(p: any): string {
+  const loc = [p.locality, p.city].filter(Boolean).join(' ');
+  const text = [p.type, p.title, loc ? `in ${loc}` : ''].filter(Boolean).join(' ');
+  return text ? text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : 'property';
+}
+
 export default async function handler(req: any, res: any) {
   const sbUrl = process.env.VITE_SUPABASE_URL;
   const sbKey = process.env.VITE_SUPABASE_ANON_KEY;
 
   let urls = [
-    'https://questhousing.com/',
-    'https://questhousing.com/properties',
-    'https://questhousing.com/about',
-    'https://questhousing.com/find-my-home'
+    'https://questhousing.vercel.app/',
+    'https://questhousing.vercel.app/properties',
+    'https://questhousing.vercel.app/about',
+    'https://questhousing.vercel.app/find-my-home'
   ];
 
   if (sbUrl && sbKey) {
-    const response = await fetch(`${sbUrl}/rest/v1/properties?select=id`, {
+    const response = await fetch(`${sbUrl}/rest/v1/properties?select=id,title,type,locality,city`, {
       headers: { apikey: sbKey, Authorization: `Bearer ${sbKey}` }
     });
     if (response.ok) {
       const data = await response.json();
       data.forEach((p: any) => {
-        urls.push(`https://questhousing.com/properties/${p.id}`);
+        urls.push(`https://questhousing.vercel.app/properties/${generatePropertySlug(p)}/${p.id}`);
       });
     }
   }

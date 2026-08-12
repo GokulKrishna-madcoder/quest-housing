@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { supabase } from '../lib/supabase';
 import { captureEvent } from '../lib/posthog';
 
 const getSessionId = () => {
@@ -13,11 +12,16 @@ const getSessionId = () => {
 
 export function useTracker() {
   const trackEvent = useCallback((eventName: string, data: Record<string, any> = {}) => {
-    supabase.from('user_events').insert({
-      session_id: getSessionId(),
-      event_name: eventName,
-      event_data: data,
-    }).then(() => {});
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: eventName,
+        path: window.location.pathname,
+        property_id: data.property_id || null,
+        session_id: getSessionId(),
+      }),
+    }).catch(() => {});
 
     captureEvent(eventName, {
       ...data,

@@ -28,6 +28,7 @@ import UnifiedInbox from './pages/admin/UnifiedInbox';
 import ScheduledVisits from './pages/admin/ScheduledVisits';
 
 const SEOManager = lazy(() => import('./pages/admin/SEOManager'));
+const Analytics = lazy(() => import('./pages/admin/Analytics'));
 
 import { HelmetProvider } from 'react-helmet-async';
 import AnalyticsTracker from './components/AnalyticsTracker';
@@ -76,6 +77,7 @@ export default function App() {
             <Route path="chat-analytics" element={<ChatbotAnalytics />} />
             <Route path="inbox" element={<UnifiedInbox />} />
             <Route path="seo" element={<SEOManager />} />
+            <Route path="analytics" element={<Analytics />} />
         </Route>
       </Routes>
       </Router>

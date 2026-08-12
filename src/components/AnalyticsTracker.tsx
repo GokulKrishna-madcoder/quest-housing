@@ -10,6 +10,15 @@ export default function AnalyticsTracker() {
         page_path: location.pathname + location.search
       });
     }
+    fetch('/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event_type: 'page_view',
+        path: location.pathname,
+        session_id: sessionStorage.getItem('qh_session') || crypto.randomUUID(),
+      }),
+    }).catch(() => {});
   }, [location]);
 
   return null;

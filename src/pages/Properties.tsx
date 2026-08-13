@@ -48,6 +48,14 @@ export default function Properties() {
       <SEO 
         title="Available Properties" 
         description="Browse our exclusive collection of 100% verified flats, villas, and premium homes available for rent in Bengaluru." 
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://questhousing.vercel.app/" },
+            { "@type": "ListItem", "position": 2, "name": "Properties", "item": "https://questhousing.vercel.app/properties" }
+          ]
+        }}
       />
       
       {/* Header */}

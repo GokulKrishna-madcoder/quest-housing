@@ -118,6 +118,30 @@ export default function Home() {
       <SEO 
         title="Luxury Rentals & Property Management in Bengaluru" 
         description="Quest Housing offers zero upfront cost, premium rentals, and 100% verified properties in Bengaluru. Find your dream home or list your property with us today." 
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "name": "Quest Housing",
+              "url": "https://questhousing.vercel.app",
+              "logo": "https://questhousing.vercel.app/logos/dark_logo.png",
+              "description": "Premium rental homes and property management in Bengaluru with zero upfront costs.",
+              "areaServed": { "@type": "City", "name": "Bengaluru" },
+              "sameAs": []
+            },
+            {
+              "@type": "WebSite",
+              "name": "Quest Housing",
+              "url": "https://questhousing.vercel.app",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://questhousing.vercel.app/properties?search={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            }
+          ]
+        }}
       />
       
       {/* Cinematic Hero Section */}

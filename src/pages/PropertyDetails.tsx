@@ -110,15 +110,27 @@ export default function PropertyDetails() {
         image={images.length > 0 ? images[0] : undefined}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "RealEstateListing",
-          "name": property.title,
-          "description": property.description || `Check out this ${property.bhk} BHK ${property.type} available for rent in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`,
-          "image": images,
-          "offers": {
-            "@type": "Offer",
-            "price": property.price,
-            "priceCurrency": "INR"
-          }
+          "@graph": [
+            {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://questhousing.vercel.app/" },
+                { "@type": "ListItem", "position": 2, "name": "Properties", "item": "https://questhousing.vercel.app/properties" },
+                { "@type": "ListItem", "position": 3, "name": property.title }
+              ]
+            },
+            {
+              "@type": "RealEstateListing",
+              "name": property.title,
+              "description": property.description || `Check out this ${property.bhk} BHK ${property.type} available for rent in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`,
+              "image": images,
+              "offers": {
+                "@type": "Offer",
+                "price": property.price,
+                "priceCurrency": "INR"
+              }
+            }
+          ]
         }}
       />
 

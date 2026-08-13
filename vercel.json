@@ -2,6 +2,7 @@
   "rewrites": [
     { "source": "/api/track", "destination": "/api/track" },
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/api/generate-seo", "destination": "/api/generate-seo" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [

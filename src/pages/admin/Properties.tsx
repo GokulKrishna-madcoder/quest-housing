@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Plus, Edit2, Trash2, X, Upload, Home, MapPin, Filter, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, X, Upload, Home, MapPin, Filter, ArrowLeft, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { DeleteModal } from '../../components/admin/DeleteModal';
 import { toast } from 'sonner';
@@ -33,6 +33,7 @@ export default function AdminProperties() {
   const [images, setImages] = useState<UnifiedImage[]>([]);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     fetchAll();
@@ -188,6 +189,24 @@ export default function AdminProperties() {
 
   const updateField = (key: string, val: any) => setForm(prev => ({ ...prev, [key]: val }));
 
+  const generateSEO = async () => {
+    if (!form.locality) { toast.error('Fill in the Locality first'); return; }
+    setGenerating(true);
+    try {
+      const res = await fetch('/api/generate-seo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: form.type, locality: form.locality, furnishing: form.furnishing, amenities: form.amenities, price: form.price, bhk: form.bhk }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (data.title) updateField('title', data.title);
+      if (data.description) updateField('description', data.description);
+      toast.success('SEO content generated!');
+    } catch { toast.error('AI generation failed. Try again.'); }
+    setGenerating(false);
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
@@ -289,6 +308,13 @@ export default function AdminProperties() {
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Description</label>
                       <textarea value={form.description} onChange={e => updateField('description', e.target.value)} rows={3}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg resize-none" placeholder="Spacious apartment with great amenities..." />
+                    </div>
+                    <div className="col-span-2">
+                      <button type="button" onClick={generateSEO} disabled={generating || !form.locality}
+                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer">
+                        {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                        {generating ? 'Generating…' : '✨ Generate SEO Title & Description'}
+                      </button>
                     </div>
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Type *</label>

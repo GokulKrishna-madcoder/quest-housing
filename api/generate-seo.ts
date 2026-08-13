@@ -41,7 +41,8 @@ Respond ONLY with valid JSON, no markdown, no explanation:
     if (!response.ok) throw new Error(`NVIDIA API error: ${response.status}`);
     const data = await response.json();
     const text = data.choices?.[0]?.message?.content?.trim() || '';
-    const parsed = JSON.parse(text);
+    const cleanedText = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(cleanedText);
     res.status(200).json(parsed);
   } catch (error) {
     res.status(500).json({ error: 'AI generation failed' });

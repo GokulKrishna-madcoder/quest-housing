@@ -147,7 +147,7 @@ export default function AdminLayout() {
 
       {/* ===== MOBILE BOTTOM BAR (md:hidden) ===== */}
       <nav className="fixed bottom-0 left-0 right-0 z-30 md:hidden bg-white/90 backdrop-blur-xl border-t border-navy/10 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
-        <div className="flex items-center justify-around px-1 py-2">
+        <div className="flex items-center px-4 py-2 gap-6 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -155,7 +155,7 @@ export default function AdminLayout() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-0 ${
+                className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all shrink-0 ${
                   isActive
                     ? 'text-navy'
                     : 'text-navy/35'

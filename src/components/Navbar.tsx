@@ -140,6 +140,7 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <button 
+          aria-label="Toggle menu"
           className={cn(
             "md:hidden p-2 transition-colors",
             isLightText ? "text-white" : "text-navy"

@@ -153,7 +153,7 @@ export default function Home() {
         {/* Cinematic Background Image & Gradient */}
         <div className="absolute inset-0 z-0">
            <ResponsiveImage 
-             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?fm=webp&fit=crop&q=80&w=2600" 
+             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?fm=webp&fit=crop&q=70&w=1600" 
              alt="Luxury Cinematic Property" 
              className="w-full h-full object-cover scale-105 transition-transform duration-[4s] ease-out group-hover:scale-100"
            />
@@ -287,10 +287,10 @@ export default function Home() {
             className="flex items-center gap-4"
           >
             <div className="flex gap-2">
-              <button onClick={() => scrollProperties('left')} className="w-14 h-14 border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-navy transition-colors">
+              <button aria-label="Scroll properties left" onClick={() => scrollProperties('left')} className="w-14 h-14 border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-navy transition-colors">
                 <ChevronLeft size={24} />
               </button>
-              <button onClick={() => scrollProperties('right')} className="w-14 h-14 border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-navy transition-colors">
+              <button aria-label="Scroll properties right" onClick={() => scrollProperties('right')} className="w-14 h-14 border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-navy transition-colors">
                 <ChevronRight size={24} />
               </button>
             </div>
@@ -662,10 +662,10 @@ export default function Home() {
               <h2 className="text-5xl md:text-7xl font-display font-medium uppercase tracking-tighter text-white">Voices Of Trust</h2>
             </div>
             <div className="flex gap-4">
-              <button onClick={prevTestimonial} className="w-14 h-14 border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-navy transition-colors">
+              <button aria-label="Previous testimonial" onClick={prevTestimonial} className="w-14 h-14 border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-navy transition-colors">
                 <ChevronLeft size={20} />
               </button>
-              <button onClick={nextTestimonial} className="w-14 h-14 bg-white flex items-center justify-center text-navy hover:bg-primary transition-colors">
+              <button aria-label="Next testimonial" onClick={nextTestimonial} className="w-14 h-14 bg-white flex items-center justify-center text-navy hover:bg-primary transition-colors">
                 <ChevronRight size={20} />
               </button>
             </div>

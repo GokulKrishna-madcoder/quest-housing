@@ -7,7 +7,7 @@ function generatePropertySlug(p: any): string {
 const BASE = 'https://questhousing.vercel.app';
 
 const STATIC_ROUTES = [
-  { loc: '/', priority: '1.0', changefreq: 'weekly' },
+  { loc: '', priority: '1.0', changefreq: 'weekly' },
   { loc: '/properties', priority: '0.9', changefreq: 'daily' },
   { loc: '/about', priority: '0.7', changefreq: 'monthly' },
   { loc: '/find-my-home', priority: '0.8', changefreq: 'monthly' },

@@ -47,7 +47,21 @@ export default async function middleware(request: Request) {
             <meta property="og:type" content="website">
             <meta name="twitter:card" content="summary_large_image">
             <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
-          </head><body></body></html>`;
+          </head><body>
+            <main>
+              <h1>${p.title}</h1>
+              <p>${p.description || desc}</p>
+              <h2>Property Details</h2>
+              <ul>
+                <li><strong>Type:</strong> ${p.type}</li>
+                <li><strong>BHK:</strong> ${p.bhk}</li>
+                <li><strong>Price:</strong> ₹${p.price}</li>
+                <li><strong>Location:</strong> ${p.locality}, ${p.city}</li>
+                <li><strong>Furnishing:</strong> ${p.furnishing}</li>
+                <li><strong>Availability:</strong> ${p.availability_status}</li>
+              </ul>
+            </main>
+          </body></html>`;
 
           return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8' } });
         }
@@ -55,10 +69,22 @@ export default async function middleware(request: Request) {
     }
   }
 
-  const staticMeta: Record<string, {title: string, desc: string}> = {
-    '/': { title: 'Quest Housing | Premium Rental Homes in Bangalore', desc: 'Quest Housing | Premium Rental Homes in Bangalore' },
-    '/properties': { title: 'Browse Premium Rentals | Quest Housing', desc: 'Browse Premium Rentals | Quest Housing' },
-    '/about': { title: 'About Quest Housing | Transparent Real Estate', desc: 'About Quest Housing | Transparent Real Estate' }
+  const staticMeta: Record<string, {title: string, desc: string, body: string}> = {
+    '/': { 
+      title: 'Quest Housing | Premium Rental Homes in Bangalore', 
+      desc: 'Quest Housing offers zero upfront cost, premium rentals, and 100% verified properties in Bengaluru. Find your dream home or list your property with us today.',
+      body: '<h1>Quest Housing</h1><p>Premium rental homes and property management in Bengaluru with zero upfront costs. Browse our verified flats, villas, and premium homes.</p>'
+    },
+    '/properties': { 
+      title: 'Browse Premium Rentals | Quest Housing', 
+      desc: 'Browse our exclusive collection of 100% verified flats, villas, and premium homes available for rent in Bengaluru.',
+      body: '<h1>Available Properties</h1><p>Browse our exclusive collection of 100% verified flats, villas, and premium homes available for rent in Bengaluru.</p>'
+    },
+    '/about': { 
+      title: 'About Quest Housing | Transparent Real Estate', 
+      desc: 'Learn about Quest Housing, our mission to revolutionize Bengaluru real estate with zero deposit and transparent renting.',
+      body: '<h1>About Quest Housing</h1><p>Our mission is to revolutionize Bengaluru real estate with zero deposit and transparent renting.</p>'
+    }
   };
 
   const meta = staticMeta[path];
@@ -69,7 +95,9 @@ export default async function middleware(request: Request) {
       <meta property="og:title" content="${meta.title}">
       <meta property="og:description" content="${meta.desc}">
       <meta property="og:type" content="website">
-    </head><body></body></html>`;
+    </head><body>
+      <main>${meta.body}</main>
+    </body></html>`;
     return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8' } });
   }
 }

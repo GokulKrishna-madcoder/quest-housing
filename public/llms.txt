@@ -1,0 +1,29 @@
+# Quest Housing
+
+> Premium rental homes and property management in Bengaluru, India.
+
+Quest Housing is a real estate platform offering 100% verified rental properties in Bengaluru with zero upfront costs. Browse flats, villas, and premium homes.
+
+## Pages
+
+- [Home](https://questhousing.vercel.app): Landing page with featured properties, testimonials, and company overview.
+- [Properties](https://questhousing.vercel.app/properties): Browse all available rental listings with filters for BHK, budget, locality, and furnishing.
+- [About](https://questhousing.vercel.app/about): Learn about Quest Housing's mission, team, and transparent renting approach.
+- [Find My Home](https://questhousing.vercel.app/find-my-home): Guided property finder to match tenants with their ideal rental home.
+- [Register](https://questhousing.vercel.app/register): Property owner registration to list properties on the platform.
+
+## Key Features
+
+- Zero upfront cost for tenants
+- 100% verified property listings
+- Premium furnished and semi-furnished homes
+- Property management services for owners
+- Schedule visit functionality for interested tenants
+
+## Location
+
+Bengaluru (Bangalore), Karnataka, India
+
+## Contact
+
+Website: https://questhousing.vercel.app

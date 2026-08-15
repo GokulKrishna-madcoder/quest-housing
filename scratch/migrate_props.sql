@@ -1,0 +1,14 @@
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS price bigint;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS deposit bigint;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS bhk integer;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS images text[];
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS furnishing text;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS admin_status text DEFAULT 'pending';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS area integer;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS locality text;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS listing_type text DEFAULT 'rent';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS category text DEFAULT 'residential';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS featured boolean DEFAULT false;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS views_count integer DEFAULT 0;
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS verification_type text DEFAULT 'unverified';
+ALTER TABLE public.properties ADD COLUMN IF NOT EXISTS embedding extensions.vector(768);

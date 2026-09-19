@@ -17,6 +17,7 @@ export default function Properties() {
   const [search, setSearch] = useState('');
   const [bhkFilter, setBhkFilter] = useState('All');
   const [furnishFilter, setFurnishFilter] = useState('All');
+  const [intentFilter, setIntentFilter] = useState('All');
   const [budgetMin, setBudgetMin] = useState('');
   const [budgetMax, setBudgetMax] = useState('');
   const { toggleFavorite, isFavorite } = useFavorites();
@@ -37,6 +38,7 @@ export default function Properties() {
   const filtered = properties.filter(p => {
     if (bhkFilter !== 'All' && p.type !== bhkFilter) return false;
     if (furnishFilter !== 'All' && p.furnishing !== furnishFilter) return false;
+    if (intentFilter !== 'All' && p.property_intent !== intentFilter.toLowerCase()) return false;
     if (budgetMin && p.price < Number(budgetMin)) return false;
     if (budgetMax && p.price > Number(budgetMax)) return false;
     if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.locality.toLowerCase().includes(search.toLowerCase())) return false;
@@ -78,8 +80,16 @@ export default function Properties() {
             </div>
             <div className="relative">
               <Filter size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-navy/30" />
-              <select value={bhkFilter} onChange={e => setBhkFilter(e.target.value)}
+              <select value={intentFilter} onChange={e => setIntentFilter(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 bg-light border border-navy/10 rounded-lg text-sm focus:outline-none focus:border-navy appearance-none font-medium text-navy cursor-pointer">
+                <option value="All">Buy & Rent</option>
+                <option value="Rent">Rent</option>
+                <option value="Sale">Buy</option>
+              </select>
+            </div>
+            <div className="relative">
+              <select value={bhkFilter} onChange={e => setBhkFilter(e.target.value)}
+                className="w-full px-4 py-3 bg-light border border-navy/10 rounded-lg text-sm focus:outline-none focus:border-navy appearance-none font-medium text-navy cursor-pointer">
                 {BHK_FILTERS.map(b => <option key={b} value={b}>{b === 'All' ? 'All Types' : b}</option>)}
               </select>
             </div>
@@ -149,13 +159,16 @@ export default function Properties() {
                     </div>
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[10px] bg-navy/5 text-navy px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">
+                          {p.property_intent === 'sale' ? 'For Sale' : 'For Rent'}
+                        </span>
                         <span className="text-[10px] bg-navy/5 text-navy px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">{p.type}</span>
                         <span className="text-[10px] bg-primary/10 text-navy px-2.5 py-1 rounded-md font-bold uppercase tracking-wider">{p.furnishing}</span>
                       </div>
                       <h3 className="font-display font-medium text-navy text-xl mb-2 group-hover:text-primary transition-colors duration-300">{p.title}</h3>
                       <p className="text-xs text-navy/50 flex items-center gap-1.5 mb-4"><MapPin size={12} className="group-hover:text-primary transition-colors" /> {p.locality}</p>
                       <div className="flex items-center justify-between border-t border-navy/5 pt-4">
-                        <p className="text-2xl font-display font-medium text-navy">₹{p.price?.toLocaleString()}<span className="text-xs text-navy/40 font-normal">/mo</span></p>
+                        <p className="text-2xl font-display font-medium text-navy">₹{p.price?.toLocaleString()}{p.property_intent !== 'sale' && <span className="text-xs text-navy/40 font-normal">/mo</span>}</p>
                         <div className="flex items-center gap-3 text-navy/40 text-xs">
                           <span className="flex items-center gap-1"><BedDouble size={14} /> {p.bhk}</span>
                           <span className="flex items-center gap-1"><Bath size={14} /> {p.bathrooms}</span>

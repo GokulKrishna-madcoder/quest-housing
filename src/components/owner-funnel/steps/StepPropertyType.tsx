@@ -18,9 +18,32 @@ export default function StepPropertyType() {
       exit={{ opacity: 0, x: -20 }}
       className="w-full max-w-4xl text-center"
     >
-      <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white mb-10 tracking-tighter">
+      <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white mb-6 tracking-tighter">
         What type of property?
       </h2>
+      
+      <div className="flex justify-center gap-4 mb-8">
+        <button
+          onClick={() => updateData({ propertyIntent: 'rent' })}
+          className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all ${
+            formData.propertyIntent === 'rent'
+              ? 'bg-primary text-navy'
+              : 'bg-white/5 border border-white/20 text-white hover:bg-white/10'
+          }`}
+        >
+          For Rent
+        </button>
+        <button
+          onClick={() => updateData({ propertyIntent: 'sale' })}
+          className={`px-8 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all ${
+            formData.propertyIntent === 'sale'
+              ? 'bg-primary text-navy'
+              : 'bg-white/5 border border-white/20 text-white hover:bg-white/10'
+          }`}
+        >
+          For Sale
+        </button>
+      </div>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-12">
         {TYPES.map((type) => (
           <button

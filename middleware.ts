@@ -23,8 +23,9 @@ export default async function middleware(request: Request) {
         if (data && data.length > 0) {
           const p = data[0];
           const img = p.images?.[0] || '';
-          const title = `${p.type} for rent in ${p.locality || p.city} | Quest Housing`;
-          const desc = `Check out this ${p.bhk} BHK ${p.type} available for rent in ${p.locality || p.city} for ₹${p.price?.toLocaleString()}.`;
+          const intentText = p.property_intent === 'sale' ? 'for sale' : 'for rent';
+          const title = `${p.type} ${intentText} in ${p.locality || p.city} | Quest Housing`;
+          const desc = `Check out this ${p.bhk} BHK ${p.type} available ${intentText} in ${p.locality || p.city} for ₹${p.price?.toLocaleString()}.`;
           const jsonLd = {
             "@context": "https://schema.org",
             "@type": "RealEstateListing",

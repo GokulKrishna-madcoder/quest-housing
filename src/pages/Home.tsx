@@ -326,10 +326,10 @@ export default function Home() {
                     />
                     <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20">
                        <span className="bg-primary text-navy px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-md">
-                        {prop.type}
+                        {prop.intent === 'sale' ? 'For Sale' : 'For Rent'}
                       </span>
                       <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
-                         {prop.rent}
+                         {prop.price}
                       </span>
                     </div>
                   </div>

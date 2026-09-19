@@ -215,6 +215,9 @@ export default function PropertyDetails() {
 
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
+                <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">
+                  {property.property_intent === 'sale' ? 'For Sale' : 'For Rent'}
+                </span>
                 <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">{property.type}</span>
                 <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">{property.furnishing}</span>
                 {property.admin_status === 'approved' && (
@@ -288,9 +291,16 @@ export default function PropertyDetails() {
 
           <div>
             <div className="sticky top-8 bg-white rounded-2xl border border-navy/10 p-8 shadow-lg">
-              <p className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold mb-2">Monthly Rent</p>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-navy/40 font-bold mb-2">
+                {property.property_intent === 'sale' ? 'Sale Price' : 'Monthly Rent'}
+              </p>
               <p className="text-4xl font-display font-medium text-navy mb-1">₹{property.price?.toLocaleString()}</p>
-              <p className="text-sm text-navy/40 mb-6">Deposit: ₹{(property.deposit || 0).toLocaleString()}</p>
+              {property.property_intent !== 'sale' && (
+                <p className="text-sm text-navy/40 mb-6">Deposit: ₹{(property.deposit || 0).toLocaleString()}</p>
+              )}
+              {property.property_intent === 'sale' && (
+                <div className="mb-6"></div>
+              )}
 
               <div className="space-y-3">
                 <button

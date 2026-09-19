@@ -13,7 +13,7 @@ const FURNISHING_OPTS = ['Fully Furnished', 'Semi Furnished', 'Unfurnished'];
 const STATUS_OPTS = ['Available', 'Rented', 'Under Maintenance'];
 
 const emptyForm = {
-  title: '', description: '', type: '1 BHK', price: 0, deposit: 0,
+  title: '', description: '', type: '1 BHK', property_intent: 'rent', price: 0, deposit: 0,
   locality: '', pincode: '', furnishing: 'Unfurnished', admin_status: 'Available',
   amenities: '', bhk: 1, bathrooms: 1, area: 0,
 };
@@ -64,6 +64,7 @@ export default function AdminProperties() {
     setEditId(p.id);
     setForm({
       title: p.title, description: p.description || '', type: p.type,
+      property_intent: p.property_intent || 'rent',
       price: p.price || p.rent_amount || 0, deposit: p.deposit || p.deposit_amount || 0,
       locality: p.locality || p.location || '', pincode: p.pincode || '',
       furnishing: p.furnishing || p.furnishing_status || '', admin_status: p.admin_status || p.availability_status || 'available',
@@ -76,7 +77,7 @@ export default function AdminProperties() {
 
   const handleSave = async () => {
     if (!form.title || !form.locality || !form.price) {
-      toast.error('Title, Location, and Rent are required.');
+      toast.error('Title, Location, and Price are required.');
       return;
     }
     setSaving(true);
@@ -95,6 +96,7 @@ export default function AdminProperties() {
         title: form.title,
         description: form.description,
         type: form.type,
+        property_intent: form.property_intent,
         price: Number(form.price),
         deposit: Number(form.deposit),
         locality: form.locality,
@@ -261,7 +263,7 @@ export default function AdminProperties() {
               <div className="p-5">
                 <h3 className="font-display font-medium text-navy text-lg mb-1 truncate">{p.title}</h3>
                 <p className="text-xs text-navy/50 flex items-center gap-1 mb-3"><MapPin size={12} /> {p.locality}</p>
-                <p className="text-2xl font-display font-medium text-navy mb-3">₹{p.price?.toLocaleString()}<span className="text-sm text-navy/40 font-normal">/month</span></p>
+                <p className="text-2xl font-display font-medium text-navy mb-3">₹{p.price?.toLocaleString()}{p.property_intent !== 'sale' && <span className="text-sm text-navy/40 font-normal">/month</span>}</p>
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.type}</span>
                   <span className="text-[10px] bg-navy/5 text-navy px-2 py-0.5 rounded font-medium">{p.furnishing}</span>
@@ -324,6 +326,14 @@ export default function AdminProperties() {
                       </select>
                     </div>
                     <div>
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Intent *</label>
+                      <select value={form.property_intent} onChange={e => updateField('property_intent', e.target.value)}
+                        className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg cursor-pointer">
+                        <option value="rent">Rent</option>
+                        <option value="sale">Sale</option>
+                      </select>
+                    </div>
+                    <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Furnishing</label>
                       <select value={form.furnishing} onChange={e => updateField('furnishing', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg cursor-pointer">
@@ -331,15 +341,19 @@ export default function AdminProperties() {
                       </select>
                     </div>
                     <div>
-                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Rent (₹/month) *</label>
+                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">
+                        {form.property_intent === 'sale' ? 'Sale Price (₹) *' : 'Rent (₹/month) *'}
+                      </label>
                       <input type="number" value={form.price || ''} onChange={e => updateField('price', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="25000" />
                     </div>
-                    <div>
-                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Deposit (₹)</label>
-                      <input type="number" value={form.deposit || ''} onChange={e => updateField('deposit', e.target.value)}
-                        className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="50000" />
-                    </div>
+                    {form.property_intent !== 'sale' && (
+                      <div>
+                        <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Deposit (₹)</label>
+                        <input type="number" value={form.deposit || ''} onChange={e => updateField('deposit', e.target.value)}
+                          className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="50000" />
+                      </div>
+                    )}
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Locality *</label>
                       <input value={form.locality} onChange={e => updateField('locality', e.target.value)}

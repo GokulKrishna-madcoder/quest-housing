@@ -6,6 +6,7 @@ interface OwnerFormData {
   email: string;
   whatsapp: string;
   propertyType: string;
+  propertyIntent: string;
   description: string;
   images: File[];
   utmSource: string;
@@ -31,6 +32,7 @@ const initialData: OwnerFormData = {
   whatsapp: '',
   location: '',
   propertyType: '',
+  propertyIntent: 'rent',
   description: '',
   images: [],
   utmSource: '',

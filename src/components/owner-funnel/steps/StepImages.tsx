@@ -48,21 +48,42 @@ export default function StepImages() {
       }
 
       // Insert to owner_leads
-      const { error: dbError } = await supabase
-        .from('owner_leads')
-        .insert([{
-          full_name: formData.fullName,
-          phone: formData.phone,
-          email: formData.email,
-          whatsapp: formData.whatsapp || null,
-          property_type: formData.propertyType,
-          location: formData.location,
-          description: formData.description || null,
-          image_urls: uploadedUrls,
-          utm_source: formData.utmSource || '',
-          utm_medium: formData.utmMedium || '',
-          utm_campaign: formData.utmCampaign || '',
-        }]);
+      const leadData = {
+        full_name: formData.fullName,
+        phone: formData.phone,
+        email: formData.email,
+        whatsapp: formData.whatsapp || null,
+        property_type: formData.propertyType,
+        property_intent: formData.propertyIntent || null,
+        bhk: formData.bhk || null,
+        area: formData.area || null,
+        furnishing: formData.furnishing || null,
+        parking: formData.parking || null,
+        price: formData.price || null,
+        deposit: formData.deposit || null,
+        maintenance: formData.maintenance || null,
+        location: formData.location,
+        description: formData.description || null,
+        image_urls: uploadedUrls,
+        status: 'Pending',
+        utm_source: formData.utmSource || '',
+        utm_medium: formData.utmMedium || '',
+        utm_campaign: formData.utmCampaign || '',
+      };
+
+      let dbError;
+      if (formData.leadId) {
+        const { error } = await supabase
+          .from('owner_leads')
+          .update(leadData)
+          .eq('id', formData.leadId);
+        dbError = error;
+      } else {
+        const { error } = await supabase
+          .from('owner_leads')
+          .insert([leadData]);
+        dbError = error;
+      }
 
       if (dbError) throw new Error(dbError.message);
 

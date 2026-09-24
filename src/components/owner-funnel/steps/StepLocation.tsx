@@ -1,11 +1,53 @@
 import { motion } from 'motion/react';
 import { useOwnerFormStore } from '../../../store/useOwnerFormStore';
 
+import { useState } from 'react';
+import { supabase } from '../../../lib/supabase';
+import { toast } from 'sonner';
+
 export default function StepLocation() {
   const { formData, updateData, nextStep, prevStep } = useOwnerFormStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleNext = () => {
-    if (formData.location.trim()) nextStep();
+  const handleNext = async () => {
+    if (!formData.location.trim()) return;
+    
+    setIsSubmitting(true);
+    try {
+      if (formData.leadId) {
+        // Just update existing partial lead
+        await supabase.from('owner_leads').update({
+          location: formData.location
+        }).eq('id', formData.leadId);
+        nextStep();
+      } else {
+        // Create new partial lead
+        const { data, error } = await supabase.from('owner_leads').insert([{
+          full_name: formData.fullName,
+          phone: formData.phone,
+          email: formData.email,
+          whatsapp: formData.whatsapp || null,
+          location: formData.location,
+          status: 'Partial',
+          utm_source: formData.utmSource || '',
+          utm_medium: formData.utmMedium || '',
+          utm_campaign: formData.utmCampaign || '',
+        }]).select('id').single();
+
+        if (error) throw error;
+        
+        if (data && data.id) {
+          updateData({ leadId: data.id });
+        }
+        nextStep();
+      }
+    } catch (err: any) {
+      console.error('Error saving partial lead:', err);
+      // We shouldn't block the user if the partial lead fails to save
+      nextStep();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -36,10 +78,15 @@ export default function StepLocation() {
         </button>
         <button 
           onClick={handleNext}
-          disabled={!formData.location.trim()}
-          className="bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-10 py-4 hover:bg-white transition-all disabled:opacity-30 disabled:hover:bg-primary"
+          disabled={!formData.location.trim() || isSubmitting}
+          className="bg-primary text-navy font-bold uppercase text-xs tracking-[0.2em] px-10 py-4 hover:bg-white transition-all disabled:opacity-30 disabled:hover:bg-primary flex items-center gap-2"
         >
-          Continue
+          {isSubmitting ? (
+            <>
+              <div className="w-3 h-3 rounded-full border-2 border-navy border-t-transparent animate-spin" />
+              Saving...
+            </>
+          ) : 'Continue'}
         </button>
       </div>
     </motion.div>

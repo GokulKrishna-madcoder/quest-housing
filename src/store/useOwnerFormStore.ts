@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 interface OwnerFormData {
+  leadId: string | null;
   fullName: string;
   phone: string;
   email: string;
@@ -33,6 +34,7 @@ interface OwnerFormState {
 }
 
 const initialData: OwnerFormData = {
+  leadId: null,
   fullName: '',
   phone: '',
   email: '',

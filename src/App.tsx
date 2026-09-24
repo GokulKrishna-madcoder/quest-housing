@@ -20,6 +20,7 @@ import AdminLayout from './components/admin/AdminLayout';
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import OwnerLeads from './pages/admin/OwnerLeads';
+import PartialLeads from './pages/admin/PartialLeads';
 import FunnelLeads from './pages/admin/FunnelLeads';
 import AdminProperties from './pages/admin/Properties';
 import AIAnalyst from './pages/admin/AIAnalyst';
@@ -70,6 +71,7 @@ export default function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
           <Route path="owner-leads" element={<OwnerLeads />} />
+          <Route path="partial-leads" element={<PartialLeads />} />
           <Route path="funnel-leads" element={<FunnelLeads />} />
           <Route path="properties" element={<AdminProperties />} />
 <Route path="ai-analyst" element={<AIAnalyst />} />

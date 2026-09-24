@@ -12,10 +12,9 @@ import ResponsiveImage from '../../components/ResponsiveImage';
 
 import { useOwnerLeads } from '../../hooks/useOwnerLeads';
 
-export default function OwnerLeads() {
+export default function PartialLeads() {
   const { data: leads = [], isLoading, updateStatus, deleteLead } = useOwnerLeads();
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
   const [selectedLead, setSelectedLead] = useState<any | null>(null);
   const [leadToDelete, setLeadToDelete] = useState<string | null>(null);
   const [notesLead, setNotesLead] = useState<any | null>(null);
@@ -71,8 +70,7 @@ export default function OwnerLeads() {
   };
 
   const filteredLeads = leads.filter(l => 
-    l.status !== 'Partial' &&
-    (statusFilter === 'All' || (l.status || 'Pending') === statusFilter) &&
+    l.status === 'Partial' &&
     (l.full_name.toLowerCase().includes(search.toLowerCase()) || 
     l.email.toLowerCase().includes(search.toLowerCase()))
   );
@@ -81,8 +79,8 @@ export default function OwnerLeads() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
-          <h2 className="text-3xl font-display font-medium uppercase tracking-tighter mb-2">Owner Leads</h2>
-          <p className="text-navy/50 text-sm">Manage property owner submissions in real-time.</p>
+          <h2 className="text-3xl font-display font-medium uppercase tracking-tighter mb-2">Uncompleted Leads</h2>
+          <p className="text-navy/50 text-sm">Follow up with owners who abandoned the submission funnel.</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -95,19 +93,6 @@ export default function OwnerLeads() {
               onChange={e => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white border border-navy/10 rounded-lg text-sm focus:outline-none focus:border-navy"
             />
-          </div>
-          <div className="relative">
-            <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-navy/50" />
-            <select 
-              value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value)}
-              className="pl-10 pr-8 py-2 bg-white border border-navy/10 rounded-lg text-sm focus:outline-none focus:border-navy appearance-none font-medium text-navy cursor-pointer"
-            >
-              <option value="All">All Statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Contacted">Contacted</option>
-              <option value="Completed">Completed</option>
-            </select>
           </div>
           <button onClick={exportCSV} className="flex items-center gap-2 bg-navy text-white px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-navy/90 transition-colors">
             <Download size={14} /> CSV

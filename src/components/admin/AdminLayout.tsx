@@ -50,6 +50,7 @@ export default function AdminLayout() {
     { name: 'Dashboard', shortName: 'Dashboard', path: '/admin', icon: LayoutDashboard },
     { name: 'Analytics', shortName: 'Analytics', path: '/admin/analytics', icon: BarChart3 },
     { name: 'Owner Leads', shortName: 'Owners', path: '/admin/owner-leads', icon: Home },
+    { name: 'Uncompleted Leads', shortName: 'Partial', path: '/admin/partial-leads', icon: Users },
     { name: 'Funnel Leads', shortName: 'Funnel', path: '/admin/funnel-leads', icon: ClipboardList },
     { name: 'Properties', shortName: 'Properties', path: '/admin/properties', icon: Building2 },
     { name: 'Scheduled Visits', shortName: 'Visits', path: '/admin/scheduled-visits', icon: CalendarClock },

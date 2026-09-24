@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { useOwnerFormStore } from '../../../store/useOwnerFormStore';
 
-const TYPES = ['Apartment', 'Villa', 'Independent House', 'Studio', 'PG', 'Commercial'];
+const TYPES = ['Apartment', 'Villa', 'Independent House', 'Plots', 'Studio', 'Commercial'];
 
 export default function StepPropertyType() {
   const { formData, updateData, nextStep, prevStep } = useOwnerFormStore();

@@ -7,6 +7,13 @@ interface OwnerFormData {
   whatsapp: string;
   propertyType: string;
   propertyIntent: string;
+  bhk: string;
+  area: string;
+  furnishing: string;
+  parking: string;
+  price: string;
+  deposit: string;
+  maintenance: string;
   description: string;
   images: File[];
   utmSource: string;
@@ -33,6 +40,13 @@ const initialData: OwnerFormData = {
   location: '',
   propertyType: '',
   propertyIntent: 'rent',
+  bhk: '',
+  area: '',
+  furnishing: '',
+  parking: '',
+  price: '',
+  deposit: '',
+  maintenance: '',
   description: '',
   images: [],
   utmSource: '',

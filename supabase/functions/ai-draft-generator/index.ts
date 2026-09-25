@@ -41,7 +41,7 @@ serve(async (req) => {
     });
 
     const response = await openai.chat.completions.create({
-      model: 'meta/llama-3.2-90b-vision-instruct',
+      model: 'nvidia/llama-3.1-nemotron-70b-instruct',
       messages: [
         { role: 'system', content: 'You are a friendly WhatsApp real estate assistant. Keep responses concise and warm.' },
         { role: 'user', content: prompt },

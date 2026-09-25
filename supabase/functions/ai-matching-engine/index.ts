@@ -78,7 +78,7 @@ serve(async (req) => {
       const draftPrompt = `Generate a warm, professional WhatsApp message for a new lead named ${name}. They are looking for a ${propertyType} in ${location} with a budget of ${budget}. Recommend these matching properties: ${matchNames}. Keep it under 80 words. Never use the word brokerage, use "Fee for Services" instead.`;
 
       const draftResponse = await openai.chat.completions.create({
-        model: 'meta/llama-3.2-90b-vision-instruct',
+        model: 'nvidia/llama-3.1-nemotron-70b-instruct',
         messages: [
           { role: 'system', content: 'You are a friendly WhatsApp real estate assistant for Quest Housing Bangalore.' },
           { role: 'user', content: draftPrompt },

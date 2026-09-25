@@ -19,7 +19,7 @@ export default defineConfig(() => {
             'vendor-motion': ['motion'],
             'vendor-sanity': ['@sanity/client', '@sanity/image-url'],
             'vendor-supabase': ['@supabase/supabase-js'],
-            'vendor-charts': ['recharts'],
+            'vendor-charts': ['@canvasjs/charts'],
             'vendor-pdf': ['jspdf', 'jspdf-autotable'],
             'vendor-ui': ['lucide-react', 'sonner', 'date-fns'],
           },

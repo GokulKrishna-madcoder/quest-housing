@@ -35,7 +35,6 @@ export async function fetchProperties() {
   }`);
 }
 
-// Fetch first 4 featured properties for the Home page
 export async function fetchFeaturedProperties() {
   return client.fetch(`*[_type == "property" && featured == true][0...4]{
     _id,
@@ -47,7 +46,8 @@ export async function fetchFeaturedProperties() {
     image,
     image2,
     image3,
-    featured
+    featured,
+    amenities
   }`);
 }
 

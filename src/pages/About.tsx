@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Globe, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const fadeUp = {
@@ -53,7 +53,7 @@ export default function About() {
             <div className="w-full h-full relative overflow-hidden">
               <div className="absolute inset-0 bg-navy/10 z-10 group-hover:bg-transparent transition-colors duration-700 pointer-events-none" />
               <img 
-                src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&auto=format&fit=crop&q=80" 
+                src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&fm=webp&fit=crop&q=80" 
                 alt="Quest Housing Office Minimalist" 
                 className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-[1.05] grayscale-[20%]"
               />
@@ -89,6 +89,67 @@ export default function About() {
               </div>
             </motion.div>
           </motion.div>
+        </div>
+
+        {/* The Quest Advantage Section */}
+        <div className="mb-40">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="text-center mb-16"
+          >
+            <motion.h2 variants={fadeUp} className="text-4xl md:text-5xl font-display font-medium text-navy uppercase tracking-tighter mb-4">The Quest Advantage</motion.h2>
+            <motion.p variants={fadeUp} className="text-navy/60 font-sans max-w-2xl mx-auto">Built on radical transparency and global accessibility.</motion.p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+            {/* Fee for Services */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-white p-12 border-stitch shadow-sm relative group hover:border-primary/50 transition-colors"
+            >
+              <div className="w-14 h-14 bg-navy text-primary flex items-center justify-center rounded-full mb-8 shadow-[0_0_15px_rgba(247,209,18,0.3)]">
+                <ShieldCheck size={24} />
+              </div>
+              <h3 className="text-3xl font-display text-navy mb-4 uppercase tracking-tight">Radical Transparency</h3>
+              <p className="text-navy/70 leading-relaxed font-sans mb-6">
+                The traditional real estate market is often filled with hidden costs, unexpected charges, and unclear processes. We believe finding a home or tenant should be straightforward and transparent.
+              </p>
+              <p className="text-navy/70 leading-relaxed font-sans mb-6">
+                Quest Housing operates on a simple success-based service model. We charge a professional service fee only after we successfully help you secure a property or find the right tenant. There are no upfront payments, hidden commissions, or surprise charges along the way.
+              </p>
+              <p className="text-navy/70 leading-relaxed font-sans mb-6">
+                From your first inquiry to the final agreement, we keep every step clear, honest, and transparent. Our goal is to build trust through exceptional service, open communication, and complete clarity on costs before any commitment is made.
+              </p>
+              <p className="text-navy/70 leading-relaxed font-sans">
+                No hidden fees. No last-minute surprises. Just a reliable partner focused on helping you find the right match with confidence.
+              </p>
+            </motion.div>
+
+            {/* NRI Services */}
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 0.2 }}
+              className="bg-white p-12 border-stitch shadow-sm relative group hover:border-primary/50 transition-colors"
+            >
+              <div className="w-14 h-14 bg-navy text-primary flex items-center justify-center rounded-full mb-8 shadow-[0_0_15px_rgba(247,209,18,0.3)]">
+                <Globe size={24} />
+              </div>
+              <h3 className="text-3xl font-display text-navy mb-4 uppercase tracking-tight">Global Reach, Local Expertise</h3>
+              <p className="text-navy/70 leading-relaxed font-sans mb-6">
+                Managing a property from abroad or relocating across the globe shouldn't be a nightmare. We proudly provide <span className="font-bold text-navy">specialized, end-to-end services tailored for NRI owners and customers.</span>
+              </p>
+              <p className="text-navy/70 leading-relaxed font-sans">
+                From high-quality virtual viewings and digital agreements to completely hands-off property management, our concierge acts as your trusted proxy on the ground in Bengaluru, letting you sleep soundly across time zones.
+              </p>
+            </motion.div>
+          </div>
         </div>
 
         {/* Call to Action Minimal */}

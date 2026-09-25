@@ -169,8 +169,24 @@ export default function OwnerLeads() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="text-navy">{lead.property_type}</p>
-                      <p className="text-xs text-navy/50">{lead.location}</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[9px] font-bold uppercase tracking-widest bg-navy/5 text-navy px-2 py-0.5 rounded">
+                          {lead.property_intent === 'sale' ? 'Sale' : 'Rent'}
+                        </span>
+                        <p className="text-navy font-medium text-sm">
+                          {lead.property_type !== 'Plots' && lead.bhk ? `${lead.bhk} BHK ` : ''}
+                          {lead.property_type}
+                        </p>
+                      </div>
+                      <p className="text-xs text-navy/60 mb-0.5">
+                        {lead.location}
+                        {lead.property_type !== 'Plots' && lead.furnishing ? ` • ${lead.furnishing}` : ''}
+                      </p>
+                      {lead.price && (
+                        <p className="text-xs font-bold text-navy/80">
+                          ₹{parseInt(lead.price).toLocaleString()}
+                        </p>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-navy/70 text-sm">
                       {format(new Date(lead.created_at), 'MMM dd, yyyy')}
@@ -208,7 +224,7 @@ export default function OwnerLeads() {
 
       <AnimatePresence>
         {selectedLead && (
-          <ImageModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
+          <LeadDetailsModal lead={selectedLead} onClose={() => setSelectedLead(null)} />
         )}
       </AnimatePresence>
       <NotesDrawer isOpen={!!notesLead} onClose={() => setNotesLead(null)} lead={notesLead} table="owner_leads" />
@@ -221,7 +237,7 @@ export default function OwnerLeads() {
   );
 }
 
-function ImageModal({ lead, onClose }: { lead: any, onClose: () => void }) {
+function LeadDetailsModal({ lead, onClose }: { lead: any, onClose: () => void }) {
   const images = lead.image_urls || [];
   
   const handleDownload = async (url: string, index: number) => {
@@ -269,7 +285,50 @@ function ImageModal({ lead, onClose }: { lead: any, onClose: () => void }) {
         </div>
         
         <div className="flex-1 overflow-y-auto p-8">
-          <div className="mb-8 p-6 bg-navy/5 rounded-xl">
+          <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+              <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">Intent</p>
+              <p className="text-sm font-medium text-navy">{lead.property_intent === 'sale' ? 'For Sale' : 'For Rent'}</p>
+            </div>
+            {lead.property_type !== 'Plots' && (
+              <>
+                <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+                  <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">BHK</p>
+                  <p className="text-sm font-medium text-navy">{lead.bhk || '-'}</p>
+                </div>
+                <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+                  <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">Furnishing</p>
+                  <p className="text-sm font-medium text-navy">{lead.furnishing || '-'}</p>
+                </div>
+              </>
+            )}
+            <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+              <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">Area / Plot Size</p>
+              <p className="text-sm font-medium text-navy">{lead.area ? `${lead.area} sq.ft` : '-'}</p>
+            </div>
+            <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+              <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">Parking</p>
+              <p className="text-sm font-medium text-navy">{lead.parking || '-'}</p>
+            </div>
+            <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+              <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">Expected Price</p>
+              <p className="text-sm font-medium text-navy">{lead.price ? `₹${parseInt(lead.price).toLocaleString()}` : '-'}</p>
+            </div>
+            {lead.property_intent !== 'sale' && (
+              <>
+                <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+                  <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">Deposit</p>
+                  <p className="text-sm font-medium text-navy">{lead.deposit ? `₹${parseInt(lead.deposit).toLocaleString()}` : '-'}</p>
+                </div>
+                <div className="p-4 bg-navy/5 rounded-xl border border-navy/10">
+                  <p className="text-[10px] uppercase tracking-widest text-navy/50 font-bold mb-1">Maintenance</p>
+                  <p className="text-sm font-medium text-navy">{lead.maintenance || '-'}</p>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="mb-8 p-6 bg-navy/5 rounded-xl border border-navy/10">
              <h4 className="text-xs font-bold uppercase tracking-widest text-navy/50 mb-2">Description</h4>
              <p className="text-navy font-sans text-sm">{lead.description || 'No description provided.'}</p>
           </div>

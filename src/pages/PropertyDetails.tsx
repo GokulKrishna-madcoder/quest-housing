@@ -122,7 +122,7 @@ export default function PropertyDetails() {
             {
               "@type": "RealEstateListing",
               "name": property.title,
-              "description": property.description || `Check out this ${property.bhk} BHK ${property.type} available for rent in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`,
+              "description": property.description || `Check out this ${property.type === 'Plot' ? 'Plot' : `${property.bhk} BHK ${property.type}`} available for ${property.property_intent === 'sale' ? 'sale' : 'rent'} in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`,
               "image": images,
               "offers": {
                 "@type": "Offer",
@@ -219,7 +219,9 @@ export default function PropertyDetails() {
                   {property.property_intent === 'sale' ? 'For Sale' : 'For Rent'}
                 </span>
                 <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">{property.type}</span>
-                <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">{property.furnishing}</span>
+                {property.type !== 'Plot' && (
+                  <span className="text-[10px] bg-navy/5 text-navy px-3 py-1 rounded font-bold uppercase tracking-wider">{property.furnishing}</span>
+                )}
                 {property.admin_status === 'approved' && (
                   <span className="text-[10px] bg-green-500 text-white px-3 py-1 rounded font-bold uppercase tracking-wider">Available</span>
                 )}
@@ -239,21 +241,27 @@ export default function PropertyDetails() {
             <p className="text-navy/50 flex items-center gap-2 mb-8 text-sm"><MapPin size={16} /> {property.locality || property.city}{property.pincode ? ` — ${property.pincode}` : ''}</p>
 
             <div className="flex items-center gap-8 mb-10 pb-8 border-b border-navy/10">
-              <div className="flex items-center gap-2 text-navy">
-                <BedDouble size={20} className="text-navy/40" />
-                <div>
-                  <p className="text-xl font-display font-medium">{property.bhk}</p>
-                  <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">Bedrooms</p>
+              {property.type !== 'Plot' && (
+                <div className="flex items-center gap-2 text-navy">
+                  <BedDouble size={20} className="text-navy/40" />
+                  <div>
+                    <p className="text-xl font-display font-medium">{property.bhk}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">Bedrooms</p>
+                  </div>
                 </div>
-              </div>
-              <div className="w-px h-10 bg-navy/10" />
-              <div className="flex items-center gap-2 text-navy">
-                <Bath size={20} className="text-navy/40" />
-                <div>
-                  <p className="text-xl font-display font-medium">{property.bathrooms}</p>
-                  <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">Bathrooms</p>
-                </div>
-              </div>
+              )}
+              {property.type !== 'Plot' && (
+                <>
+                  <div className="w-px h-10 bg-navy/10" />
+                  <div className="flex items-center gap-2 text-navy">
+                    <Bath size={20} className="text-navy/40" />
+                    <div>
+                      <p className="text-xl font-display font-medium">{property.bathrooms}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">Bathrooms</p>
+                    </div>
+                  </div>
+                </>
+              )}
               {property.area > 0 && (
                 <>
                   <div className="w-px h-10 bg-navy/10" />
@@ -261,7 +269,9 @@ export default function PropertyDetails() {
                     <Maximize size={20} className="text-navy/40" />
                     <div>
                       <p className="text-xl font-display font-medium">{property.area}</p>
-                      <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">Sq. Ft.</p>
+                      <p className="text-[10px] uppercase tracking-widest text-navy/40 font-bold">
+                        {property.type === 'Plot' ? 'Plot Area (Sq.Ft)' : 'Sq. Ft.'}
+                      </p>
                     </div>
                   </div>
                 </>

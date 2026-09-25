@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { uploadMedia } from '../../lib/mediaUpload';
 import ResponsiveImage from '../../components/ResponsiveImage';
 
-const PROPERTY_TYPES = ['1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
+const PROPERTY_TYPES = ['1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio', 'Plot'];
 const FURNISHING_OPTS = ['Fully Furnished', 'Semi Furnished', 'Unfurnished'];
 const STATUS_OPTS = ['Available', 'Rented', 'Under Maintenance'];
 
@@ -333,13 +333,15 @@ export default function AdminProperties() {
                         <option value="sale">Sale</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Furnishing</label>
-                      <select value={form.furnishing} onChange={e => updateField('furnishing', e.target.value)}
-                        className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg cursor-pointer">
-                        {FURNISHING_OPTS.map(f => <option key={f} value={f}>{f}</option>)}
-                      </select>
-                    </div>
+                    {form.type !== 'Plot' && (
+                      <div>
+                        <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Furnishing</label>
+                        <select value={form.furnishing} onChange={e => updateField('furnishing', e.target.value)}
+                          className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg cursor-pointer">
+                          {FURNISHING_OPTS.map(f => <option key={f} value={f}>{f}</option>)}
+                        </select>
+                      </div>
+                    )}
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">
                         {form.property_intent === 'sale' ? 'Sale Price (₹) *' : 'Rent (₹/month) *'}
@@ -364,16 +366,20 @@ export default function AdminProperties() {
                       <input value={form.pincode} onChange={e => updateField('pincode', e.target.value)}
                         className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" placeholder="560102" />
                     </div>
-                    <div>
-                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">BHK</label>
-                      <input type="number" value={form.bhk} onChange={e => updateField('bhk', e.target.value)}
-                        className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" />
-                    </div>
-                    <div>
-                      <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Bathrooms</label>
-                      <input type="number" value={form.bathrooms} onChange={e => updateField('bathrooms', e.target.value)}
-                        className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" />
-                    </div>
+                    {form.type !== 'Plot' && (
+                      <>
+                        <div>
+                          <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">BHK</label>
+                          <input type="number" value={form.bhk} onChange={e => updateField('bhk', e.target.value)}
+                            className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" />
+                        </div>
+                        <div>
+                          <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Bathrooms</label>
+                          <input type="number" value={form.bathrooms} onChange={e => updateField('bathrooms', e.target.value)}
+                            className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" />
+                        </div>
+                      </>
+                    )}
                     <div>
                       <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">Area (sqft)</label>
                       <input type="number" value={form.area || ''} onChange={e => updateField('area', e.target.value)}

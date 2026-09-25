@@ -79,7 +79,8 @@ export default function Home() {
           name: prop.title,
           type: prop.type || "Property",
           location: prop.locality || "Unknown",
-          rent: `₹${prop.price?.toLocaleString()}`,
+          price: `₹${prop.price?.toLocaleString()}`,
+          intent: prop.property_intent || 'rent',
           bedrooms: prop.bhk || "—",
           bathrooms: prop.bathrooms || "—",
           image: (prop.images && prop.images.length > 0) 
@@ -329,7 +330,7 @@ export default function Home() {
                         {prop.intent === 'sale' ? 'For Sale' : 'For Rent'}
                       </span>
                       <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
-                         {prop.price}
+                         {prop.price}{prop.intent === 'sale' ? '' : '/mo'}
                       </span>
                     </div>
                   </div>

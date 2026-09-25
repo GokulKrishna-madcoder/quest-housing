@@ -92,7 +92,7 @@ If they indicate they are a Tenant, you MUST include the exact string [ACTION: O
     }));
 
     let response = await openai.chat.completions.create({
-      model: "meta/llama-3.1-70b-instruct",
+      model: "nvidia/llama-3.1-nemotron-70b-instruct",
       messages: [
         { role: "system", content: systemPrompt },
         ...formattedMessages

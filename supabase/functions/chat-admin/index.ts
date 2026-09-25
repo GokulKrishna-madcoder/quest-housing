@@ -48,7 +48,7 @@ Tone: Professional, highly analytical, concise, and structured.`;
     }));
 
     const response = await openai.chat.completions.create({
-      model: "nvidia/llama-3.1-nemotron-70b-instruct",
+      model: "meta/llama-3.2-11b-vision-instruct",
       messages: [
         { role: "system", content: systemPrompt },
         ...formattedMessages

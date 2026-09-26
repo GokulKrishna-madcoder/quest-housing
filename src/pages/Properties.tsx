@@ -8,7 +8,7 @@ import { useFavorites } from '../hooks/useFavorites';
 import ResponsiveImage from '../components/ResponsiveImage';
 import SEO from '../components/SEO';
 
-const BHK_FILTERS = ['All', '1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
+const BHK_FILTERS = ['All', '1 RK', '1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
 const FURNISH_FILTERS = ['All', 'Fully Furnished', 'Semi Furnished', 'Unfurnished'];
 
 export default function Properties() {

@@ -105,8 +105,8 @@ export default function PropertyDetails() {
   return (
     <div className="bg-light stitch-grid min-h-screen">
       <SEO
-        title={`${property.type} for rent in ${property.locality || property.city}`}
-        description={`Check out this ${property.bhk} BHK ${property.type} available for rent in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`}
+        title={`${property.type} for ${property.property_intent === 'sale' ? 'sale' : 'rent'} in ${property.locality || property.city}`}
+        description={`Check out this ${['Plot', '1 RK', 'Studio', 'PG / Hostel'].includes(property.type) ? property.type : `${property.bhk} BHK ${property.type}`} available for ${property.property_intent === 'sale' ? 'sale' : 'rent'} in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`}
         image={images.length > 0 ? images[0] : undefined}
         jsonLd={{
           "@context": "https://schema.org",
@@ -122,7 +122,7 @@ export default function PropertyDetails() {
             {
               "@type": "RealEstateListing",
               "name": property.title,
-              "description": property.description || `Check out this ${property.type === 'Plot' ? 'Plot' : `${property.bhk} BHK ${property.type}`} available for ${property.property_intent === 'sale' ? 'sale' : 'rent'} in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`,
+              "description": property.description || `Check out this ${['Plot', '1 RK', 'Studio', 'PG / Hostel'].includes(property.type) ? property.type : `${property.bhk} BHK ${property.type}`} available for ${property.property_intent === 'sale' ? 'sale' : 'rent'} in ${property.locality || property.city} for ₹${property.price?.toLocaleString()}.`,
               "image": images,
               "offers": {
                 "@type": "Offer",

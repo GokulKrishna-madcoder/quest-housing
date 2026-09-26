@@ -38,13 +38,14 @@ export default function StepDetails() {
         
         {isBhkApplicable && (
           <div>
-            <label className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-bold block mb-3 ml-2">BHK *</label>
+            <label className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-bold block mb-3 ml-2">BHK / RK *</label>
             <select 
               value={formData.bhk}
               onChange={(e) => updateData({ bhk: e.target.value })}
               className="w-full bg-white/5 border border-white/20 text-white text-sm p-4 rounded-xl focus:outline-none focus:border-primary transition-colors appearance-none"
             >
               <option value="" disabled className="bg-navy text-white">Select BHK</option>
+              <option value="1 RK" className="bg-navy text-white">1 RK</option>
               <option value="1 BHK" className="bg-navy text-white">1 BHK</option>
               <option value="2 BHK" className="bg-navy text-white">2 BHK</option>
               <option value="3 BHK" className="bg-navy text-white">3 BHK</option>

@@ -1,6 +1,6 @@
 import { useLeadFormStore } from '../../../store/useLeadFormStore';
 
-const PROPERTY_TYPES = ['1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
+const PROPERTY_TYPES = ['1 RK', '1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio'];
 
 export default function StepPropertyType() {
   const { formData, updateData, nextStep, prevStep } = useLeadFormStore();

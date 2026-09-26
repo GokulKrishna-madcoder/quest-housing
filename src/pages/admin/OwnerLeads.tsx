@@ -174,7 +174,7 @@ export default function OwnerLeads() {
                           {lead.property_intent === 'sale' ? 'Sale' : 'Rent'}
                         </span>
                         <p className="text-navy font-medium text-sm">
-                          {lead.property_type !== 'Plots' && lead.bhk ? `${lead.bhk} BHK ` : ''}
+                          {lead.property_type !== 'Plots' && lead.bhk ? `${lead.bhk} ` : ''}
                           {lead.property_type}
                         </p>
                       </div>

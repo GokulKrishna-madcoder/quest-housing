@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { uploadMedia } from '../../lib/mediaUpload';
 import ResponsiveImage from '../../components/ResponsiveImage';
 
-const PROPERTY_TYPES = ['1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio', 'Plot'];
+const PROPERTY_TYPES = ['1 RK', '1 BHK', '2 BHK', '3 BHK', 'Villa', 'PG / Hostel', 'Studio', 'Plot'];
 const FURNISHING_OPTS = ['Fully Furnished', 'Semi Furnished', 'Unfurnished'];
 const STATUS_OPTS = ['Available', 'Rented', 'Under Maintenance'];
 
@@ -369,7 +369,7 @@ export default function AdminProperties() {
                     {form.type !== 'Plot' && (
                       <>
                         <div>
-                          <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">BHK</label>
+                          <label className="text-[10px] uppercase tracking-[0.3em] text-navy/50 font-bold block mb-2">BHK / RK</label>
                           <input type="number" value={form.bhk} onChange={e => updateField('bhk', e.target.value)}
                             className="w-full bg-white border border-navy/15 text-navy text-sm p-3 focus:border-primary focus:outline-none rounded-lg" />
                         </div>

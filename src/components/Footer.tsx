@@ -77,8 +77,8 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between pt-10 border-t border-white/10 text-xs text-white/40 uppercase tracking-widest font-bold">
           <p>&copy; {new Date().getFullYear()} Quest Housing. All Rights Reserved.</p>
           <div className="flex gap-8 mt-6 md:mt-0">
-            <Link to="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="#" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>

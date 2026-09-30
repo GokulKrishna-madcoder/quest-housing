@@ -13,6 +13,8 @@ import PropertyDetails from './pages/PropertyDetails';
 import Registration from './pages/Registration';
 import FindMyHome from './pages/FindMyHome';
 import SavedProperties from './pages/SavedProperties';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import ScrollToTop from './components/ScrollToTop';
 
 // Admin Routes
@@ -64,6 +66,8 @@ export default function App() {
           <Route path="register" element={<Registration />} />
           <Route path="find-my-home" element={<FindMyHome />} />
           <Route path="saved" element={<SavedProperties />} />
+          <Route path="privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="terms-of-service" element={<TermsOfService />} />
         </Route>
         
         {/* Admin Routes */}

@@ -12,6 +12,8 @@ const STATIC_ROUTES = [
   { loc: '/about', priority: '0.7', changefreq: 'monthly' },
   { loc: '/find-my-home', priority: '0.8', changefreq: 'monthly' },
   { loc: '/register', priority: '0.6', changefreq: 'monthly' },
+  { loc: '/privacy-policy', priority: '0.3', changefreq: 'yearly' },
+  { loc: '/terms-of-service', priority: '0.3', changefreq: 'yearly' },
 ];
 
 export default async function handler(req: any, res: any) {

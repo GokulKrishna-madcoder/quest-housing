@@ -77,6 +77,12 @@ export default async function middleware(request: Request) {
   } else if (path === '/services') {
     title = 'Real Estate Services | Quest Housing';
     desc = 'Premium property management, tenant matching, and real estate services in Bengaluru.';
+  } else if (path === '/privacy-policy') {
+    title = 'Privacy Policy | Quest Housing';
+    desc = 'Read the privacy policy of Quest Housing. We are committed to protecting your personal information and being transparent about our data practices.';
+  } else if (path === '/terms-of-service') {
+    title = 'Terms of Service | Quest Housing';
+    desc = 'Read the terms of service for using the Quest Housing platform, services, and website.';
   }
 
   // Inject SEO tags into <head> — replaces the static <title>QuestHousing</title>
@@ -111,5 +117,5 @@ function esc(s: string): string {
 }
 
 export const config = {
-  matcher: ['/', '/properties', '/properties/:path*', '/about', '/services', '/find-my-home', '/register'],
+  matcher: ['/', '/properties', '/properties/:path*', '/about', '/services', '/find-my-home', '/register', '/privacy-policy', '/terms-of-service'],
 };
